@@ -1,0 +1,4 @@
+services:
+#    tekstove_api.example:
+#        class: Tekstove\ApiBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]

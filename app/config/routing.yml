@@ -1,0 +1,4 @@
+tekstove_api:
+    resource: "@TekstoveApiBundle/Resources/config/routing.yml"
+    prefix:   /{_format}/
+

@@ -1,0 +1,3 @@
+tekstove_api_user:
+    path: "/user"
+    defaults: { _controller: TekstoveApiBundle:User:index }

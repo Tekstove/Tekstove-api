@@ -22,7 +22,9 @@
         "propel/propel": "2.0.*-dev", 
         "propel/propel-bundle": "2.0.*-dev",
         "friendsofsymfony/rest-bundle": "^1.7",
-        "symfony/serializer": "*"
+        "jms/serializer": "dev-master",
+        "jms/serializer-bundle": "dev-master",
+        "potaka/knp-paginator-propel2bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

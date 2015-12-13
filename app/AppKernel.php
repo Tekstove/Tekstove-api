@@ -18,6 +18,9 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             
             // vendor
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new Potaka\KnpPaginatorAdapterPropel2Bundle\PotakaKnpPaginatorAdapterPropel2Bundle(),
             new Propel\PropelBundle\PropelBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new Tekstove\ApiBundle\TekstoveApiBundle(),

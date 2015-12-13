@@ -1,0 +1,5 @@
+"Tekstove\\ApiBundle\\Model\\User":
+    exclusion_policy: none
+    exclude: false
+    read_only: false
+    properties:

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="default" namespace="Tekstove\ApiBundle\Model" defaultIdMethod="native">
+    <table name="user">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="username" type="varchar" primaryString="1" size="100" />
+        <column name="password" type="varchar" required="true" />
+        <column name="mail" type="varchar" required="true" />
+        <column name="avatar" type="varchar" />
+        <column name="about" type="varchar" />
+        <!-- should be php bool -->
+        <column name="autoplay" type="smallint" />
+        
+        <behavior name="validate">
+            <parameter name="emailValid" value="{column: mail, validator: Email}" />
+            <parameter name="uniqueEmail" value="{column: mail, validator: Unique}" />
+            <parameter name="uniqueUsername" value="{column: username, validator: Unique}"/>
+        </behavior>
+    </table>
+    
+    <table name="permission" namespace="\Tekstove\ApiBundle\Model\Acl" readonly="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="name" type="varchar" />
+        <column name="value" type="integer" />
+    </table>
+
+    <table name="permission_group" namespace="\Tekstove\ApiBundle\Model\Acl" readonly="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="name" type="varchar" />
+        <column name="image" type="varchar" />
+    </table>
+    
+    <table name="permission_group_permission" namespace="\Tekstove\ApiBundle\Model\Acl" readonly="true">
+        <column name="group_id" type="integer" required="true" primaryKey="true" autoIncrement="false" />
+        <foreign-key foreignTable="permission_group">
+            <reference local="group_id" foreign="id" />
+        </foreign-key>
+
+        <column name="permission_id" type="integer" required="true" primaryKey="true" autoIncrement="false" />
+        <foreign-key foreignTable="permission">
+            <reference local="permission_id" foreign="id" />
+        </foreign-key>
+    </table>
+    
+    <table name="permission_group_user" namespace="\Tekstove\ApiBundle\Model\Acl">
+        <column name="user_id" type="integer" required="true" primaryKey="true" autoIncrement="false" />
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+
+        <column name="group_id" type="integer" required="true" primaryKey="true" autoIncrement="false" />
+        <foreign-key foreignTable="permission_group">
+            <reference local="group_id" foreign="id" />
+        </foreign-key>
+    </table>
+    
+    <table name="lyric">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
+        <column name="title" type="varchar" />
+        <column name="text" type="varchar" />
+        <column name="text_bg" phpName="textBg" type="varchar" />
+
+        <column name="user_id" phpName="userId" type="integer" />
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+
+        <column name="cache_title_short" phpName="cacheTitleShort" type="varchar"/>
+        <column name="views" type="integer" />
+        <column name="popularity" type="integer" />
+        <column name="votesCount" type="integer" />
+        
+        <column name="video_youtube" type="varchar" phpName="videoYoutube" />
+        <column name="video_vbox7" type="varchar" phpName="videoVbox7" />
+        <column name="video_metacafe" type="varchar" phpName="videoMetacafe" />
+
+        <column name="download" type="varchar" phpName="download" />
+        
+        <behavior name="validate">
+            <parameter name="textValidationNotEmpty" value="{column: text, validator: NotBlank}" />
+            <parameter name="titleValidationNotEmpty" value="{column: title, validator: NotBlank}" />
+        </behavior>
+    </table>
+    
+    <table name="lyric_language" isCrossRef="true" namespace="\Tekstove\ApiBundle\Model\Lyric" >
+        <column name="lyric_id" type="integer" primaryKey="true"/>
+        <column name="language_id" type="integer" primaryKey="true"/>
+        <foreign-key foreignTable="lyric">
+            <reference local="lyric_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="language">
+            <reference local="language_id" foreign="id"/>
+        </foreign-key>
+    </table>
+    
+    <table name="lyric_translation" namespace="\Tekstove\ApiBundle\Model\Lyric" >
+        <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
+        <column name="lyric_id" type="integer"/>
+        <column name="user_id" type="integer"/>
+        <column name="text" type="varchar"/>
+        
+        <foreign-key foreignTable="lyric">
+            <reference local="lyric_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+    </table>
+    
+    <table name="language" readOnly="true">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" />
+    </table>
+    
+    <table name="lyric_vote" namespace="\Tekstove\ApiBundle\Model\Lyric">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
+        <column name="lyric_id" type="integer" />
+        <column name="user_id" type="integer" />
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="lyric">
+            <reference local="lyric_id" foreign="id" />
+        </foreign-key>
+    </table>
+    
+    <table name="artist">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" />
+        <column name="user_id" type="integer" />
+        <!-- Add forbidden, redirect_toArtist -->
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+    </table>
+    
+    <table name="album">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" />
+        <column name="year" type="integer" />
+        <column name="image" type="varchar" />
+        <column name="user_id" type="integer" />
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+</database>

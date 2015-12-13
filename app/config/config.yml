@@ -72,3 +72,7 @@ fos_rest:
     view:
         view_response_listener: force
     
+jms_serializer:
+    metadata:
+        auto_detection: true
+        debug: "%kernel.debug%"

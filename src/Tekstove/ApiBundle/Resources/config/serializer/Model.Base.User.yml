@@ -1,0 +1,15 @@
+"Tekstove\\ApiBundle\\Model\\Base\\User":
+    exclusion_policy: none
+    exclude: false
+    read_only: false
+    properties:
+        username:
+            expose: true
+            groups: [List]
+        password:
+            expose: false
+            include: false
+            groups: []
+        mail:
+            expose: true
+            groups: []

@@ -75,5 +75,4 @@ class TekstoveAbstractController extends FOSRestController
         
         return $data;
     }
-    
 }

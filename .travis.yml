@@ -1,0 +1,16 @@
+language: php
+php:
+  - 5.6
+before_script:
+  - pyrus install pear/PHP_CodeSniffer
+  - phpenv rehash
+#  - mv app/config/parameters_travis.yml app/config/parameters.yml
+#  - mysql -e 'create database tekstove_lyric;'
+
+script:
+    - cd Test/codeSniffer
+    - phpcs
+
+notifications:
+    on_success: never
+    on_failure: always

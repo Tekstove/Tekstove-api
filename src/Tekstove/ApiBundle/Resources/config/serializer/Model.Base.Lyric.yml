@@ -1,0 +1,19 @@
+"Tekstove\\ApiBundle\\Model\\Base\\Lyric":
+    exclusion_policy: none
+    exclude: false
+    read_only: false
+    properties:
+        id:
+            expose: true
+            groups: [List]
+        title:
+            expose: true
+            groups: [List]
+        cache_title_short:
+            expose: true,
+            serialized_name: cacheTitleShort
+            groups: [List]
+        text:
+            expose: false
+            include: false
+            groups: []

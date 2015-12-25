@@ -2,3 +2,8 @@ tekstove_api_user:
     path: "/users"
     defaults: { _controller: TekstoveApiBundle:User:index }
     methods: [GET]
+
+tekstove_api_lyric:
+    path: "/lyric"
+    defaults: { _controller: TekstoveApiBundle:Lyric:index }
+    methods: [GET]

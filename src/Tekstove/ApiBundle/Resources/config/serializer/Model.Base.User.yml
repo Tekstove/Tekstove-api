@@ -13,3 +13,7 @@
         mail:
             expose: true
             groups: []
+        avatar:
+            expose: true
+            groups: [List]
+        

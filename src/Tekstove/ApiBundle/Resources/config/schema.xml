@@ -58,6 +58,7 @@
         <column name="title" type="varchar" />
         <column name="text" type="varchar" />
         <column name="text_bg" phpName="textBg" type="varchar" />
+        <column name="text_bg_added" type="timestamp" phpName="textBgAdded"/>
 
         <column name="user_id" phpName="userId" type="integer" />
         <foreign-key foreignTable="user">
@@ -67,7 +68,7 @@
         <column name="cache_title_short" phpName="cacheTitleShort" type="varchar"/>
         <column name="views" type="integer" />
         <column name="popularity" type="integer" />
-        <column name="votesCount" type="integer" />
+        <column name="votes_count" type="integer" phpName="votesCount" />
         
         <column name="video_youtube" type="varchar" phpName="videoYoutube" />
         <column name="video_vbox7" type="varchar" phpName="videoVbox7" />
@@ -97,6 +98,7 @@
         <column name="lyric_id" type="integer"/>
         <column name="user_id" type="integer"/>
         <column name="text" type="varchar"/>
+        
         
         <foreign-key foreignTable="lyric">
             <reference local="lyric_id" foreign="id"/>

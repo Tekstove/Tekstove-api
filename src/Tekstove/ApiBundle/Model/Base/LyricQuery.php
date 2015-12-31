@@ -27,11 +27,12 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery orderByTitle($order = Criteria::ASC) Order by the title column
  * @method     ChildLyricQuery orderByText($order = Criteria::ASC) Order by the text column
  * @method     ChildLyricQuery orderBytextBg($order = Criteria::ASC) Order by the text_bg column
+ * @method     ChildLyricQuery orderBytextBgAdded($order = Criteria::ASC) Order by the text_bg_added column
  * @method     ChildLyricQuery orderByuserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildLyricQuery orderBycacheTitleShort($order = Criteria::ASC) Order by the cache_title_short column
  * @method     ChildLyricQuery orderByViews($order = Criteria::ASC) Order by the views column
  * @method     ChildLyricQuery orderByPopularity($order = Criteria::ASC) Order by the popularity column
- * @method     ChildLyricQuery orderByVotescount($order = Criteria::ASC) Order by the votesCount column
+ * @method     ChildLyricQuery orderByvotesCount($order = Criteria::ASC) Order by the votes_count column
  * @method     ChildLyricQuery orderByvideoYoutube($order = Criteria::ASC) Order by the video_youtube column
  * @method     ChildLyricQuery orderByvideoVbox7($order = Criteria::ASC) Order by the video_vbox7 column
  * @method     ChildLyricQuery orderByvideoMetacafe($order = Criteria::ASC) Order by the video_metacafe column
@@ -41,11 +42,12 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery groupByTitle() Group by the title column
  * @method     ChildLyricQuery groupByText() Group by the text column
  * @method     ChildLyricQuery groupBytextBg() Group by the text_bg column
+ * @method     ChildLyricQuery groupBytextBgAdded() Group by the text_bg_added column
  * @method     ChildLyricQuery groupByuserId() Group by the user_id column
  * @method     ChildLyricQuery groupBycacheTitleShort() Group by the cache_title_short column
  * @method     ChildLyricQuery groupByViews() Group by the views column
  * @method     ChildLyricQuery groupByPopularity() Group by the popularity column
- * @method     ChildLyricQuery groupByVotescount() Group by the votesCount column
+ * @method     ChildLyricQuery groupByvotesCount() Group by the votes_count column
  * @method     ChildLyricQuery groupByvideoYoutube() Group by the video_youtube column
  * @method     ChildLyricQuery groupByvideoVbox7() Group by the video_vbox7 column
  * @method     ChildLyricQuery groupByvideoMetacafe() Group by the video_metacafe column
@@ -108,11 +110,12 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric findOneByTitle(string $title) Return the first ChildLyric filtered by the title column
  * @method     ChildLyric findOneByText(string $text) Return the first ChildLyric filtered by the text column
  * @method     ChildLyric findOneBytextBg(string $text_bg) Return the first ChildLyric filtered by the text_bg column
+ * @method     ChildLyric findOneBytextBgAdded(string $text_bg_added) Return the first ChildLyric filtered by the text_bg_added column
  * @method     ChildLyric findOneByuserId(int $user_id) Return the first ChildLyric filtered by the user_id column
  * @method     ChildLyric findOneBycacheTitleShort(string $cache_title_short) Return the first ChildLyric filtered by the cache_title_short column
  * @method     ChildLyric findOneByViews(int $views) Return the first ChildLyric filtered by the views column
  * @method     ChildLyric findOneByPopularity(int $popularity) Return the first ChildLyric filtered by the popularity column
- * @method     ChildLyric findOneByVotescount(int $votesCount) Return the first ChildLyric filtered by the votesCount column
+ * @method     ChildLyric findOneByvotesCount(int $votes_count) Return the first ChildLyric filtered by the votes_count column
  * @method     ChildLyric findOneByvideoYoutube(string $video_youtube) Return the first ChildLyric filtered by the video_youtube column
  * @method     ChildLyric findOneByvideoVbox7(string $video_vbox7) Return the first ChildLyric filtered by the video_vbox7 column
  * @method     ChildLyric findOneByvideoMetacafe(string $video_metacafe) Return the first ChildLyric filtered by the video_metacafe column
@@ -125,11 +128,12 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric requireOneByTitle(string $title) Return the first ChildLyric filtered by the title column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByText(string $text) Return the first ChildLyric filtered by the text column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBytextBg(string $text_bg) Return the first ChildLyric filtered by the text_bg column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildLyric requireOneBytextBgAdded(string $text_bg_added) Return the first ChildLyric filtered by the text_bg_added column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByuserId(int $user_id) Return the first ChildLyric filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBycacheTitleShort(string $cache_title_short) Return the first ChildLyric filtered by the cache_title_short column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByViews(int $views) Return the first ChildLyric filtered by the views column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByPopularity(int $popularity) Return the first ChildLyric filtered by the popularity column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildLyric requireOneByVotescount(int $votesCount) Return the first ChildLyric filtered by the votesCount column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildLyric requireOneByvotesCount(int $votes_count) Return the first ChildLyric filtered by the votes_count column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByvideoYoutube(string $video_youtube) Return the first ChildLyric filtered by the video_youtube column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByvideoVbox7(string $video_vbox7) Return the first ChildLyric filtered by the video_vbox7 column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByvideoMetacafe(string $video_metacafe) Return the first ChildLyric filtered by the video_metacafe column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -140,11 +144,12 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric[]|ObjectCollection findByTitle(string $title) Return ChildLyric objects filtered by the title column
  * @method     ChildLyric[]|ObjectCollection findByText(string $text) Return ChildLyric objects filtered by the text column
  * @method     ChildLyric[]|ObjectCollection findBytextBg(string $text_bg) Return ChildLyric objects filtered by the text_bg column
+ * @method     ChildLyric[]|ObjectCollection findBytextBgAdded(string $text_bg_added) Return ChildLyric objects filtered by the text_bg_added column
  * @method     ChildLyric[]|ObjectCollection findByuserId(int $user_id) Return ChildLyric objects filtered by the user_id column
  * @method     ChildLyric[]|ObjectCollection findBycacheTitleShort(string $cache_title_short) Return ChildLyric objects filtered by the cache_title_short column
  * @method     ChildLyric[]|ObjectCollection findByViews(int $views) Return ChildLyric objects filtered by the views column
  * @method     ChildLyric[]|ObjectCollection findByPopularity(int $popularity) Return ChildLyric objects filtered by the popularity column
- * @method     ChildLyric[]|ObjectCollection findByVotescount(int $votesCount) Return ChildLyric objects filtered by the votesCount column
+ * @method     ChildLyric[]|ObjectCollection findByvotesCount(int $votes_count) Return ChildLyric objects filtered by the votes_count column
  * @method     ChildLyric[]|ObjectCollection findByvideoYoutube(string $video_youtube) Return ChildLyric objects filtered by the video_youtube column
  * @method     ChildLyric[]|ObjectCollection findByvideoVbox7(string $video_vbox7) Return ChildLyric objects filtered by the video_vbox7 column
  * @method     ChildLyric[]|ObjectCollection findByvideoMetacafe(string $video_metacafe) Return ChildLyric objects filtered by the video_metacafe column
@@ -241,7 +246,7 @@ abstract class LyricQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, title, text, text_bg, user_id, cache_title_short, views, popularity, votesCount, video_youtube, video_vbox7, video_metacafe, download FROM lyric WHERE id = :p0';
+        $sql = 'SELECT id, title, text, text_bg, text_bg_added, user_id, cache_title_short, views, popularity, votes_count, video_youtube, video_vbox7, video_metacafe, download FROM lyric WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -460,6 +465,49 @@ abstract class LyricQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the text_bg_added column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBytextBgAdded('2011-03-14'); // WHERE text_bg_added = '2011-03-14'
+     * $query->filterBytextBgAdded('now'); // WHERE text_bg_added = '2011-03-14'
+     * $query->filterBytextBgAdded(array('max' => 'yesterday')); // WHERE text_bg_added > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $textBgAdded The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildLyricQuery The current query, for fluid interface
+     */
+    public function filterBytextBgAdded($textBgAdded = null, $comparison = null)
+    {
+        if (is_array($textBgAdded)) {
+            $useMinMax = false;
+            if (isset($textBgAdded['min'])) {
+                $this->addUsingAlias(LyricTableMap::COL_TEXT_BG_ADDED, $textBgAdded['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($textBgAdded['max'])) {
+                $this->addUsingAlias(LyricTableMap::COL_TEXT_BG_ADDED, $textBgAdded['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(LyricTableMap::COL_TEXT_BG_ADDED, $textBgAdded, $comparison);
+    }
+
+    /**
      * Filter the query on the user_id column
      *
      * Example usage:
@@ -614,16 +662,16 @@ abstract class LyricQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the votesCount column
+     * Filter the query on the votes_count column
      *
      * Example usage:
      * <code>
-     * $query->filterByVotescount(1234); // WHERE votesCount = 1234
-     * $query->filterByVotescount(array(12, 34)); // WHERE votesCount IN (12, 34)
-     * $query->filterByVotescount(array('min' => 12)); // WHERE votesCount > 12
+     * $query->filterByvotesCount(1234); // WHERE votes_count = 1234
+     * $query->filterByvotesCount(array(12, 34)); // WHERE votes_count IN (12, 34)
+     * $query->filterByvotesCount(array('min' => 12)); // WHERE votes_count > 12
      * </code>
      *
-     * @param     mixed $votescount The value to use as filter.
+     * @param     mixed $votesCount The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -631,16 +679,16 @@ abstract class LyricQuery extends ModelCriteria
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
      */
-    public function filterByVotescount($votescount = null, $comparison = null)
+    public function filterByvotesCount($votesCount = null, $comparison = null)
     {
-        if (is_array($votescount)) {
+        if (is_array($votesCount)) {
             $useMinMax = false;
-            if (isset($votescount['min'])) {
-                $this->addUsingAlias(LyricTableMap::COL_VOTESCOUNT, $votescount['min'], Criteria::GREATER_EQUAL);
+            if (isset($votesCount['min'])) {
+                $this->addUsingAlias(LyricTableMap::COL_VOTES_COUNT, $votesCount['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($votescount['max'])) {
-                $this->addUsingAlias(LyricTableMap::COL_VOTESCOUNT, $votescount['max'], Criteria::LESS_EQUAL);
+            if (isset($votesCount['max'])) {
+                $this->addUsingAlias(LyricTableMap::COL_VOTES_COUNT, $votesCount['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -651,7 +699,7 @@ abstract class LyricQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(LyricTableMap::COL_VOTESCOUNT, $votescount, $comparison);
+        return $this->addUsingAlias(LyricTableMap::COL_VOTES_COUNT, $votesCount, $comparison);
     }
 
     /**

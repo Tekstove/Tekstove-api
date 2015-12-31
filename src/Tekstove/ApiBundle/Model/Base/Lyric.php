@@ -2,6 +2,7 @@
 
 namespace Tekstove\ApiBundle\Model\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -16,6 +17,7 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -113,6 +115,13 @@ abstract class Lyric implements ActiveRecordInterface
     protected $text_bg;
 
     /**
+     * The value for the text_bg_added field.
+     *
+     * @var        \DateTime
+     */
+    protected $text_bg_added;
+
+    /**
      * The value for the user_id field.
      *
      * @var        int
@@ -141,11 +150,11 @@ abstract class Lyric implements ActiveRecordInterface
     protected $popularity;
 
     /**
-     * The value for the votescount field.
+     * The value for the votes_count field.
      *
      * @var        int
      */
-    protected $votescount;
+    protected $votes_count;
 
     /**
      * The value for the video_youtube field.
@@ -523,6 +532,26 @@ abstract class Lyric implements ActiveRecordInterface
     }
 
     /**
+     * Get the [optionally formatted] temporal [text_bg_added] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function gettextBgAdded($format = NULL)
+    {
+        if ($format === null) {
+            return $this->text_bg_added;
+        } else {
+            return $this->text_bg_added instanceof \DateTime ? $this->text_bg_added->format($format) : null;
+        }
+    }
+
+    /**
      * Get the [user_id] column value.
      *
      * @return int
@@ -563,13 +592,13 @@ abstract class Lyric implements ActiveRecordInterface
     }
 
     /**
-     * Get the [votescount] column value.
+     * Get the [votes_count] column value.
      *
      * @return int
      */
-    public function getVotescount()
+    public function getvotesCount()
     {
-        return $this->votescount;
+        return $this->votes_count;
     }
 
     /**
@@ -693,6 +722,26 @@ abstract class Lyric implements ActiveRecordInterface
     } // settextBg()
 
     /**
+     * Sets the value of [text_bg_added] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Tekstove\ApiBundle\Model\Lyric The current object (for fluent API support)
+     */
+    public function settextBgAdded($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->text_bg_added !== null || $dt !== null) {
+            if ($this->text_bg_added === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->text_bg_added->format("Y-m-d H:i:s")) {
+                $this->text_bg_added = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[LyricTableMap::COL_TEXT_BG_ADDED] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // settextBgAdded()
+
+    /**
      * Set the value of [user_id] column.
      *
      * @param int $v new value
@@ -777,24 +826,24 @@ abstract class Lyric implements ActiveRecordInterface
     } // setPopularity()
 
     /**
-     * Set the value of [votescount] column.
+     * Set the value of [votes_count] column.
      *
      * @param int $v new value
      * @return $this|\Tekstove\ApiBundle\Model\Lyric The current object (for fluent API support)
      */
-    public function setVotescount($v)
+    public function setvotesCount($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->votescount !== $v) {
-            $this->votescount = $v;
-            $this->modifiedColumns[LyricTableMap::COL_VOTESCOUNT] = true;
+        if ($this->votes_count !== $v) {
+            $this->votes_count = $v;
+            $this->modifiedColumns[LyricTableMap::COL_VOTES_COUNT] = true;
         }
 
         return $this;
-    } // setVotescount()
+    } // setvotesCount()
 
     /**
      * Set the value of [video_youtube] column.
@@ -924,31 +973,37 @@ abstract class Lyric implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : LyricTableMap::translateFieldName('textBg', TableMap::TYPE_PHPNAME, $indexType)];
             $this->text_bg = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : LyricTableMap::translateFieldName('userId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : LyricTableMap::translateFieldName('textBgAdded', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->text_bg_added = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : LyricTableMap::translateFieldName('userId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : LyricTableMap::translateFieldName('cacheTitleShort', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : LyricTableMap::translateFieldName('cacheTitleShort', TableMap::TYPE_PHPNAME, $indexType)];
             $this->cache_title_short = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : LyricTableMap::translateFieldName('Views', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : LyricTableMap::translateFieldName('Views', TableMap::TYPE_PHPNAME, $indexType)];
             $this->views = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : LyricTableMap::translateFieldName('Popularity', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : LyricTableMap::translateFieldName('Popularity', TableMap::TYPE_PHPNAME, $indexType)];
             $this->popularity = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : LyricTableMap::translateFieldName('Votescount', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->votescount = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : LyricTableMap::translateFieldName('votesCount', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->votes_count = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : LyricTableMap::translateFieldName('videoYoutube', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : LyricTableMap::translateFieldName('videoYoutube', TableMap::TYPE_PHPNAME, $indexType)];
             $this->video_youtube = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : LyricTableMap::translateFieldName('videoVbox7', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : LyricTableMap::translateFieldName('videoVbox7', TableMap::TYPE_PHPNAME, $indexType)];
             $this->video_vbox7 = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : LyricTableMap::translateFieldName('videoMetacafe', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : LyricTableMap::translateFieldName('videoMetacafe', TableMap::TYPE_PHPNAME, $indexType)];
             $this->video_metacafe = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : LyricTableMap::translateFieldName('download', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : LyricTableMap::translateFieldName('download', TableMap::TYPE_PHPNAME, $indexType)];
             $this->download = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
@@ -958,7 +1013,7 @@ abstract class Lyric implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 13; // 13 = LyricTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 14; // 14 = LyricTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Lyric'), 0, $e);
@@ -1272,6 +1327,9 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_TEXT_BG)) {
             $modifiedColumns[':p' . $index++]  = 'text_bg';
         }
+        if ($this->isColumnModified(LyricTableMap::COL_TEXT_BG_ADDED)) {
+            $modifiedColumns[':p' . $index++]  = 'text_bg_added';
+        }
         if ($this->isColumnModified(LyricTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = 'user_id';
         }
@@ -1284,8 +1342,8 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_POPULARITY)) {
             $modifiedColumns[':p' . $index++]  = 'popularity';
         }
-        if ($this->isColumnModified(LyricTableMap::COL_VOTESCOUNT)) {
-            $modifiedColumns[':p' . $index++]  = 'votesCount';
+        if ($this->isColumnModified(LyricTableMap::COL_VOTES_COUNT)) {
+            $modifiedColumns[':p' . $index++]  = 'votes_count';
         }
         if ($this->isColumnModified(LyricTableMap::COL_VIDEO_YOUTUBE)) {
             $modifiedColumns[':p' . $index++]  = 'video_youtube';
@@ -1322,6 +1380,9 @@ abstract class Lyric implements ActiveRecordInterface
                     case 'text_bg':
                         $stmt->bindValue($identifier, $this->text_bg, PDO::PARAM_STR);
                         break;
+                    case 'text_bg_added':
+                        $stmt->bindValue($identifier, $this->text_bg_added ? $this->text_bg_added->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                        break;
                     case 'user_id':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
@@ -1334,8 +1395,8 @@ abstract class Lyric implements ActiveRecordInterface
                     case 'popularity':
                         $stmt->bindValue($identifier, $this->popularity, PDO::PARAM_INT);
                         break;
-                    case 'votesCount':
-                        $stmt->bindValue($identifier, $this->votescount, PDO::PARAM_INT);
+                    case 'votes_count':
+                        $stmt->bindValue($identifier, $this->votes_count, PDO::PARAM_INT);
                         break;
                     case 'video_youtube':
                         $stmt->bindValue($identifier, $this->video_youtube, PDO::PARAM_STR);
@@ -1424,30 +1485,33 @@ abstract class Lyric implements ActiveRecordInterface
                 return $this->gettextBg();
                 break;
             case 4:
-                return $this->getuserId();
+                return $this->gettextBgAdded();
                 break;
             case 5:
-                return $this->getcacheTitleShort();
+                return $this->getuserId();
                 break;
             case 6:
-                return $this->getViews();
+                return $this->getcacheTitleShort();
                 break;
             case 7:
-                return $this->getPopularity();
+                return $this->getViews();
                 break;
             case 8:
-                return $this->getVotescount();
+                return $this->getPopularity();
                 break;
             case 9:
-                return $this->getvideoYoutube();
+                return $this->getvotesCount();
                 break;
             case 10:
-                return $this->getvideoVbox7();
+                return $this->getvideoYoutube();
                 break;
             case 11:
-                return $this->getvideoMetacafe();
+                return $this->getvideoVbox7();
                 break;
             case 12:
+                return $this->getvideoMetacafe();
+                break;
+            case 13:
                 return $this->getdownload();
                 break;
             default:
@@ -1484,16 +1548,21 @@ abstract class Lyric implements ActiveRecordInterface
             $keys[1] => $this->getTitle(),
             $keys[2] => $this->getText(),
             $keys[3] => $this->gettextBg(),
-            $keys[4] => $this->getuserId(),
-            $keys[5] => $this->getcacheTitleShort(),
-            $keys[6] => $this->getViews(),
-            $keys[7] => $this->getPopularity(),
-            $keys[8] => $this->getVotescount(),
-            $keys[9] => $this->getvideoYoutube(),
-            $keys[10] => $this->getvideoVbox7(),
-            $keys[11] => $this->getvideoMetacafe(),
-            $keys[12] => $this->getdownload(),
+            $keys[4] => $this->gettextBgAdded(),
+            $keys[5] => $this->getuserId(),
+            $keys[6] => $this->getcacheTitleShort(),
+            $keys[7] => $this->getViews(),
+            $keys[8] => $this->getPopularity(),
+            $keys[9] => $this->getvotesCount(),
+            $keys[10] => $this->getvideoYoutube(),
+            $keys[11] => $this->getvideoVbox7(),
+            $keys[12] => $this->getvideoMetacafe(),
+            $keys[13] => $this->getdownload(),
         );
+        if ($result[$keys[4]] instanceof \DateTime) {
+            $result[$keys[4]] = $result[$keys[4]]->format('c');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -1607,30 +1676,33 @@ abstract class Lyric implements ActiveRecordInterface
                 $this->settextBg($value);
                 break;
             case 4:
-                $this->setuserId($value);
+                $this->settextBgAdded($value);
                 break;
             case 5:
-                $this->setcacheTitleShort($value);
+                $this->setuserId($value);
                 break;
             case 6:
-                $this->setViews($value);
+                $this->setcacheTitleShort($value);
                 break;
             case 7:
-                $this->setPopularity($value);
+                $this->setViews($value);
                 break;
             case 8:
-                $this->setVotescount($value);
+                $this->setPopularity($value);
                 break;
             case 9:
-                $this->setvideoYoutube($value);
+                $this->setvotesCount($value);
                 break;
             case 10:
-                $this->setvideoVbox7($value);
+                $this->setvideoYoutube($value);
                 break;
             case 11:
-                $this->setvideoMetacafe($value);
+                $this->setvideoVbox7($value);
                 break;
             case 12:
+                $this->setvideoMetacafe($value);
+                break;
+            case 13:
                 $this->setdownload($value);
                 break;
         } // switch()
@@ -1672,31 +1744,34 @@ abstract class Lyric implements ActiveRecordInterface
             $this->settextBg($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setuserId($arr[$keys[4]]);
+            $this->settextBgAdded($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setcacheTitleShort($arr[$keys[5]]);
+            $this->setuserId($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setViews($arr[$keys[6]]);
+            $this->setcacheTitleShort($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setPopularity($arr[$keys[7]]);
+            $this->setViews($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setVotescount($arr[$keys[8]]);
+            $this->setPopularity($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setvideoYoutube($arr[$keys[9]]);
+            $this->setvotesCount($arr[$keys[9]]);
         }
         if (array_key_exists($keys[10], $arr)) {
-            $this->setvideoVbox7($arr[$keys[10]]);
+            $this->setvideoYoutube($arr[$keys[10]]);
         }
         if (array_key_exists($keys[11], $arr)) {
-            $this->setvideoMetacafe($arr[$keys[11]]);
+            $this->setvideoVbox7($arr[$keys[11]]);
         }
         if (array_key_exists($keys[12], $arr)) {
-            $this->setdownload($arr[$keys[12]]);
+            $this->setvideoMetacafe($arr[$keys[12]]);
+        }
+        if (array_key_exists($keys[13], $arr)) {
+            $this->setdownload($arr[$keys[13]]);
         }
     }
 
@@ -1751,6 +1826,9 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_TEXT_BG)) {
             $criteria->add(LyricTableMap::COL_TEXT_BG, $this->text_bg);
         }
+        if ($this->isColumnModified(LyricTableMap::COL_TEXT_BG_ADDED)) {
+            $criteria->add(LyricTableMap::COL_TEXT_BG_ADDED, $this->text_bg_added);
+        }
         if ($this->isColumnModified(LyricTableMap::COL_USER_ID)) {
             $criteria->add(LyricTableMap::COL_USER_ID, $this->user_id);
         }
@@ -1763,8 +1841,8 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_POPULARITY)) {
             $criteria->add(LyricTableMap::COL_POPULARITY, $this->popularity);
         }
-        if ($this->isColumnModified(LyricTableMap::COL_VOTESCOUNT)) {
-            $criteria->add(LyricTableMap::COL_VOTESCOUNT, $this->votescount);
+        if ($this->isColumnModified(LyricTableMap::COL_VOTES_COUNT)) {
+            $criteria->add(LyricTableMap::COL_VOTES_COUNT, $this->votes_count);
         }
         if ($this->isColumnModified(LyricTableMap::COL_VIDEO_YOUTUBE)) {
             $criteria->add(LyricTableMap::COL_VIDEO_YOUTUBE, $this->video_youtube);
@@ -1867,11 +1945,12 @@ abstract class Lyric implements ActiveRecordInterface
         $copyObj->setTitle($this->getTitle());
         $copyObj->setText($this->getText());
         $copyObj->settextBg($this->gettextBg());
+        $copyObj->settextBgAdded($this->gettextBgAdded());
         $copyObj->setuserId($this->getuserId());
         $copyObj->setcacheTitleShort($this->getcacheTitleShort());
         $copyObj->setViews($this->getViews());
         $copyObj->setPopularity($this->getPopularity());
-        $copyObj->setVotescount($this->getVotescount());
+        $copyObj->setvotesCount($this->getvotesCount());
         $copyObj->setvideoYoutube($this->getvideoYoutube());
         $copyObj->setvideoVbox7($this->getvideoVbox7());
         $copyObj->setvideoMetacafe($this->getvideoMetacafe());
@@ -3003,11 +3082,12 @@ abstract class Lyric implements ActiveRecordInterface
         $this->title = null;
         $this->text = null;
         $this->text_bg = null;
+        $this->text_bg_added = null;
         $this->user_id = null;
         $this->cache_title_short = null;
         $this->views = null;
         $this->popularity = null;
-        $this->votescount = null;
+        $this->votes_count = null;
         $this->video_youtube = null;
         $this->video_vbox7 = null;
         $this->video_metacafe = null;

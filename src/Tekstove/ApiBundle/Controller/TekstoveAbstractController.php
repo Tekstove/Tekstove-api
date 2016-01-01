@@ -60,11 +60,9 @@ class TekstoveAbstractController extends FOSRestController
                     $data->{$filterMethod}(null, Criteria::ISNOTNULL);
                     
                     break;
-            default :
-                throw new \Exception("Unknown operator {$operator}");
+                default:
+                    throw new \Exception("Unknown operator {$operator}");
             }
-            
-            
         }
         
         return $data;

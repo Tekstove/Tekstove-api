@@ -4,12 +4,11 @@ namespace Tekstove\ApiBundle\Listener;
 
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
-use JMS\Serializer\Metadata\VirtualPropertyMetadata;
 
 /**
  * Description of SerializationListener
  *
- * @author potaka
+ * @author po_taka <angel.koilov@gmail.com>
  */
 class SerializationSubscriber implements EventSubscriberInterface
 {

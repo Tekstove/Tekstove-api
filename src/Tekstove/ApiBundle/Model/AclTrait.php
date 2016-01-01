@@ -5,7 +5,7 @@ namespace Tekstove\ApiBundle\Model;
 /**
  * Description of AclTrait
  *
- * @author potaka
+ * @author po_taka <anlge.koilov@gmail.com>
  */
 trait AclTrait
 {

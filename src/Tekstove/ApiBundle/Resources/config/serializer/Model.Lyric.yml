@@ -1,0 +1,8 @@
+"Tekstove\\ApiBundle\\Model\\Lyric":
+    exclusion_policy: none
+    exclude: false
+    read_only: true
+    virtual_properties:
+        _acl:
+            expose: true
+            groups: [List, Details]

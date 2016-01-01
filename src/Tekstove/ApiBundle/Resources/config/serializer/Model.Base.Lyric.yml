@@ -1,7 +1,7 @@
 "Tekstove\\ApiBundle\\Model\\Base\\Lyric":
     exclusion_policy: none
     exclude: false
-    read_only: false
+    read_only: true
     properties:
         id:
             expose: true

@@ -16,5 +16,5 @@ use Tekstove\ApiBundle\Model\Base\Lyric as BaseLyric;
  */
 class Lyric extends BaseLyric
 {
-
+    use AclTrait;
 }

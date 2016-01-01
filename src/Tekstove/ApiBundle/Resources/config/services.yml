@@ -1,4 +1,5 @@
 services:
-#    tekstove_api.example:
-#        class: Tekstove\ApiBundle\Example
-#        arguments: [@service_id, "plain_value", %parameter%]
+    tekstove.api.serializer.subscriber:
+        class: Tekstove\ApiBundle\Listener\SerializationSubscriber
+        tags:
+            - { name: "jms_serializer.event_subscriber" }

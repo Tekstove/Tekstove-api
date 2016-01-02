@@ -16,4 +16,3 @@
         avatar:
             expose: true
             groups: [List]
-        

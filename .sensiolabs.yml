@@ -3,8 +3,12 @@ global_exclude_dirs:
     - Test
     - app/scripts/cron
     - src/Tekstove/ApiBundle/Model/Base
+    - src/Tekstove/ApiBundle/Model/Map
     - src/Tekstove/ApiBundle/Model/Acl/Base
+    - src/Tekstove/ApiBundle/Model/Acl/Map
     - src/Tekstove/ApiBundle/Model/Lyric/Base
+    - src/Tekstove/ApiBundle/Model/Lyric/Map
 
 exclude_patterns:
     - app/config/parameters_travis.yml
+    - app/check.php

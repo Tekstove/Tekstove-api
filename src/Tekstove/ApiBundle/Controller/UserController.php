@@ -2,7 +2,6 @@
 
 namespace Tekstove\ApiBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 class UserController extends TekstoveAbstractController

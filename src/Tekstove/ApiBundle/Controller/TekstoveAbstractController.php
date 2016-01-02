@@ -11,7 +11,7 @@ use Propel\Runtime\ActiveQuery\Criteria;
 /**
  * Description of TekstoveAbstractController
  *
- * @author po_taka
+ * @author po_taka <angel.koilov@gmail.com>
  */
 class TekstoveAbstractController extends FOSRestController
 {

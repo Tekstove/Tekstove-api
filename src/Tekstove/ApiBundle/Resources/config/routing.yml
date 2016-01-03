@@ -1,6 +1,16 @@
 tekstove_api_user:
-    path: "/users"
+    path: "/user"
     defaults: { _controller: TekstoveApiBundle:User:index }
+    methods: [GET]
+
+tekstove_api_user_credentials_list:
+    path: "/user/credentials"
+    defaults: { _controller: TekstoveApiBundle:UserCredentials:index }
+    methods: [GET]
+
+tekstove_api_user_credentials:
+    path: "/user/credentials/{id}"
+    defaults: { _controller: TekstoveApiBundle:UserCredentials:get }
     methods: [GET]
 
 tekstove_api_lyric:

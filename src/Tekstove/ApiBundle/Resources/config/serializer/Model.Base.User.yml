@@ -5,14 +5,14 @@
     properties:
         username:
             expose: true
-            groups: [List]
+            groups: [List, Credentials]
         password:
             expose: false
             include: false
-            groups: []
+            groups: [Credentials]
         mail:
             expose: true
-            groups: []
+            groups: [Credentials]
         avatar:
             expose: true
             groups: [List]

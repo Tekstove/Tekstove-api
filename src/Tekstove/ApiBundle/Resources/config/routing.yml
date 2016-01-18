@@ -14,6 +14,10 @@ tekstove_api_user_credentials:
     methods: [GET]
 
 tekstove_api_lyric:
-    path: "/lyric"
+    path: "/lyric/list"
     defaults: { _controller: TekstoveApiBundle:Lyric:index }
+    methods: [GET]
+tekstove_api_lyric_get:
+    path: "/lyric/get/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric:get }
     methods: [GET]

@@ -5,15 +5,22 @@
     properties:
         id:
             expose: true
-            groups: [List]
+            groups: [List, Details]
         title:
             expose: true
-            groups: [List]
+            groups: [List, Details]
+        text:
+            expose: false
+            include: false
+            groups: [Details]
+        views:
+            expose: true,
+            groups: [Details]
+        popularity:
+            expose: true,
+            groups: [Details]
         cache_title_short:
             expose: true,
             serialized_name: cacheTitleShort
             groups: [List]
-        text:
-            expose: false
-            include: false
-            groups: []
+        

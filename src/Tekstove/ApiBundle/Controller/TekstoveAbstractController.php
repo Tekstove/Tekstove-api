@@ -34,6 +34,12 @@ class TekstoveAbstractController extends FOSRestController
         $data = $this->propelQueryToPagination($request, $data);
         $data = $this->paginationToArray($data);
         
+        if (!is_array($data)) {
+            $data = [
+                'item' => $data,
+            ];
+        }
+        
          $view = $this->view($data, 200);
          $view->setSerializationContext($this->getContext());
          return $view;

@@ -3,6 +3,11 @@ tekstove_api_user:
     defaults: { _controller: TekstoveApiBundle:User:index }
     methods: [GET]
 
+tekstove_api_user_get:
+    path: "/users/{id}"
+    defaults: { _controller: TekstoveApiBundle:User:get }
+    methods: [GET]
+
 tekstove_api_user_credentials_list:
     path: "/users/credentials"
     defaults: { _controller: TekstoveApiBundle:UserCredentials:index }
@@ -17,6 +22,7 @@ tekstove_api_lyric:
     path: "/lyrics"
     defaults: { _controller: TekstoveApiBundle:Lyric:index }
     methods: [GET]
+
 tekstove_api_lyric_get:
     path: "/lyrics/{id}"
     defaults: { _controller: TekstoveApiBundle:Lyric:get }

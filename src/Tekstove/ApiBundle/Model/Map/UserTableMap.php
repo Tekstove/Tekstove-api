@@ -181,7 +181,7 @@ class UserTableMap extends TableMap
         $this->addRelation('Lyric', '\\Tekstove\\ApiBundle\\Model\\Lyric', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
-    0 => ':user_id',
+    0 => ':send_by',
     1 => ':id',
   ),
 ), null, null, 'Lyrics', false);

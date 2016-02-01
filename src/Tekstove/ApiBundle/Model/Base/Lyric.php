@@ -122,11 +122,11 @@ abstract class Lyric implements ActiveRecordInterface
     protected $text_bg_added;
 
     /**
-     * The value for the user_id field.
+     * The value for the send_by field.
      *
      * @var        int
      */
-    protected $user_id;
+    protected $send_by;
 
     /**
      * The value for the cache_title_short field.
@@ -552,13 +552,13 @@ abstract class Lyric implements ActiveRecordInterface
     }
 
     /**
-     * Get the [user_id] column value.
+     * Get the [send_by] column value.
      *
      * @return int
      */
-    public function getuserId()
+    public function getsendBy()
     {
-        return $this->user_id;
+        return $this->send_by;
     }
 
     /**
@@ -742,20 +742,20 @@ abstract class Lyric implements ActiveRecordInterface
     } // settextBgAdded()
 
     /**
-     * Set the value of [user_id] column.
+     * Set the value of [send_by] column.
      *
      * @param int $v new value
      * @return $this|\Tekstove\ApiBundle\Model\Lyric The current object (for fluent API support)
      */
-    public function setuserId($v)
+    public function setsendBy($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[LyricTableMap::COL_USER_ID] = true;
+        if ($this->send_by !== $v) {
+            $this->send_by = $v;
+            $this->modifiedColumns[LyricTableMap::COL_SEND_BY] = true;
         }
 
         if ($this->aUser !== null && $this->aUser->getId() !== $v) {
@@ -763,7 +763,7 @@ abstract class Lyric implements ActiveRecordInterface
         }
 
         return $this;
-    } // setuserId()
+    } // setsendBy()
 
     /**
      * Set the value of [cache_title_short] column.
@@ -979,8 +979,8 @@ abstract class Lyric implements ActiveRecordInterface
             }
             $this->text_bg_added = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : LyricTableMap::translateFieldName('userId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : LyricTableMap::translateFieldName('sendBy', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->send_by = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : LyricTableMap::translateFieldName('cacheTitleShort', TableMap::TYPE_PHPNAME, $indexType)];
             $this->cache_title_short = (null !== $col) ? (string) $col : null;
@@ -1035,7 +1035,7 @@ abstract class Lyric implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+        if ($this->aUser !== null && $this->send_by !== $this->aUser->getId()) {
             $this->aUser = null;
         }
     } // ensureConsistency
@@ -1330,8 +1330,8 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_TEXT_BG_ADDED)) {
             $modifiedColumns[':p' . $index++]  = 'text_bg_added';
         }
-        if ($this->isColumnModified(LyricTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
+        if ($this->isColumnModified(LyricTableMap::COL_SEND_BY)) {
+            $modifiedColumns[':p' . $index++]  = 'send_by';
         }
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_TITLE_SHORT)) {
             $modifiedColumns[':p' . $index++]  = 'cache_title_short';
@@ -1383,8 +1383,8 @@ abstract class Lyric implements ActiveRecordInterface
                     case 'text_bg_added':
                         $stmt->bindValue($identifier, $this->text_bg_added ? $this->text_bg_added->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                    case 'send_by':
+                        $stmt->bindValue($identifier, $this->send_by, PDO::PARAM_INT);
                         break;
                     case 'cache_title_short':
                         $stmt->bindValue($identifier, $this->cache_title_short, PDO::PARAM_STR);
@@ -1488,7 +1488,7 @@ abstract class Lyric implements ActiveRecordInterface
                 return $this->gettextBgAdded();
                 break;
             case 5:
-                return $this->getuserId();
+                return $this->getsendBy();
                 break;
             case 6:
                 return $this->getcacheTitleShort();
@@ -1549,7 +1549,7 @@ abstract class Lyric implements ActiveRecordInterface
             $keys[2] => $this->getText(),
             $keys[3] => $this->gettextBg(),
             $keys[4] => $this->gettextBgAdded(),
-            $keys[5] => $this->getuserId(),
+            $keys[5] => $this->getsendBy(),
             $keys[6] => $this->getcacheTitleShort(),
             $keys[7] => $this->getViews(),
             $keys[8] => $this->getPopularity(),
@@ -1679,7 +1679,7 @@ abstract class Lyric implements ActiveRecordInterface
                 $this->settextBgAdded($value);
                 break;
             case 5:
-                $this->setuserId($value);
+                $this->setsendBy($value);
                 break;
             case 6:
                 $this->setcacheTitleShort($value);
@@ -1747,7 +1747,7 @@ abstract class Lyric implements ActiveRecordInterface
             $this->settextBgAdded($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setuserId($arr[$keys[5]]);
+            $this->setsendBy($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
             $this->setcacheTitleShort($arr[$keys[6]]);
@@ -1829,8 +1829,8 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_TEXT_BG_ADDED)) {
             $criteria->add(LyricTableMap::COL_TEXT_BG_ADDED, $this->text_bg_added);
         }
-        if ($this->isColumnModified(LyricTableMap::COL_USER_ID)) {
-            $criteria->add(LyricTableMap::COL_USER_ID, $this->user_id);
+        if ($this->isColumnModified(LyricTableMap::COL_SEND_BY)) {
+            $criteria->add(LyricTableMap::COL_SEND_BY, $this->send_by);
         }
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_TITLE_SHORT)) {
             $criteria->add(LyricTableMap::COL_CACHE_TITLE_SHORT, $this->cache_title_short);
@@ -1946,7 +1946,7 @@ abstract class Lyric implements ActiveRecordInterface
         $copyObj->setText($this->getText());
         $copyObj->settextBg($this->gettextBg());
         $copyObj->settextBgAdded($this->gettextBgAdded());
-        $copyObj->setuserId($this->getuserId());
+        $copyObj->setsendBy($this->getsendBy());
         $copyObj->setcacheTitleShort($this->getcacheTitleShort());
         $copyObj->setViews($this->getViews());
         $copyObj->setPopularity($this->getPopularity());
@@ -2019,9 +2019,9 @@ abstract class Lyric implements ActiveRecordInterface
     public function setUser(ChildUser $v = null)
     {
         if ($v === null) {
-            $this->setuserId(NULL);
+            $this->setsendBy(NULL);
         } else {
-            $this->setuserId($v->getId());
+            $this->setsendBy($v->getId());
         }
 
         $this->aUser = $v;
@@ -2046,8 +2046,8 @@ abstract class Lyric implements ActiveRecordInterface
      */
     public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+        if ($this->aUser === null && ($this->send_by !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->send_by, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
@@ -3083,7 +3083,7 @@ abstract class Lyric implements ActiveRecordInterface
         $this->text = null;
         $this->text_bg = null;
         $this->text_bg_added = null;
-        $this->user_id = null;
+        $this->send_by = null;
         $this->cache_title_short = null;
         $this->views = null;
         $this->popularity = null;

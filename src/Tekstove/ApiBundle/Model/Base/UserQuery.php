@@ -633,7 +633,7 @@ abstract class UserQuery extends ModelCriteria
     {
         if ($lyric instanceof \Tekstove\ApiBundle\Model\Lyric) {
             return $this
-                ->addUsingAlias(UserTableMap::COL_ID, $lyric->getuserId(), $comparison);
+                ->addUsingAlias(UserTableMap::COL_ID, $lyric->getsendBy(), $comparison);
         } elseif ($lyric instanceof ObjectCollection) {
             return $this
                 ->useLyricQuery()

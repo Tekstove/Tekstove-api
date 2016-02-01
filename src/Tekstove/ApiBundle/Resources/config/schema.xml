@@ -60,9 +60,9 @@
         <column name="text_bg" phpName="textBg" type="varchar" />
         <column name="text_bg_added" type="timestamp" phpName="textBgAdded"/>
 
-        <column name="user_id" phpName="userId" type="integer" />
+        <column name="send_by" phpName="sendBy" type="integer" />
         <foreign-key foreignTable="user">
-            <reference local="user_id" foreign="id"/>
+            <reference local="send_by" foreign="id"/>
         </foreign-key>
 
         <column name="cache_title_short" phpName="cacheTitleShort" type="varchar"/>

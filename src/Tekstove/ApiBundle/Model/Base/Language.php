@@ -21,6 +21,7 @@ use Tekstove\ApiBundle\Model\LyricQuery as ChildLyricQuery;
 use Tekstove\ApiBundle\Model\Lyric\LyricLanguage;
 use Tekstove\ApiBundle\Model\Lyric\LyricLanguageQuery;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricLanguage as BaseLyricLanguage;
+use Tekstove\ApiBundle\Model\Lyric\Map\LyricLanguageTableMap;
 use Tekstove\ApiBundle\Model\Map\LanguageTableMap;
 
 /**
@@ -764,7 +765,10 @@ abstract class Language implements ActiveRecordInterface
         if (null !== $this->collLyricLanguages && !$overrideExisting) {
             return;
         }
-        $this->collLyricLanguages = new ObjectCollection();
+
+        $collectionClassName = LyricLanguageTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collLyricLanguages = new $collectionClassName;
         $this->collLyricLanguages->setModel('\Tekstove\ApiBundle\Model\Lyric\LyricLanguage');
     }
 
@@ -1000,9 +1004,10 @@ abstract class Language implements ActiveRecordInterface
      */
     public function initLyrics()
     {
-        $this->collLyrics = new ObjectCollection();
-        $this->collLyricsPartial = true;
+        $collectionClassName = LyricLanguageTableMap::getTableMap()->getCollectionClassName();
 
+        $this->collLyrics = new $collectionClassName;
+        $this->collLyricsPartial = true;
         $this->collLyrics->setModel('\Tekstove\ApiBundle\Model\Lyric');
     }
 

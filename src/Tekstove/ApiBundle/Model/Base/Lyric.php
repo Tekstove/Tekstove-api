@@ -43,6 +43,9 @@ use Tekstove\ApiBundle\Model\Lyric\LyricVoteQuery;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricLanguage as BaseLyricLanguage;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricTranslation as BaseLyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricVote as BaseLyricVote;
+use Tekstove\ApiBundle\Model\Lyric\Map\LyricLanguageTableMap;
+use Tekstove\ApiBundle\Model\Lyric\Map\LyricTranslationTableMap;
+use Tekstove\ApiBundle\Model\Lyric\Map\LyricVoteTableMap;
 use Tekstove\ApiBundle\Model\Map\LyricTableMap;
 
 /**
@@ -2121,7 +2124,10 @@ abstract class Lyric implements ActiveRecordInterface
         if (null !== $this->collLyricLanguages && !$overrideExisting) {
             return;
         }
-        $this->collLyricLanguages = new ObjectCollection();
+
+        $collectionClassName = LyricLanguageTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collLyricLanguages = new $collectionClassName;
         $this->collLyricLanguages->setModel('\Tekstove\ApiBundle\Model\Lyric\LyricLanguage');
     }
 
@@ -2371,7 +2377,10 @@ abstract class Lyric implements ActiveRecordInterface
         if (null !== $this->collLyricTranslations && !$overrideExisting) {
             return;
         }
-        $this->collLyricTranslations = new ObjectCollection();
+
+        $collectionClassName = LyricTranslationTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collLyricTranslations = new $collectionClassName;
         $this->collLyricTranslations->setModel('\Tekstove\ApiBundle\Model\Lyric\LyricTranslation');
     }
 
@@ -2618,7 +2627,10 @@ abstract class Lyric implements ActiveRecordInterface
         if (null !== $this->collLyricVotes && !$overrideExisting) {
             return;
         }
-        $this->collLyricVotes = new ObjectCollection();
+
+        $collectionClassName = LyricVoteTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collLyricVotes = new $collectionClassName;
         $this->collLyricVotes->setModel('\Tekstove\ApiBundle\Model\Lyric\LyricVote');
     }
 
@@ -2851,9 +2863,10 @@ abstract class Lyric implements ActiveRecordInterface
      */
     public function initLanguages()
     {
-        $this->collLanguages = new ObjectCollection();
-        $this->collLanguagesPartial = true;
+        $collectionClassName = LyricLanguageTableMap::getTableMap()->getCollectionClassName();
 
+        $this->collLanguages = new $collectionClassName;
+        $this->collLanguagesPartial = true;
         $this->collLanguages->setModel('\Tekstove\ApiBundle\Model\Language');
     }
 

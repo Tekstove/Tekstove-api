@@ -38,12 +38,18 @@ use Tekstove\ApiBundle\Model\UserQuery as ChildUserQuery;
 use Tekstove\ApiBundle\Model\Acl\PermissionGroupUser;
 use Tekstove\ApiBundle\Model\Acl\PermissionGroupUserQuery;
 use Tekstove\ApiBundle\Model\Acl\Base\PermissionGroupUser as BasePermissionGroupUser;
+use Tekstove\ApiBundle\Model\Acl\Map\PermissionGroupUserTableMap;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslationQuery;
 use Tekstove\ApiBundle\Model\Lyric\LyricVote;
 use Tekstove\ApiBundle\Model\Lyric\LyricVoteQuery;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricTranslation as BaseLyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricVote as BaseLyricVote;
+use Tekstove\ApiBundle\Model\Lyric\Map\LyricTranslationTableMap;
+use Tekstove\ApiBundle\Model\Lyric\Map\LyricVoteTableMap;
+use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
+use Tekstove\ApiBundle\Model\Map\ArtistTableMap;
+use Tekstove\ApiBundle\Model\Map\LyricTableMap;
 use Tekstove\ApiBundle\Model\Map\UserTableMap;
 
 /**
@@ -1716,7 +1722,10 @@ abstract class User implements ActiveRecordInterface
         if (null !== $this->collPermissionGroupUsers && !$overrideExisting) {
             return;
         }
-        $this->collPermissionGroupUsers = new ObjectCollection();
+
+        $collectionClassName = PermissionGroupUserTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collPermissionGroupUsers = new $collectionClassName;
         $this->collPermissionGroupUsers->setModel('\Tekstove\ApiBundle\Model\Acl\PermissionGroupUser');
     }
 
@@ -1966,7 +1975,10 @@ abstract class User implements ActiveRecordInterface
         if (null !== $this->collLyrics && !$overrideExisting) {
             return;
         }
-        $this->collLyrics = new ObjectCollection();
+
+        $collectionClassName = LyricTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collLyrics = new $collectionClassName;
         $this->collLyrics->setModel('\Tekstove\ApiBundle\Model\Lyric');
     }
 
@@ -2188,7 +2200,10 @@ abstract class User implements ActiveRecordInterface
         if (null !== $this->collLyricTranslations && !$overrideExisting) {
             return;
         }
-        $this->collLyricTranslations = new ObjectCollection();
+
+        $collectionClassName = LyricTranslationTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collLyricTranslations = new $collectionClassName;
         $this->collLyricTranslations->setModel('\Tekstove\ApiBundle\Model\Lyric\LyricTranslation');
     }
 
@@ -2435,7 +2450,10 @@ abstract class User implements ActiveRecordInterface
         if (null !== $this->collLyricVotes && !$overrideExisting) {
             return;
         }
-        $this->collLyricVotes = new ObjectCollection();
+
+        $collectionClassName = LyricVoteTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collLyricVotes = new $collectionClassName;
         $this->collLyricVotes->setModel('\Tekstove\ApiBundle\Model\Lyric\LyricVote');
     }
 
@@ -2682,7 +2700,10 @@ abstract class User implements ActiveRecordInterface
         if (null !== $this->collArtists && !$overrideExisting) {
             return;
         }
-        $this->collArtists = new ObjectCollection();
+
+        $collectionClassName = ArtistTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collArtists = new $collectionClassName;
         $this->collArtists->setModel('\Tekstove\ApiBundle\Model\Artist');
     }
 
@@ -2904,7 +2925,10 @@ abstract class User implements ActiveRecordInterface
         if (null !== $this->collAlbums && !$overrideExisting) {
             return;
         }
-        $this->collAlbums = new ObjectCollection();
+
+        $collectionClassName = AlbumTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collAlbums = new $collectionClassName;
         $this->collAlbums->setModel('\Tekstove\ApiBundle\Model\Album');
     }
 

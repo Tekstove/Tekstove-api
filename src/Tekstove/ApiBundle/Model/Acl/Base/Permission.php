@@ -18,6 +18,7 @@ use Tekstove\ApiBundle\Model\Acl\Permission as ChildPermission;
 use Tekstove\ApiBundle\Model\Acl\PermissionGroupPermission as ChildPermissionGroupPermission;
 use Tekstove\ApiBundle\Model\Acl\PermissionGroupPermissionQuery as ChildPermissionGroupPermissionQuery;
 use Tekstove\ApiBundle\Model\Acl\PermissionQuery as ChildPermissionQuery;
+use Tekstove\ApiBundle\Model\Acl\Map\PermissionGroupPermissionTableMap;
 use Tekstove\ApiBundle\Model\Acl\Map\PermissionTableMap;
 
 /**
@@ -793,7 +794,10 @@ abstract class Permission implements ActiveRecordInterface
         if (null !== $this->collPermissionGroupPermissions && !$overrideExisting) {
             return;
         }
-        $this->collPermissionGroupPermissions = new ObjectCollection();
+
+        $collectionClassName = PermissionGroupPermissionTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collPermissionGroupPermissions = new $collectionClassName;
         $this->collPermissionGroupPermissions->setModel('\Tekstove\ApiBundle\Model\Acl\PermissionGroupPermission');
     }
 

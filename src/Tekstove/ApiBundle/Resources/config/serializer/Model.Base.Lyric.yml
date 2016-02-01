@@ -10,7 +10,7 @@
         text:
             groups: [Details]
         send_by:
-            groups: [Details]
+            groups: [List, Details]
             serialized_name: sendBy
         views:
             groups: [Details]

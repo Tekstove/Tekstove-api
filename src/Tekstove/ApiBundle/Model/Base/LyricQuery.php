@@ -28,7 +28,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery orderByText($order = Criteria::ASC) Order by the text column
  * @method     ChildLyricQuery orderBytextBg($order = Criteria::ASC) Order by the text_bg column
  * @method     ChildLyricQuery orderBytextBgAdded($order = Criteria::ASC) Order by the text_bg_added column
- * @method     ChildLyricQuery orderByuserId($order = Criteria::ASC) Order by the user_id column
+ * @method     ChildLyricQuery orderBysendBy($order = Criteria::ASC) Order by the send_by column
  * @method     ChildLyricQuery orderBycacheTitleShort($order = Criteria::ASC) Order by the cache_title_short column
  * @method     ChildLyricQuery orderByViews($order = Criteria::ASC) Order by the views column
  * @method     ChildLyricQuery orderByPopularity($order = Criteria::ASC) Order by the popularity column
@@ -43,7 +43,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery groupByText() Group by the text column
  * @method     ChildLyricQuery groupBytextBg() Group by the text_bg column
  * @method     ChildLyricQuery groupBytextBgAdded() Group by the text_bg_added column
- * @method     ChildLyricQuery groupByuserId() Group by the user_id column
+ * @method     ChildLyricQuery groupBysendBy() Group by the send_by column
  * @method     ChildLyricQuery groupBycacheTitleShort() Group by the cache_title_short column
  * @method     ChildLyricQuery groupByViews() Group by the views column
  * @method     ChildLyricQuery groupByPopularity() Group by the popularity column
@@ -111,7 +111,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric findOneByText(string $text) Return the first ChildLyric filtered by the text column
  * @method     ChildLyric findOneBytextBg(string $text_bg) Return the first ChildLyric filtered by the text_bg column
  * @method     ChildLyric findOneBytextBgAdded(string $text_bg_added) Return the first ChildLyric filtered by the text_bg_added column
- * @method     ChildLyric findOneByuserId(int $user_id) Return the first ChildLyric filtered by the user_id column
+ * @method     ChildLyric findOneBysendBy(int $send_by) Return the first ChildLyric filtered by the send_by column
  * @method     ChildLyric findOneBycacheTitleShort(string $cache_title_short) Return the first ChildLyric filtered by the cache_title_short column
  * @method     ChildLyric findOneByViews(int $views) Return the first ChildLyric filtered by the views column
  * @method     ChildLyric findOneByPopularity(int $popularity) Return the first ChildLyric filtered by the popularity column
@@ -129,7 +129,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric requireOneByText(string $text) Return the first ChildLyric filtered by the text column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBytextBg(string $text_bg) Return the first ChildLyric filtered by the text_bg column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBytextBgAdded(string $text_bg_added) Return the first ChildLyric filtered by the text_bg_added column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildLyric requireOneByuserId(int $user_id) Return the first ChildLyric filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildLyric requireOneBysendBy(int $send_by) Return the first ChildLyric filtered by the send_by column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBycacheTitleShort(string $cache_title_short) Return the first ChildLyric filtered by the cache_title_short column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByViews(int $views) Return the first ChildLyric filtered by the views column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByPopularity(int $popularity) Return the first ChildLyric filtered by the popularity column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -145,7 +145,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric[]|ObjectCollection findByText(string $text) Return ChildLyric objects filtered by the text column
  * @method     ChildLyric[]|ObjectCollection findBytextBg(string $text_bg) Return ChildLyric objects filtered by the text_bg column
  * @method     ChildLyric[]|ObjectCollection findBytextBgAdded(string $text_bg_added) Return ChildLyric objects filtered by the text_bg_added column
- * @method     ChildLyric[]|ObjectCollection findByuserId(int $user_id) Return ChildLyric objects filtered by the user_id column
+ * @method     ChildLyric[]|ObjectCollection findBysendBy(int $send_by) Return ChildLyric objects filtered by the send_by column
  * @method     ChildLyric[]|ObjectCollection findBycacheTitleShort(string $cache_title_short) Return ChildLyric objects filtered by the cache_title_short column
  * @method     ChildLyric[]|ObjectCollection findByViews(int $views) Return ChildLyric objects filtered by the views column
  * @method     ChildLyric[]|ObjectCollection findByPopularity(int $popularity) Return ChildLyric objects filtered by the popularity column
@@ -246,7 +246,7 @@ abstract class LyricQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, title, text, text_bg, text_bg_added, user_id, cache_title_short, views, popularity, votes_count, video_youtube, video_vbox7, video_metacafe, download FROM lyric WHERE id = :p0';
+        $sql = 'SELECT id, title, text, text_bg, text_bg_added, send_by, cache_title_short, views, popularity, votes_count, video_youtube, video_vbox7, video_metacafe, download FROM lyric WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -508,18 +508,18 @@ abstract class LyricQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the user_id column
+     * Filter the query on the send_by column
      *
      * Example usage:
      * <code>
-     * $query->filterByuserId(1234); // WHERE user_id = 1234
-     * $query->filterByuserId(array(12, 34)); // WHERE user_id IN (12, 34)
-     * $query->filterByuserId(array('min' => 12)); // WHERE user_id > 12
+     * $query->filterBysendBy(1234); // WHERE send_by = 1234
+     * $query->filterBysendBy(array(12, 34)); // WHERE send_by IN (12, 34)
+     * $query->filterBysendBy(array('min' => 12)); // WHERE send_by > 12
      * </code>
      *
      * @see       filterByUser()
      *
-     * @param     mixed $userId The value to use as filter.
+     * @param     mixed $sendBy The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -527,16 +527,16 @@ abstract class LyricQuery extends ModelCriteria
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
      */
-    public function filterByuserId($userId = null, $comparison = null)
+    public function filterBysendBy($sendBy = null, $comparison = null)
     {
-        if (is_array($userId)) {
+        if (is_array($sendBy)) {
             $useMinMax = false;
-            if (isset($userId['min'])) {
-                $this->addUsingAlias(LyricTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+            if (isset($sendBy['min'])) {
+                $this->addUsingAlias(LyricTableMap::COL_SEND_BY, $sendBy['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($userId['max'])) {
-                $this->addUsingAlias(LyricTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+            if (isset($sendBy['max'])) {
+                $this->addUsingAlias(LyricTableMap::COL_SEND_BY, $sendBy['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -547,7 +547,7 @@ abstract class LyricQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(LyricTableMap::COL_USER_ID, $userId, $comparison);
+        return $this->addUsingAlias(LyricTableMap::COL_SEND_BY, $sendBy, $comparison);
     }
 
     /**
@@ -832,14 +832,14 @@ abstract class LyricQuery extends ModelCriteria
     {
         if ($user instanceof \Tekstove\ApiBundle\Model\User) {
             return $this
-                ->addUsingAlias(LyricTableMap::COL_USER_ID, $user->getId(), $comparison);
+                ->addUsingAlias(LyricTableMap::COL_SEND_BY, $user->getId(), $comparison);
         } elseif ($user instanceof ObjectCollection) {
             if (null === $comparison) {
                 $comparison = Criteria::IN;
             }
 
             return $this
-                ->addUsingAlias(LyricTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+                ->addUsingAlias(LyricTableMap::COL_SEND_BY, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
             throw new PropelException('filterByUser() only accepts arguments of type \Tekstove\ApiBundle\Model\User or Collection');
         }

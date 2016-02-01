@@ -13,6 +13,10 @@
             expose: false
             include: false
             groups: [Details]
+        send_by:
+            expose: true
+            groups: [List, Details]
+            serialized_name: sendBy
         views:
             expose: true,
             groups: [Details]

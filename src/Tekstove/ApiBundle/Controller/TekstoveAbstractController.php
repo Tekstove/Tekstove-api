@@ -64,7 +64,8 @@ class TekstoveAbstractController extends FOSRestController
                     break;
                 case 'NOT_NULL':
                     $data->{$filterMethod}(null, Criteria::ISNOTNULL);
-                    
+                case 'in':
+                    $data->{$filterMethod}($value, Criteria::IN);
                     break;
                 default:
                     throw new \Exception("Unknown operator {$operator}");

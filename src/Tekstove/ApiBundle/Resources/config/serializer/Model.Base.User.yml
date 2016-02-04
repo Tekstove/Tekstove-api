@@ -3,6 +3,8 @@
     exclude: false
     read_only: false
     properties:
+        id:
+            groups: [List]
         username:
             expose: true
             groups: [List, Credentials]

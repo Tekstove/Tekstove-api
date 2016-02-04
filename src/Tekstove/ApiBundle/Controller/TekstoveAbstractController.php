@@ -59,11 +59,12 @@ class TekstoveAbstractController extends FOSRestController
             //@TODO maybe this should be service
             $filterMethod = 'filterBy' . ucfirst($field);
             switch ($operator) {
-                case Criteria::EQUAL:
+                case '=':
                     $data->{$filterMethod}($value, $operator);
                     break;
                 case 'NOT_NULL':
                     $data->{$filterMethod}(null, Criteria::ISNOTNULL);
+                    break;
                 case 'in':
                     $data->{$filterMethod}($value, Criteria::IN);
                     break;

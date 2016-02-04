@@ -4,10 +4,10 @@
     read_only: false
     properties:
         id:
-            groups: [List]
+            groups: [List, Details]
         username:
             expose: true
-            groups: [List, Credentials]
+            groups: [List, Credentials, Details]
         password:
             expose: false
             include: false
@@ -17,4 +17,4 @@
             groups: [Credentials]
         avatar:
             expose: true
-            groups: [List]
+            groups: [List, Details]

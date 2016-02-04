@@ -27,8 +27,7 @@ class UserController extends TekstoveAbstractController
      */
     public function getAction(Request $request, $id)
     {
-        $this->getContext()
-                ->setGroups(['Details']);
+        $this->applyGroups($request);
         $userQuery = new UserQuery();
         $user = $userQuery->findOneById($id);
         return $this->handleData($request, $user);

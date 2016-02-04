@@ -10,8 +10,7 @@ class LyricController extends Controller
 {
     public function indexAction(Request $request)
     {
-        $this->getContext()
-                ->setGroups(['List']);
+        $this->applyGroups($request);
         $lyricQuery = new LyricQuery();
         return $this->handleData($request, $lyricQuery);
     }

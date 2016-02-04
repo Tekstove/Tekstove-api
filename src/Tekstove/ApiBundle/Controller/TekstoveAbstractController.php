@@ -45,6 +45,21 @@ class TekstoveAbstractController extends FOSRestController
          return $view;
     }
     
+    public function getGroups(Request $request)
+    {
+        return $request->get('groups');
+    }
+    
+    public function applyGroups(Request $request)
+    {
+        $groups = $this->getGroups($request);
+        if (empty($groups)) {
+            throw new \Exception("Groups can't be empty");
+        }
+        $this->getContext()
+                ->setGroups($groups);
+    }
+    
     public function applyFilters(Request $request, $data)
     {
         if (!$data instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {

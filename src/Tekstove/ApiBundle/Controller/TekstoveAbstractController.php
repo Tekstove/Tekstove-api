@@ -28,6 +28,11 @@ class TekstoveAbstractController extends FOSRestController
         return $this->context;
     }
     
+    /**
+     * @param Request $request
+     * @param type $data
+     * @return \FOS\RestBundle\View\View
+     */
     public function handleData(Request $request, $data)
     {
         $data = $this->applyFilters($request, $data);

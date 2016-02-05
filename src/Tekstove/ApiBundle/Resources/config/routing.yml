@@ -27,3 +27,8 @@ tekstove_api_lyric_get:
     path: "/lyrics/{id}"
     defaults: { _controller: TekstoveApiBundle:Lyric:get }
     methods: [GET]
+
+tekstove_api_lyric_post:
+    path: "/lyrics/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric:post, id: null }
+    methods: [POST]

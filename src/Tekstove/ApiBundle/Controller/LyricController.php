@@ -6,6 +6,8 @@ use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
 
+use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
+
 class LyricController extends Controller
 {
     public function indexAction(Request $request)
@@ -22,5 +24,20 @@ class LyricController extends Controller
         $lyricQuery = new LyricQuery();
         $lyric = $lyricQuery->findOneById($id);
         return $this->handleData($request, $lyric);
+    }
+    
+    public function postAction(Request $request, $id = null)
+    {
+        $lyric = new \Tekstove\ApiBundle\Model\Lyric();
+        $this->getContext()
+                ->setGroups(['List']);
+        try {
+            $lyric->setTitle("test");
+            $lyric->save();
+        } catch (LyricHumanReadableException $e) {
+            $view = $this->handleData($request, $e->getMessage());
+            $view->setStatusCode(400);
+            return $view;
+        }
     }
 }

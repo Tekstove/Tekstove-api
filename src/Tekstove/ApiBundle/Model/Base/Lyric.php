@@ -21,6 +21,7 @@ use Propel\Runtime\Util\PropelDateTime;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
@@ -3173,6 +3174,7 @@ abstract class Lyric implements ActiveRecordInterface
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('text', new NotBlank());
+        $metadata->addPropertyConstraint('text', new Length(array ('min' => 10,)));
         $metadata->addPropertyConstraint('title', new NotBlank());
     }
 

@@ -252,7 +252,7 @@ class LyricTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'validate' => array('textValidationNotEmpty' => array ('column' => 'text','validator' => 'NotBlank',), 'titleValidationNotEmpty' => array ('column' => 'title','validator' => 'NotBlank',), ),
+            'validate' => array('textValidationNotEmpty' => array ('column' => 'text','validator' => 'NotBlank',), 'textValidationMinLength' => array ('column' => 'text','validator' => 'Length','options' => array ('min' => 10,),), 'titleValidationNotEmpty' => array ('column' => 'title','validator' => 'NotBlank',), ),
         );
     } // getBehaviors()
 

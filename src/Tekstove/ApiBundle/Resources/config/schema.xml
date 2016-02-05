@@ -78,6 +78,7 @@
         
         <behavior name="validate">
             <parameter name="textValidationNotEmpty" value="{column: text, validator: NotBlank}" />
+            <parameter name="textValidationMinLength" value="{column: text, validator: Length, options: {min: 10}}" />
             <parameter name="titleValidationNotEmpty" value="{column: title, validator: NotBlank}" />
         </behavior>
     </table>

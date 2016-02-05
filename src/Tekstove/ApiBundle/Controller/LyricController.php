@@ -32,10 +32,11 @@ class LyricController extends Controller
         $this->getContext()
                 ->setGroups(['List']);
         try {
-            $lyric->setTitle("test");
+            $lyric->setTitle($request->get('title'));
+            $lyric->setText($request->get('text'));
             $lyric->save();
         } catch (LyricHumanReadableException $e) {
-            $view = $this->handleData($request, $e->getMessage());
+            $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
             return $view;
         }

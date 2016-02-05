@@ -27,12 +27,12 @@ class Lyric extends BaseLyric
     {
         if (!$this->validate()) {
             $errors = $this->getValidationFailures();
-            $errorString = '';
+            $exception = new LyricHumanReadableException('Validation failed.');
             foreach ($errors as $error) {
                 /* @var $error \Symfony\Component\Validator\ConstraintViolationInterface */
-                $errorString .= $error->getPropertyPath() . ' - ' . $error->getMessage() . '. ';
+                $exception->addError($error->getPropertyPath(), $error->getMessage());
             }
-            throw new LyricHumanReadableException('Validation failed. ' . $errorString);
+            throw $exception;
         }
         
         $this->notifyPreSave($this);
@@ -57,7 +57,8 @@ class Lyric extends BaseLyric
     }
     private function notifyPreSave(Lyric $lyric)
     {
-        $event = new Event($lyric);
-        $this->getEventDispacher()->dispatch('tekstove.lyric.save', $event);
+        // @FIX @TODO
+//        $event = new Event($lyric);
+//        $this->getEventDispacher()->dispatch('tekstove.lyric.save', $event);
     }
 }

@@ -16,8 +16,7 @@ class UserController extends TekstoveAbstractController
     {
         $userQuery = new UserQuery();
         
-        $this->getContext()
-                ->setGroups(['List']);
+        $this->applyGroups($request);
         
         return $this->handleData($request, $userQuery);
     }

@@ -9,5 +9,4 @@ namespace Tekstove\ApiBundle\Exception;
  */
 class HumanReadableException extends Exception implements HumanReadableInterface
 {
-    //put your code here
 }

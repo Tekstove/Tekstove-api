@@ -9,5 +9,4 @@ namespace Tekstove\ApiBundle\Model\Lyric\Exception;
  */
 class LyricException extends \Tekstove\ApiBundle\Exception\Exception
 {
-    //put your code here
 }

@@ -1,13 +1,17 @@
 /composer.lock
 
-/nbproject
 /vendor
-/app/cache/*
-/app/logs/*
+
+/bin
 /app/config/parameters.yml
 /app/bootstrap.php.cache
+/var
 /web/bundles
 /web/js/fos_js_routes.js
 
 /app/scripts/migrations/vendor
 /app/scripts/migrations/phinx.yml
+
+
+/Test/codeSniffer/vendor
+

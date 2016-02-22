@@ -8,6 +8,11 @@ tekstove_api_user_get:
     defaults: { _controller: TekstoveApiBundle:User:get }
     methods: [GET]
 
+tekstove_api_user_login_post:
+    path: "/users/login/{username}"
+    defaults: { _controller: TekstoveApiBundle:User/Login:post }
+    methods: [POST]
+
 tekstove_api_user_credentials_list:
     path: "/users/credentials"
     defaults: { _controller: TekstoveApiBundle:UserCredentials:index }

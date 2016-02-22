@@ -11,7 +11,7 @@
         password:
             expose: false
             include: false
-            groups: [Credentials]
+            groups: []
         mail:
             expose: true
             groups: [Credentials]

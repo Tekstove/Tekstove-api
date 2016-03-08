@@ -28,6 +28,12 @@ tekstove_api_lyric:
     defaults: { _controller: TekstoveApiBundle:Lyric:index }
     methods: [GET]
 
+tekstove_api_lyric_credentials:
+    path: "/lyrics/credentials"
+    defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index }
+    methods: [GET]
+
+
 tekstove_api_lyric_get:
     path: "/lyrics/{id}"
     defaults: { _controller: TekstoveApiBundle:Lyric:get }

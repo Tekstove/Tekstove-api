@@ -5,7 +5,6 @@ namespace Tekstove\ApiBundle\Controller\Lyric;
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 
-
 /**
  * Description of CredentialsController
  *

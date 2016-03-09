@@ -3,3 +3,8 @@ services:
         class: Tekstove\ApiBundle\Listener\SerializationSubscriber
         tags:
             - { name: "jms_serializer.event_subscriber" }
+    tekstove.api.user_provider:
+        class: Tekstove\ApiBundle\Security\ApiUserProvider
+    tekstove.api.apikey_authenticator:
+        class:  Tekstove\ApiBundle\Security\ApiKeyAuthenticator
+        public: false

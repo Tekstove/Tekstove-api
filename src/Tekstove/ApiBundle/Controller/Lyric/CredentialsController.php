@@ -14,6 +14,10 @@ class CredentialsController extends Controller
 {
     public function indexAction(Request $request)
     {
+        if ($this->getUser()) {
+            // do stuff...
+        }
+        
         // @TODO remove mock and add real code
         $data = [
             'item' => [

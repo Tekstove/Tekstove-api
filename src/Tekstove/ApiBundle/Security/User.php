@@ -7,7 +7,6 @@ use Tekstove\ApiBundle\Model\User as BaseUser;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 
-
 /**
  * Description of User
  *
@@ -19,7 +18,6 @@ class User extends BaseUser implements UserInterface, EquatableInterface
     private $roles;
 
     /**
-     * 
      * @param type $username
      * @param type $password
      * @param type $salt

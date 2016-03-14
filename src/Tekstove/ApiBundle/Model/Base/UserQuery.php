@@ -26,6 +26,7 @@ use Tekstove\ApiBundle\Model\Map\UserTableMap;
  * @method     ChildUserQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildUserQuery orderByUsername($order = Criteria::ASC) Order by the username column
  * @method     ChildUserQuery orderByPassword($order = Criteria::ASC) Order by the password column
+ * @method     ChildUserQuery orderByapiKey($order = Criteria::ASC) Order by the api_key column
  * @method     ChildUserQuery orderByMail($order = Criteria::ASC) Order by the mail column
  * @method     ChildUserQuery orderByAvatar($order = Criteria::ASC) Order by the avatar column
  * @method     ChildUserQuery orderByAbout($order = Criteria::ASC) Order by the about column
@@ -34,6 +35,7 @@ use Tekstove\ApiBundle\Model\Map\UserTableMap;
  * @method     ChildUserQuery groupById() Group by the id column
  * @method     ChildUserQuery groupByUsername() Group by the username column
  * @method     ChildUserQuery groupByPassword() Group by the password column
+ * @method     ChildUserQuery groupByapiKey() Group by the api_key column
  * @method     ChildUserQuery groupByMail() Group by the mail column
  * @method     ChildUserQuery groupByAvatar() Group by the avatar column
  * @method     ChildUserQuery groupByAbout() Group by the about column
@@ -115,6 +117,7 @@ use Tekstove\ApiBundle\Model\Map\UserTableMap;
  * @method     ChildUser findOneById(int $id) Return the first ChildUser filtered by the id column
  * @method     ChildUser findOneByUsername(string $username) Return the first ChildUser filtered by the username column
  * @method     ChildUser findOneByPassword(string $password) Return the first ChildUser filtered by the password column
+ * @method     ChildUser findOneByapiKey(string $api_key) Return the first ChildUser filtered by the api_key column
  * @method     ChildUser findOneByMail(string $mail) Return the first ChildUser filtered by the mail column
  * @method     ChildUser findOneByAvatar(string $avatar) Return the first ChildUser filtered by the avatar column
  * @method     ChildUser findOneByAbout(string $about) Return the first ChildUser filtered by the about column
@@ -126,6 +129,7 @@ use Tekstove\ApiBundle\Model\Map\UserTableMap;
  * @method     ChildUser requireOneById(int $id) Return the first ChildUser filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByUsername(string $username) Return the first ChildUser filtered by the username column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByPassword(string $password) Return the first ChildUser filtered by the password column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildUser requireOneByapiKey(string $api_key) Return the first ChildUser filtered by the api_key column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByMail(string $mail) Return the first ChildUser filtered by the mail column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByAvatar(string $avatar) Return the first ChildUser filtered by the avatar column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByAbout(string $about) Return the first ChildUser filtered by the about column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -135,6 +139,7 @@ use Tekstove\ApiBundle\Model\Map\UserTableMap;
  * @method     ChildUser[]|ObjectCollection findById(int $id) Return ChildUser objects filtered by the id column
  * @method     ChildUser[]|ObjectCollection findByUsername(string $username) Return ChildUser objects filtered by the username column
  * @method     ChildUser[]|ObjectCollection findByPassword(string $password) Return ChildUser objects filtered by the password column
+ * @method     ChildUser[]|ObjectCollection findByapiKey(string $api_key) Return ChildUser objects filtered by the api_key column
  * @method     ChildUser[]|ObjectCollection findByMail(string $mail) Return ChildUser objects filtered by the mail column
  * @method     ChildUser[]|ObjectCollection findByAvatar(string $avatar) Return ChildUser objects filtered by the avatar column
  * @method     ChildUser[]|ObjectCollection findByAbout(string $about) Return ChildUser objects filtered by the about column
@@ -231,7 +236,7 @@ abstract class UserQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, username, password, mail, avatar, about, autoplay FROM user WHERE id = :p0';
+        $sql = 'SELECT id, username, password, api_key, mail, avatar, about, autoplay FROM user WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -418,6 +423,35 @@ abstract class UserQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UserTableMap::COL_PASSWORD, $password, $comparison);
+    }
+
+    /**
+     * Filter the query on the api_key column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByapiKey('fooValue');   // WHERE api_key = 'fooValue'
+     * $query->filterByapiKey('%fooValue%'); // WHERE api_key LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $apiKey The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByapiKey($apiKey = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($apiKey)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $apiKey)) {
+                $apiKey = str_replace('*', '%', $apiKey);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(UserTableMap::COL_API_KEY, $apiKey, $comparison);
     }
 
     /**

@@ -115,6 +115,13 @@ abstract class User implements ActiveRecordInterface
     protected $password;
 
     /**
+     * The value for the api_key field.
+     *
+     * @var        string
+     */
+    protected $api_key;
+
+    /**
      * The value for the mail field.
      *
      * @var        string
@@ -495,6 +502,16 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Get the [api_key] column value.
+     *
+     * @return string
+     */
+    public function getapiKey()
+    {
+        return $this->api_key;
+    }
+
+    /**
      * Get the [mail] column value.
      *
      * @return string
@@ -593,6 +610,26 @@ abstract class User implements ActiveRecordInterface
 
         return $this;
     } // setPassword()
+
+    /**
+     * Set the value of [api_key] column.
+     *
+     * @param string $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
+     */
+    public function setapiKey($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->api_key !== $v) {
+            $this->api_key = $v;
+            $this->modifiedColumns[UserTableMap::COL_API_KEY] = true;
+        }
+
+        return $this;
+    } // setapiKey()
 
     /**
      * Set the value of [mail] column.
@@ -719,16 +756,19 @@ abstract class User implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : UserTableMap::translateFieldName('Password', TableMap::TYPE_PHPNAME, $indexType)];
             $this->password = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : UserTableMap::translateFieldName('Mail', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : UserTableMap::translateFieldName('apiKey', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->api_key = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : UserTableMap::translateFieldName('Mail', TableMap::TYPE_PHPNAME, $indexType)];
             $this->mail = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : UserTableMap::translateFieldName('Avatar', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : UserTableMap::translateFieldName('Avatar', TableMap::TYPE_PHPNAME, $indexType)];
             $this->avatar = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : UserTableMap::translateFieldName('About', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : UserTableMap::translateFieldName('About', TableMap::TYPE_PHPNAME, $indexType)];
             $this->about = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : UserTableMap::translateFieldName('Autoplay', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : UserTableMap::translateFieldName('Autoplay', TableMap::TYPE_PHPNAME, $indexType)];
             $this->autoplay = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -738,7 +778,7 @@ abstract class User implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = UserTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 8; // 8 = UserTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\User'), 0, $e);
@@ -869,8 +909,8 @@ abstract class User implements ActiveRecordInterface
         }
 
         return $con->transaction(function () use ($con) {
-            $isInsert = $this->isNew();
             $ret = $this->preSave($con);
+            $isInsert = $this->isNew();
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
             } else {
@@ -1063,6 +1103,9 @@ abstract class User implements ActiveRecordInterface
         if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
             $modifiedColumns[':p' . $index++]  = 'password';
         }
+        if ($this->isColumnModified(UserTableMap::COL_API_KEY)) {
+            $modifiedColumns[':p' . $index++]  = 'api_key';
+        }
         if ($this->isColumnModified(UserTableMap::COL_MAIL)) {
             $modifiedColumns[':p' . $index++]  = 'mail';
         }
@@ -1094,6 +1137,9 @@ abstract class User implements ActiveRecordInterface
                         break;
                     case 'password':
                         $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
+                        break;
+                    case 'api_key':
+                        $stmt->bindValue($identifier, $this->api_key, PDO::PARAM_STR);
                         break;
                     case 'mail':
                         $stmt->bindValue($identifier, $this->mail, PDO::PARAM_STR);
@@ -1179,15 +1225,18 @@ abstract class User implements ActiveRecordInterface
                 return $this->getPassword();
                 break;
             case 3:
-                return $this->getMail();
+                return $this->getapiKey();
                 break;
             case 4:
-                return $this->getAvatar();
+                return $this->getMail();
                 break;
             case 5:
-                return $this->getAbout();
+                return $this->getAvatar();
                 break;
             case 6:
+                return $this->getAbout();
+                break;
+            case 7:
                 return $this->getAutoplay();
                 break;
             default:
@@ -1223,10 +1272,11 @@ abstract class User implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getUsername(),
             $keys[2] => $this->getPassword(),
-            $keys[3] => $this->getMail(),
-            $keys[4] => $this->getAvatar(),
-            $keys[5] => $this->getAbout(),
-            $keys[6] => $this->getAutoplay(),
+            $keys[3] => $this->getapiKey(),
+            $keys[4] => $this->getMail(),
+            $keys[5] => $this->getAvatar(),
+            $keys[6] => $this->getAbout(),
+            $keys[7] => $this->getAutoplay(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1368,15 +1418,18 @@ abstract class User implements ActiveRecordInterface
                 $this->setPassword($value);
                 break;
             case 3:
-                $this->setMail($value);
+                $this->setapiKey($value);
                 break;
             case 4:
-                $this->setAvatar($value);
+                $this->setMail($value);
                 break;
             case 5:
-                $this->setAbout($value);
+                $this->setAvatar($value);
                 break;
             case 6:
+                $this->setAbout($value);
+                break;
+            case 7:
                 $this->setAutoplay($value);
                 break;
         } // switch()
@@ -1415,16 +1468,19 @@ abstract class User implements ActiveRecordInterface
             $this->setPassword($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setMail($arr[$keys[3]]);
+            $this->setapiKey($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setAvatar($arr[$keys[4]]);
+            $this->setMail($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setAbout($arr[$keys[5]]);
+            $this->setAvatar($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setAutoplay($arr[$keys[6]]);
+            $this->setAbout($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setAutoplay($arr[$keys[7]]);
         }
     }
 
@@ -1475,6 +1531,9 @@ abstract class User implements ActiveRecordInterface
         }
         if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
             $criteria->add(UserTableMap::COL_PASSWORD, $this->password);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_API_KEY)) {
+            $criteria->add(UserTableMap::COL_API_KEY, $this->api_key);
         }
         if ($this->isColumnModified(UserTableMap::COL_MAIL)) {
             $criteria->add(UserTableMap::COL_MAIL, $this->mail);
@@ -1576,6 +1635,7 @@ abstract class User implements ActiveRecordInterface
     {
         $copyObj->setUsername($this->getUsername());
         $copyObj->setPassword($this->getPassword());
+        $copyObj->setapiKey($this->getapiKey());
         $copyObj->setMail($this->getMail());
         $copyObj->setAvatar($this->getAvatar());
         $copyObj->setAbout($this->getAbout());
@@ -3121,6 +3181,7 @@ abstract class User implements ActiveRecordInterface
         $this->id = null;
         $this->username = null;
         $this->password = null;
+        $this->api_key = null;
         $this->mail = null;
         $this->avatar = null;
         $this->about = null;

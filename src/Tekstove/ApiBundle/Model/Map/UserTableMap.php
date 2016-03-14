@@ -59,7 +59,7 @@ class UserTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 8;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class UserTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 8;
 
     /**
      * the column name for the id field
@@ -85,6 +85,11 @@ class UserTableMap extends TableMap
      * the column name for the password field
      */
     const COL_PASSWORD = 'user.password';
+
+    /**
+     * the column name for the api_key field
+     */
+    const COL_API_KEY = 'user.api_key';
 
     /**
      * the column name for the mail field
@@ -118,11 +123,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Username', 'Password', 'Mail', 'Avatar', 'About', 'Autoplay', ),
-        self::TYPE_CAMELNAME     => array('id', 'username', 'password', 'mail', 'avatar', 'about', 'autoplay', ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_USERNAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_MAIL, UserTableMap::COL_AVATAR, UserTableMap::COL_ABOUT, UserTableMap::COL_AUTOPLAY, ),
-        self::TYPE_FIELDNAME     => array('id', 'username', 'password', 'mail', 'avatar', 'about', 'autoplay', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'Username', 'Password', 'apiKey', 'Mail', 'Avatar', 'About', 'Autoplay', ),
+        self::TYPE_CAMELNAME     => array('id', 'username', 'password', 'apiKey', 'mail', 'avatar', 'about', 'autoplay', ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_USERNAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_API_KEY, UserTableMap::COL_MAIL, UserTableMap::COL_AVATAR, UserTableMap::COL_ABOUT, UserTableMap::COL_AUTOPLAY, ),
+        self::TYPE_FIELDNAME     => array('id', 'username', 'password', 'api_key', 'mail', 'avatar', 'about', 'autoplay', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -132,11 +137,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Password' => 2, 'Mail' => 3, 'Avatar' => 4, 'About' => 5, 'Autoplay' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'mail' => 3, 'avatar' => 4, 'about' => 5, 'autoplay' => 6, ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_USERNAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_MAIL => 3, UserTableMap::COL_AVATAR => 4, UserTableMap::COL_ABOUT => 5, UserTableMap::COL_AUTOPLAY => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'mail' => 3, 'avatar' => 4, 'about' => 5, 'autoplay' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Password' => 2, 'apiKey' => 3, 'Mail' => 4, 'Avatar' => 5, 'About' => 6, 'Autoplay' => 7, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'apiKey' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_USERNAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_API_KEY => 3, UserTableMap::COL_MAIL => 4, UserTableMap::COL_AVATAR => 5, UserTableMap::COL_ABOUT => 6, UserTableMap::COL_AUTOPLAY => 7, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'api_key' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -160,6 +165,7 @@ class UserTableMap extends TableMap
         $this->addColumn('username', 'Username', 'VARCHAR', false, 100, null);
         $this->getColumn('username')->setPrimaryString(true);
         $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
+        $this->addColumn('api_key', 'apiKey', 'VARCHAR', true, 255, null);
         $this->addColumn('mail', 'Mail', 'VARCHAR', true, 255, null);
         $this->addColumn('avatar', 'Avatar', 'VARCHAR', false, 255, null);
         $this->addColumn('about', 'About', 'VARCHAR', false, 255, null);
@@ -372,6 +378,7 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn(UserTableMap::COL_ID);
             $criteria->addSelectColumn(UserTableMap::COL_USERNAME);
             $criteria->addSelectColumn(UserTableMap::COL_PASSWORD);
+            $criteria->addSelectColumn(UserTableMap::COL_API_KEY);
             $criteria->addSelectColumn(UserTableMap::COL_MAIL);
             $criteria->addSelectColumn(UserTableMap::COL_AVATAR);
             $criteria->addSelectColumn(UserTableMap::COL_ABOUT);
@@ -380,6 +387,7 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.username');
             $criteria->addSelectColumn($alias . '.password');
+            $criteria->addSelectColumn($alias . '.api_key');
             $criteria->addSelectColumn($alias . '.mail');
             $criteria->addSelectColumn($alias . '.avatar');
             $criteria->addSelectColumn($alias . '.about');

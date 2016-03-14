@@ -121,7 +121,7 @@ abstract class Lyric implements ActiveRecordInterface
     /**
      * The value for the text_bg_added field.
      *
-     * @var        \DateTime
+     * @var        DateTime
      */
     protected $text_bg_added;
 
@@ -551,7 +551,7 @@ abstract class Lyric implements ActiveRecordInterface
         if ($format === null) {
             return $this->text_bg_added;
         } else {
-            return $this->text_bg_added instanceof \DateTime ? $this->text_bg_added->format($format) : null;
+            return $this->text_bg_added instanceof \DateTimeInterface ? $this->text_bg_added->format($format) : null;
         }
     }
 
@@ -728,7 +728,7 @@ abstract class Lyric implements ActiveRecordInterface
     /**
      * Sets the value of [text_bg_added] column to a normalized version of the date/time value specified.
      *
-     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
      *               Empty strings are treated as NULL.
      * @return $this|\Tekstove\ApiBundle\Model\Lyric The current object (for fluent API support)
      */
@@ -1147,8 +1147,8 @@ abstract class Lyric implements ActiveRecordInterface
         }
 
         return $con->transaction(function () use ($con) {
-            $isInsert = $this->isNew();
             $ret = $this->preSave($con);
+            $isInsert = $this->isNew();
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
             } else {

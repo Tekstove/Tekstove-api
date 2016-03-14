@@ -4,6 +4,7 @@
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
         <column name="username" type="varchar" primaryString="1" size="100" />
         <column name="password" type="varchar" required="true" />
+        <column name="api_key" type="varchar" phpName="apiKey" required="true" />
         <column name="mail" type="varchar" required="true" />
         <column name="avatar" type="varchar" />
         <column name="about" type="varchar" />

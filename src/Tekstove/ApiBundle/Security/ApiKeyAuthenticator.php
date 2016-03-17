@@ -20,11 +20,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 {
     public function createToken(Request $request, $providerKey)
     {
-        // look for an apikey query parameter
-        $apiKey = $request->query->get('apikey');
-
-        // or if you want to use an "apikey" header, then do something like this:
-        // $apiKey = $request->headers->get('apikey');
+        $apiKey = $this->getApiKey($request);
 
         if (!$apiKey) {
             // do not auth user
@@ -36,6 +32,18 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
             $apiKey,
             $providerKey
         );
+    }
+    
+    protected function getApiKey(Request $request)
+    {
+        $apiKey = $request->get('apikey');
+        if ($apiKey) {
+            return $apiKey;
+        }
+        
+        $apiKey = $request->headers->get('apikey');
+        
+        return $apiKey;
     }
 
     public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)

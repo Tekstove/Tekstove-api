@@ -40,9 +40,8 @@ class ApiUserProvider implements UserProviderInterface
     
     public function getUsernameForApiKey($key)
     {
-        //@TODO fixme, atm key=username
         $userQuery = UserQuery::create();
-        $userQuery->filterByUsername($key, Criteria::EQUAL);
+        $userQuery->filterByapiKey($key, Criteria::EQUAL);
         $user = $userQuery->findOne();
         return $user;
     }

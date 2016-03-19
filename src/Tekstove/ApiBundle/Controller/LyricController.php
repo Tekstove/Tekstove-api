@@ -35,6 +35,7 @@ class LyricController extends Controller
             $lyric->setTitle($request->get('title'));
             $lyric->setText($request->get('text'));
             $lyric->save();
+            return $this->handleData($request, $lyric);
         } catch (LyricHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);

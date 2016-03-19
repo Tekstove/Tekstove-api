@@ -14,18 +14,22 @@ class CredentialsController extends Controller
 {
     public function indexAction(Request $request)
     {
+        $allowedFields = [
+            'title',
+            'text',
+        ];
+
         if ($this->getUser()) {
-            // do stuff...
+            $permissions = $this->getUser()->getPermissions();
+            if (array_key_exists('lyric_download', $permissions)) {
+                $allowedFields[] = 'download';
+            }
         }
         
-        // @TODO remove mock and add real code
         $data = [
             'item' => [
-                'fields' => [
-                    'title',
-                    'text',
-                ],
-            ]
+                'fields' => $allowedFields,
+            ],
         ];
         
         return $this->handleData($request, $data);

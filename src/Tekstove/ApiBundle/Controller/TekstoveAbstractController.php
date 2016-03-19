@@ -19,7 +19,7 @@ class TekstoveAbstractController extends FOSRestController
     /**
      * @return SerializationContext
      */
-    public function getContext()
+    protected function getContext()
     {
         if ($this->context === null) {
             $this->context = SerializationContext::create();
@@ -33,7 +33,7 @@ class TekstoveAbstractController extends FOSRestController
      * @param type $data
      * @return \FOS\RestBundle\View\View
      */
-    public function handleData(Request $request, $data)
+    protected function handleData(Request $request, $data)
     {
         $data = $this->applyFilters($request, $data);
         $data = $this->propelQueryToPagination($request, $data);
@@ -50,12 +50,12 @@ class TekstoveAbstractController extends FOSRestController
          return $view;
     }
     
-    public function getGroups(Request $request)
+    protected function getGroups(Request $request)
     {
         return $request->get('groups');
     }
     
-    public function applyGroups(Request $request)
+    protected function applyGroups(Request $request)
     {
         $groups = $this->getGroups($request);
         if (empty($groups)) {
@@ -65,7 +65,7 @@ class TekstoveAbstractController extends FOSRestController
                 ->setGroups($groups);
     }
     
-    public function applyFilters(Request $request, $data)
+    protected function applyFilters(Request $request, $data)
     {
         if (!$data instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {
             return $data;
@@ -96,7 +96,7 @@ class TekstoveAbstractController extends FOSRestController
         return $data;
     }
     
-    public function propelQueryToPagination(Request $request, $query)
+    protected function propelQueryToPagination(Request $request, $query)
     {
         if (!$query instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {
             return $query;
@@ -112,7 +112,7 @@ class TekstoveAbstractController extends FOSRestController
         return $pagination;
     }
     
-    public function paginationToArray($pagination)
+    protected function paginationToArray($pagination)
     {
         if (!$pagination instanceof \Knp\Component\Pager\Pagination\AbstractPagination) {
             return $pagination;

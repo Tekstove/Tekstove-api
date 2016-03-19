@@ -58,21 +58,19 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
         }
 
         $apiKey = $token->getCredentials();
-        $username = $userProvider->getUsernameForApiKey($apiKey);
+        $user = $userProvider->findUserByApiKey($apiKey);
 
-        if (!$username) {
+        if (!$user) {
             // CAUTION: this message will be returned to the client
             // (so don't put any un-trusted messages / error strings here)
             throw new CustomUserMessageAuthenticationException("API Key '{$apiKey}' does not exist.");
         }
 
-        $user = $userProvider->loadUserByUsername($username);
-
         return new PreAuthenticatedToken(
             $user,
             $apiKey,
             $providerKey,
-            $user->getRoles()
+            []
         );
     }
 

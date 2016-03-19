@@ -38,7 +38,7 @@ class ApiUserProvider implements UserProviderInterface
         );
     }
     
-    public function getUsernameForApiKey($key)
+    public function findUserByApiKey($key)
     {
         $userQuery = UserQuery::create();
         $userQuery->filterByapiKey($key, Criteria::EQUAL);

@@ -16,5 +16,29 @@ use Tekstove\ApiBundle\Model\Base\User as BaseUser;
  */
 class User extends BaseUser
 {
-
+    /**
+     * Return array
+     * [permissioName] => permissionValue
+     * @return array
+     */
+    public function getPermissions()
+    {
+        $return = [];
+        foreach ($this->getPermissionGroupUsers() as $permissionGroupUser) {
+            $permissionGroup = $permissionGroupUser->getPermissionGroup();
+            foreach ($permissionGroup->getPermissionGroupPermissions() as $groupPermission) {
+                $permission = $groupPermission->getPermission();
+                $return[$permission->getName()] = $permission->getValue();
+            }
+        }
+        return $return;
+    }
+    
+    public function getPermission($name)
+    {
+        $permissions = $this->getPermissions();
+        if (isset($permissions[$name])) {
+            return $permissions[$name];
+        }
+    }
 }

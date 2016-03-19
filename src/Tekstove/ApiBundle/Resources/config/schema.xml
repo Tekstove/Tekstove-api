@@ -32,6 +32,7 @@
     
     <table name="permission_group_permission" namespace="\Tekstove\ApiBundle\Model\Acl" readonly="true">
         <column name="group_id" type="integer" required="true" primaryKey="true" autoIncrement="false" />
+        
         <foreign-key foreignTable="permission_group">
             <reference local="group_id" foreign="id" />
         </foreign-key>

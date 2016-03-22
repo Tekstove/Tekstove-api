@@ -16,5 +16,5 @@ use Tekstove\ApiBundle\Model\Base\LyricQuery as BaseLyricQuery;
  */
 class LyricQuery extends BaseLyricQuery
 {
-
+    
 }

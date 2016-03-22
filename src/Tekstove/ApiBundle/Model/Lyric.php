@@ -5,6 +5,9 @@ namespace Tekstove\ApiBundle\Model;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Tekstove\ApiBundle\Model\Base\Lyric as BaseLyric;
 
+use Tekstove\ApiBundle\EventDispatcher\EventDispacher;
+use Tekstove\ApiBundle\EventDispatcher\Lyric\LyricEvent;
+
 use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
 
 /**
@@ -42,7 +45,7 @@ class Lyric extends BaseLyric
     
     /**
      *
-     * @return EventDispatcher\EventDispacher
+     * @return EventDispacher
      */
     private function getEventDispacher()
     {
@@ -51,14 +54,13 @@ class Lyric extends BaseLyric
         }
         return $this->eventDispacher;
     }
-    public function setEventDispacher($eventDispacher)
+    public function setEventDispacher(EventDispacher $eventDispacher)
     {
         $this->eventDispacher = $eventDispacher;
     }
     private function notifyPreSave(Lyric $lyric)
     {
-        // @FIX @TODO
-//        $event = new Event($lyric);
-//        $this->getEventDispacher()->dispatch('tekstove.lyric.save', $event);
+        $event = new LyricEvent($lyric);
+        $this->getEventDispacher()->dispatch('tekstove.lyric.save', $event);
     }
 }

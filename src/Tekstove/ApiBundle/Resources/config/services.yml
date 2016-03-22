@@ -8,3 +8,16 @@ services:
     tekstove.api.apikey_authenticator:
         class:  Tekstove\ApiBundle\Security\ApiKeyAuthenticator
         public: false
+        
+    tekstove.lyric.repository:
+        class: Tekstove\ApiBundle\Model\Lyric\LyricRepository
+        arguments: ["@tekstove.event_dispacher"]
+        
+    tekstove.event_dispacher.factory:
+        class: Tekstove\ApiBundle\EventDispatcher\EventDispacherFactory
+        arguments: []
+    
+    tekstove.event_dispacher:
+        class: Tekstove\ApiBundle\EventDispatcher\EventDispacher
+        factory: ["@tekstove.event_dispacher.factory", createDispacher]
+        arguments: ["@service_container"]

@@ -28,13 +28,14 @@ class LyricController extends Controller
     
     public function postAction(Request $request, $id = null)
     {
+        $repo = $this->get('tekstove.lyric.repository');
         $lyric = new \Tekstove\ApiBundle\Model\Lyric();
         $this->getContext()
                 ->setGroups(['List']);
         try {
             $lyric->setTitle($request->get('title'));
             $lyric->setText($request->get('text'));
-            $lyric->save();
+            $repo->save($lyric);
             return $this->handleData($request, $lyric);
         } catch (LyricHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());

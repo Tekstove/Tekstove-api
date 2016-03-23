@@ -57,12 +57,12 @@ class LyricUploadedBySubscriber implements \Symfony\Component\EventDispatcher\Ev
             return false;
         }
         
-        $isAuth = $this->authchecker->isGranted('IS_AUTHENTICATED_REMEMBERED');
-        if (!$isAuth) {
+        // @TODO fix
+        $user = $this->securityContext->getToken()->getUser();
+        if (!$user instanceof \Tekstove\ApiBundle\Model\User) {
             return false;
         }
         
-        $user = $this->securityContext->getToken()->getUser();
         $lyric->setUser($user);
     }
 }

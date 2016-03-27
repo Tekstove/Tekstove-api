@@ -17,6 +17,9 @@ class CredentialsController extends Controller
         $allowedFields = [
             'title',
             'text',
+            'video_youtube',
+            'video_vbox7',
+            'video_metacafe',
         ];
 
         if ($this->getUser()) {

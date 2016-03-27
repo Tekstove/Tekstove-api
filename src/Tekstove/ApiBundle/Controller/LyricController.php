@@ -26,7 +26,7 @@ class LyricController extends Controller
         return $this->handleData($request, $lyric);
     }
     
-    public function postAction(Request $request, $id = null)
+    public function postAction(Request $request)
     {
         $repo = $this->get('tekstove.lyric.repository');
         $lyric = new \Tekstove\ApiBundle\Model\Lyric();

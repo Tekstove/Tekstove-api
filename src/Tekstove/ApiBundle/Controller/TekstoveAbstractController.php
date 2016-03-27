@@ -15,6 +15,8 @@ use Propel\Runtime\ActiveQuery\Criteria;
  */
 class TekstoveAbstractController extends FOSRestController
 {
+    private $itemsPerPage = 10;
+    
     private $context;
     /**
      * @return SerializationContext
@@ -50,6 +52,11 @@ class TekstoveAbstractController extends FOSRestController
          return $view;
     }
     
+    public function setItemsPerPage($itemsPerPage)
+    {
+        $this->itemsPerPage = $itemsPerPage;
+    }
+
     protected function getGroups(Request $request)
     {
         return $request->get('groups');
@@ -106,7 +113,7 @@ class TekstoveAbstractController extends FOSRestController
         $pagination = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            10
+            $this->itemsPerPage
         );
         
         return $pagination;

@@ -1,0 +1,9 @@
+"Tekstove\\ApiBundle\\Model\\Base\\Language":
+    exclusion_policy: none
+    exclude: false
+    read_only: true
+    properties:
+        id:
+            groups: [List, Details]
+        name:
+            groups: [List, Details]

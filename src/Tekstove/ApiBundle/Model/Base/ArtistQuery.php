@@ -128,27 +128,21 @@ abstract class ArtistQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-
-        if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(ArtistTableMap::DATABASE_NAME);
-        }
-
-        $this->basePreSelect($con);
-
-        if (
-            $this->formatter || $this->modelAlias || $this->with || $this->select
-            || $this->selectColumns || $this->asColumns || $this->selectModifiers
-            || $this->map || $this->having || $this->joins
-        ) {
-            return $this->findPkComplex($key, $con);
-        }
-
-        if ((null !== ($obj = ArtistTableMap::getInstanceFromPool(null === $key || is_scalar($key) || is_callable([$key, '__toString']) ? (string) $key : $key)))) {
+        if ((null !== ($obj = ArtistTableMap::getInstanceFromPool(null === $key || is_scalar($key) || is_callable([$key, '__toString']) ? (string) $key : $key))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
-
-        return $this->findPkSimple($key, $con);
+        if ($con === null) {
+            $con = Propel::getServiceContainer()->getReadConnection(ArtistTableMap::DATABASE_NAME);
+        }
+        $this->basePreSelect($con);
+        if ($this->formatter || $this->modelAlias || $this->with || $this->select
+         || $this->selectColumns || $this->asColumns || $this->selectModifiers
+         || $this->map || $this->having || $this->joins) {
+            return $this->findPkComplex($key, $con);
+        } else {
+            return $this->findPkSimple($key, $con);
+        }
     }
 
     /**

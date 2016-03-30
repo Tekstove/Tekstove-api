@@ -3,6 +3,7 @@
 namespace Tekstove\ApiBundle\Model;
 
 use Tekstove\ApiBundle\Model\Base\User as BaseUser;
+use Tekstove\ApiBundle\Model\Lyric;
 
 /**
  * Skeleton subclass for representing a row from the 'user' table.
@@ -40,5 +41,28 @@ class User extends BaseUser
         if (isset($permissions[$name])) {
             return $permissions[$name];
         }
+    }
+    
+    /**
+     * @param Lyric $lyric
+     * @return array
+     */
+    public function getAllowedLyricFields(Lyric $lyric)
+    {
+        $allowedFields = [
+            'title',
+            'text',
+            'video_youtube',
+            'video_vbox7',
+            'video_metacafe',
+        ];
+
+        $permissions = $this->getPermissions();
+        
+        if (array_key_exists('lyric_download', $permissions)) {
+            $allowedFields[] = 'download';
+        }
+        
+        return $allowedFields;
     }
 }

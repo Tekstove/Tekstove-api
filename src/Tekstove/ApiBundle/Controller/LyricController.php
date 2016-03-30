@@ -35,6 +35,8 @@ class LyricController extends Controller
         try {
             $lyric->setTitle($request->get('title'));
             $lyric->setText($request->get('text'));
+            $lyric->setvideoYoutube($request->get('videoYoutube'));
+            $lyric->setvideoVbox7($request->get('videoVbox7'));
             $repo->save($lyric);
             return $this->handleData($request, $lyric);
         } catch (LyricHumanReadableException $e) {

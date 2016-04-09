@@ -6,6 +6,8 @@ use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
 
+use Tekstove\ApiBundle\Model\User;
+
 use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
 
 class LyricController extends Controller
@@ -33,10 +35,22 @@ class LyricController extends Controller
         $this->getContext()
                 ->setGroups(['List']);
         try {
-            $lyric->setTitle($request->get('title'));
-            $lyric->setText($request->get('text'));
-            $lyric->setvideoYoutube($request->get('videoYoutube'));
-            $lyric->setvideoVbox7($request->get('videoVbox7'));
+            if ($this->getUser()) {
+                $user = $this->getUser();
+            } else {
+                $user = new User();
+            }
+
+            $allowedFields = $user->getAllowedLyricFields($lyric);
+            
+            $caseHelper = new \Tekstove\ApiBundle\Helper\CaseHelper();
+            foreach ($allowedFields as $field) {
+                $bumpyCase = $caseHelper->bumpyCase($field);
+                $camel = $caseHelper->camelCase($field);
+                $setter = 'set' . $bumpyCase;
+                $value = $request->get($camel);
+                $lyric->{$setter}($value);
+            }
             $repo->save($lyric);
             return $this->handleData($request, $lyric);
         } catch (LyricHumanReadableException $e) {

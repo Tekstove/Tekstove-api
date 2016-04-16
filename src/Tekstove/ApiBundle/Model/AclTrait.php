@@ -12,7 +12,7 @@ trait AclTrait
     /**
      * Used in jmsSerializer config
      */
-    public function _acl()
+    public function acl()
     {
         return null;
     }

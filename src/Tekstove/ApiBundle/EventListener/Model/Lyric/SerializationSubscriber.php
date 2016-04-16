@@ -1,9 +1,11 @@
 <?php
 
-namespace Tekstove\ApiBundle\Listener;
+namespace Tekstove\ApiBundle\EventListener\Model\Lyric;
 
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
+
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Description of SerializationListener
@@ -12,6 +14,13 @@ use JMS\Serializer\EventDispatcher\ObjectEvent;
  */
 class SerializationSubscriber implements EventSubscriberInterface
 {
+    private $authorizationChecker = null;
+    
+    public function __construct(AuthorizationCheckerInterface $authChecker)
+    {
+        $this->authorizationChecker = $authChecker;
+    }
+    
     public static function getSubscribedEvents()
     {
         return [
@@ -26,7 +35,8 @@ class SerializationSubscriber implements EventSubscriberInterface
     
     public function onPostSerialize(ObjectEvent $event)
     {
-        $data = $event->getObject();
+        $lyric = $event->getObject();
+        /* @lyric \Tekstove\ApiBundle\Model\Lyric */
         $visitor = $event->getVisitor();
         $context = $event->getContext();
         
@@ -34,16 +44,22 @@ class SerializationSubscriber implements EventSubscriberInterface
                                         ->getMetadataForClass(\Tekstove\ApiBundle\Model\Lyric::class)
                                             ->propertyMetadata;
         
-        $aclMetaData = $propertyMetadata['_acl'];
+        $aclMetaData = $propertyMetadata['acl'];
         
         $exclusionStrategy = $context->getExclusionStrategy();
         
         // @TODO use voters to get acl data
         
-        if ($exclusionStrategy->shouldSkipProperty($aclMetaData, $context)) {
-            $visitor->addData('_acl', 'false');
-        } else {
-            $visitor->addData('_acl', 'yeessss');
+        
+        if (false == $exclusionStrategy->shouldSkipProperty($aclMetaData, $context)) {
+            $acl = [];
+            $permissions = ['edit'];
+            foreach ($permissions as $permission) {
+                if ($this->authorizationChecker->isGranted($permission, $lyric)) {
+                    $acl[$permission] = 1;
+                }
+            }
+            $visitor->addData('acl', $acl);
         }
     }
 }

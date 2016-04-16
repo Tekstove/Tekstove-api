@@ -3,6 +3,6 @@
     exclude: false
     read_only: true
     virtual_properties:
-        _acl:
+        acl:
             expose: true
-            groups: [List, Details]
+            groups: [Acl]

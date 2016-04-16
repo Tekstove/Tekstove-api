@@ -70,12 +70,18 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
             $user,
             $apiKey,
             $providerKey,
-            []
+            ['registered']
         );
     }
 
+    /**
+     * @return boolean
+     */
     public function supportsToken(TokenInterface $token, $providerKey)
     {
-        return $token instanceof PreAuthenticatedToken && $token->getProviderKey() === $providerKey;
+        if (!$token instanceof PreAuthenticatedToken) {
+            return false;
+        }
+        return $token->getProviderKey() === $providerKey;
     }
 }

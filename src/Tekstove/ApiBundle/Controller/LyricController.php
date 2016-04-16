@@ -19,8 +19,7 @@ class LyricController extends Controller
     
     public function getAction(Request $request, $id)
     {
-        $this->getContext()
-                ->setGroups(['Details']);
+        $this->applyGroups($request);
         $lyricQuery = new LyricQuery();
         $lyric = $lyricQuery->findOneById($id);
         return $this->handleData($request, $lyric);

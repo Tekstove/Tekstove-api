@@ -83,13 +83,21 @@ class LyricController extends Controller
             $allowedFields = $user->getAllowedLyricFields($lyric);
             
             $caseHelper = new CaseHelper();
+            $pathData = json_decode($request->getContent(), true);
             foreach ($allowedFields as $field) {
-                $camel = $caseHelper->camelCase($field);
-                if ($request->request->has($camel)) {
-                    $bumpyCase = $caseHelper->bumpyCase($field);
-                    $setter = 'set' . $bumpyCase;
-                    $value = $request->get($camel);
-                    $lyric->{$setter}($value);
+                foreach ($pathData as $path) {
+                    switch ($path['op']) {
+                        case 'replace':
+                            if ($path['path'] === '/' . $field) {
+                                $bumpyCase = $caseHelper->bumpyCase($field);
+                                $setter = 'set' . $bumpyCase;
+                                $value = $path['value'];
+                                $lyric->{$setter}($value);
+                            }
+                            break;
+                        default:
+                            throw new \Exception('not implemented `op`');
+                    }
                 }
             }
             $repo->save($lyric);

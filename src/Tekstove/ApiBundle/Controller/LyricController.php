@@ -84,11 +84,13 @@ class LyricController extends Controller
             
             $caseHelper = new CaseHelper();
             foreach ($allowedFields as $field) {
-                $bumpyCase = $caseHelper->bumpyCase($field);
                 $camel = $caseHelper->camelCase($field);
-                $setter = 'set' . $bumpyCase;
-                $value = $request->get($camel);
-                $lyric->{$setter}($value);
+                if ($request->request->has($camel)) {
+                    $bumpyCase = $caseHelper->bumpyCase($field);
+                    $setter = 'set' . $bumpyCase;
+                    $value = $request->get($camel);
+                    $lyric->{$setter}($value);
+                }
             }
             $repo->save($lyric);
             return $this->handleData($request, $lyric);

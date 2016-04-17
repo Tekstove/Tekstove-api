@@ -6,6 +6,8 @@ use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
 
+use Potaka\Helper\Casing\CaseHelper;
+
 use Tekstove\ApiBundle\Model\User;
 
 use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
@@ -42,7 +44,7 @@ class LyricController extends Controller
 
             $allowedFields = $user->getAllowedLyricFields($lyric);
             
-            $caseHelper = new \Tekstove\ApiBundle\Helper\CaseHelper();
+            $caseHelper = new CaseHelper();
             foreach ($allowedFields as $field) {
                 $bumpyCase = $caseHelper->bumpyCase($field);
                 $camel = $caseHelper->camelCase($field);

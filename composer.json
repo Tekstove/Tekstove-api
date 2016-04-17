@@ -30,7 +30,7 @@
         "incenteev/composer-parameter-handler": "^2.0",
         
         "propel/propel": "2.0.*-dev", 
-        "propel/propel-bundle": "2.0.*-dev",
+        "propel/propel-bundle": "3.0.*-dev",
         "friendsofsymfony/rest-bundle": "^1.7",
         "jms/serializer-bundle": "1.*",
         "potaka/knp-paginator-propel2bundle": "dev-master",

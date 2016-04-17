@@ -60,4 +60,42 @@ class LyricController extends Controller
             return $view;
         }
     }
+    
+    public function patchAction(Request $request, $id)
+    {
+        $this->getContext()
+                ->setGroups(['List']);
+        
+        $repo = $this->get('tekstove.lyric.repository');
+        /* @var $repo \Tekstove\ApiBundle\Model\Lyric\LyricRepository */
+        $lyricQuery = new LyricQuery();
+        $lyric = $lyricQuery->findOneById($id);
+        
+        // @OTO change to real patch!
+        
+        try {
+            if ($this->getUser()) {
+                $user = $this->getUser();
+            } else {
+                $user = new User();
+            }
+
+            $allowedFields = $user->getAllowedLyricFields($lyric);
+            
+            $caseHelper = new CaseHelper();
+            foreach ($allowedFields as $field) {
+                $bumpyCase = $caseHelper->bumpyCase($field);
+                $camel = $caseHelper->camelCase($field);
+                $setter = 'set' . $bumpyCase;
+                $value = $request->get($camel);
+                $lyric->{$setter}($value);
+            }
+            $repo->save($lyric);
+            return $this->handleData($request, $lyric);
+        } catch (LyricHumanReadableException $e) {
+            $view = $this->handleData($request, $e->getErrors());
+            $view->setStatusCode(400);
+            return $view;
+        }
+    }
 }

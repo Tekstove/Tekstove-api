@@ -43,6 +43,11 @@ tekstove_api_lyric_post:
     path: "/lyrics"
     defaults: { _controller: TekstoveApiBundle:Lyric:post}
     methods: [POST]
+    
+tekstove_api_lyric_patch:
+    path: "/lyrics/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric:patch}
+    methods: [PATCH]
 
 tekstove_api_languages:
     path: /languages

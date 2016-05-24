@@ -52,6 +52,7 @@ class User extends BaseUser
         $allowedFields = [
             'title',
             'text',
+            'extraInfo',
             'video_youtube',
             'video_vbox7',
             'video_metacafe',

@@ -28,6 +28,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery orderByText($order = Criteria::ASC) Order by the text column
  * @method     ChildLyricQuery orderBytextBg($order = Criteria::ASC) Order by the text_bg column
  * @method     ChildLyricQuery orderBytextBgAdded($order = Criteria::ASC) Order by the text_bg_added column
+ * @method     ChildLyricQuery orderByextraInfo($order = Criteria::ASC) Order by the extra_info column
  * @method     ChildLyricQuery orderBysendBy($order = Criteria::ASC) Order by the send_by column
  * @method     ChildLyricQuery orderBycacheTitleShort($order = Criteria::ASC) Order by the cache_title_short column
  * @method     ChildLyricQuery orderByViews($order = Criteria::ASC) Order by the views column
@@ -43,6 +44,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery groupByText() Group by the text column
  * @method     ChildLyricQuery groupBytextBg() Group by the text_bg column
  * @method     ChildLyricQuery groupBytextBgAdded() Group by the text_bg_added column
+ * @method     ChildLyricQuery groupByextraInfo() Group by the extra_info column
  * @method     ChildLyricQuery groupBysendBy() Group by the send_by column
  * @method     ChildLyricQuery groupBycacheTitleShort() Group by the cache_title_short column
  * @method     ChildLyricQuery groupByViews() Group by the views column
@@ -111,6 +113,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric findOneByText(string $text) Return the first ChildLyric filtered by the text column
  * @method     ChildLyric findOneBytextBg(string $text_bg) Return the first ChildLyric filtered by the text_bg column
  * @method     ChildLyric findOneBytextBgAdded(string $text_bg_added) Return the first ChildLyric filtered by the text_bg_added column
+ * @method     ChildLyric findOneByextraInfo(string $extra_info) Return the first ChildLyric filtered by the extra_info column
  * @method     ChildLyric findOneBysendBy(int $send_by) Return the first ChildLyric filtered by the send_by column
  * @method     ChildLyric findOneBycacheTitleShort(string $cache_title_short) Return the first ChildLyric filtered by the cache_title_short column
  * @method     ChildLyric findOneByViews(int $views) Return the first ChildLyric filtered by the views column
@@ -129,6 +132,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric requireOneByText(string $text) Return the first ChildLyric filtered by the text column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBytextBg(string $text_bg) Return the first ChildLyric filtered by the text_bg column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBytextBgAdded(string $text_bg_added) Return the first ChildLyric filtered by the text_bg_added column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildLyric requireOneByextraInfo(string $extra_info) Return the first ChildLyric filtered by the extra_info column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBysendBy(int $send_by) Return the first ChildLyric filtered by the send_by column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBycacheTitleShort(string $cache_title_short) Return the first ChildLyric filtered by the cache_title_short column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByViews(int $views) Return the first ChildLyric filtered by the views column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -145,6 +149,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric[]|ObjectCollection findByText(string $text) Return ChildLyric objects filtered by the text column
  * @method     ChildLyric[]|ObjectCollection findBytextBg(string $text_bg) Return ChildLyric objects filtered by the text_bg column
  * @method     ChildLyric[]|ObjectCollection findBytextBgAdded(string $text_bg_added) Return ChildLyric objects filtered by the text_bg_added column
+ * @method     ChildLyric[]|ObjectCollection findByextraInfo(string $extra_info) Return ChildLyric objects filtered by the extra_info column
  * @method     ChildLyric[]|ObjectCollection findBysendBy(int $send_by) Return ChildLyric objects filtered by the send_by column
  * @method     ChildLyric[]|ObjectCollection findBycacheTitleShort(string $cache_title_short) Return ChildLyric objects filtered by the cache_title_short column
  * @method     ChildLyric[]|ObjectCollection findByViews(int $views) Return ChildLyric objects filtered by the views column
@@ -252,7 +257,7 @@ abstract class LyricQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, title, text, text_bg, text_bg_added, send_by, cache_title_short, views, popularity, votes_count, video_youtube, video_vbox7, video_metacafe, download FROM lyric WHERE id = :p0';
+        $sql = 'SELECT id, title, text, text_bg, text_bg_added, extra_info, send_by, cache_title_short, views, popularity, votes_count, video_youtube, video_vbox7, video_metacafe, download FROM lyric WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -511,6 +516,35 @@ abstract class LyricQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(LyricTableMap::COL_TEXT_BG_ADDED, $textBgAdded, $comparison);
+    }
+
+    /**
+     * Filter the query on the extra_info column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByextraInfo('fooValue');   // WHERE extra_info = 'fooValue'
+     * $query->filterByextraInfo('%fooValue%'); // WHERE extra_info LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $extraInfo The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildLyricQuery The current query, for fluid interface
+     */
+    public function filterByextraInfo($extraInfo = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($extraInfo)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $extraInfo)) {
+                $extraInfo = str_replace('*', '%', $extraInfo);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(LyricTableMap::COL_EXTRA_INFO, $extraInfo, $comparison);
     }
 
     /**

@@ -61,6 +61,7 @@
         <column name="text" type="varchar" />
         <column name="text_bg" phpName="textBg" type="varchar" />
         <column name="text_bg_added" type="timestamp" phpName="textBgAdded"/>
+        <column name="extra_info" type="varchar" phpName="extraInfo" />
 
         <column name="send_by" phpName="sendBy" type="integer" />
         <foreign-key foreignTable="user">

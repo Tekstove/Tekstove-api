@@ -34,7 +34,7 @@ class PermissionGroupPermissionTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'src..Tekstove.ApiBundle.Model.Acl.Map.PermissionGroupPermissionTableMap';
+    const CLASS_NAME = 'Tekstove.ApiBundle.Model.Acl.Map.PermissionGroupPermissionTableMap';
 
     /**
      * The default database name for this class
@@ -54,7 +54,7 @@ class PermissionGroupPermissionTableMap extends TableMap
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'src..Tekstove.ApiBundle.Model.Acl.PermissionGroupPermission';
+    const CLASS_DEFAULT = 'Tekstove.ApiBundle.Model.Acl.PermissionGroupPermission';
 
     /**
      * The total number of columns
@@ -128,7 +128,7 @@ class PermissionGroupPermissionTableMap extends TableMap
         $this->setPhpName('PermissionGroupPermission');
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Acl\\PermissionGroupPermission');
-        $this->setPackage('src..Tekstove.ApiBundle.Model.Acl');
+        $this->setPackage('Tekstove.ApiBundle.Model.Acl');
         $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('group_id', 'GroupId', 'INTEGER' , 'permission_group', 'id', true, null, null);

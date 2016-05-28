@@ -34,7 +34,7 @@ class LyricTranslationTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'src..Tekstove.ApiBundle.Model.Lyric.Map.LyricTranslationTableMap';
+    const CLASS_NAME = 'Tekstove.ApiBundle.Model.Lyric.Map.LyricTranslationTableMap';
 
     /**
      * The default database name for this class
@@ -54,7 +54,7 @@ class LyricTranslationTableMap extends TableMap
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'src..Tekstove.ApiBundle.Model.Lyric.LyricTranslation';
+    const CLASS_DEFAULT = 'Tekstove.ApiBundle.Model.Lyric.LyricTranslation';
 
     /**
      * The total number of columns
@@ -138,7 +138,7 @@ class LyricTranslationTableMap extends TableMap
         $this->setPhpName('LyricTranslation');
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricTranslation');
-        $this->setPackage('src..Tekstove.ApiBundle.Model.Lyric');
+        $this->setPackage('Tekstove.ApiBundle.Model.Lyric');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);

@@ -26,8 +26,8 @@ use Tekstove\ApiBundle\Model\Acl\Map\PermissionTableMap;
  *
  *
  *
-* @package    propel.generator.src..Tekstove.ApiBundle.Model.Acl.Base
-*/
+ * @package    propel.generator.Tekstove.ApiBundle.Model.Acl.Base
+ */
 abstract class Permission implements ActiveRecordInterface
 {
     /**

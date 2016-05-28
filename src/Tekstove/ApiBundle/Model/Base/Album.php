@@ -25,8 +25,8 @@ use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
  *
  *
  *
-* @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
-*/
+ * @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
+ */
 abstract class Album implements ActiveRecordInterface
 {
     /**

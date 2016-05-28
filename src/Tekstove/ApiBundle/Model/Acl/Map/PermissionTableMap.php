@@ -34,7 +34,7 @@ class PermissionTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'src..Tekstove.ApiBundle.Model.Acl.Map.PermissionTableMap';
+    const CLASS_NAME = 'Tekstove.ApiBundle.Model.Acl.Map.PermissionTableMap';
 
     /**
      * The default database name for this class
@@ -54,7 +54,7 @@ class PermissionTableMap extends TableMap
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'src..Tekstove.ApiBundle.Model.Acl.Permission';
+    const CLASS_DEFAULT = 'Tekstove.ApiBundle.Model.Acl.Permission';
 
     /**
      * The total number of columns
@@ -133,7 +133,7 @@ class PermissionTableMap extends TableMap
         $this->setPhpName('Permission');
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Acl\\Permission');
-        $this->setPackage('src..Tekstove.ApiBundle.Model.Acl');
+        $this->setPackage('Tekstove.ApiBundle.Model.Acl');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);

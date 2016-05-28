@@ -57,8 +57,8 @@ use Tekstove\ApiBundle\Model\Map\UserTableMap;
  *
  *
  *
-* @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
-*/
+ * @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
+ */
 abstract class User implements ActiveRecordInterface
 {
     /**

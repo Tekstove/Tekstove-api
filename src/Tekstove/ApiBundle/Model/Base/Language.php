@@ -29,8 +29,8 @@ use Tekstove\ApiBundle\Model\Map\LanguageTableMap;
  *
  *
  *
-* @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
-*/
+ * @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
+ */
 abstract class Language implements ActiveRecordInterface
 {
     /**

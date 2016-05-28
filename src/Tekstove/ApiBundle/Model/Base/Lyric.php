@@ -54,8 +54,8 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  *
  *
  *
-* @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
-*/
+ * @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
+ */
 abstract class Lyric implements ActiveRecordInterface
 {
     /**

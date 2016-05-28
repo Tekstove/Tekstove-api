@@ -25,8 +25,8 @@ use Tekstove\ApiBundle\Model\Acl\Map\PermissionGroupPermissionTableMap;
  *
  *
  *
-* @package    propel.generator.src..Tekstove.ApiBundle.Model.Acl.Base
-*/
+ * @package    propel.generator.Tekstove.ApiBundle.Model.Acl.Base
+ */
 abstract class PermissionGroupPermission implements ActiveRecordInterface
 {
     /**

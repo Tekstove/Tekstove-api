@@ -12,9 +12,14 @@ class TekstoveApiPropelModelFixCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
+        $desctiption = 'When entity namespace is explicity set.' .
+                'Then source is generated in root.' .
+                'This fix the issue'
+        ;
+        
         $this
             ->setName('tekstoveApi:propelModelFix')
-            ->setDescription('Fix propel model generation bug')
+            ->setDescription($desctiption)
         ;
     }
 

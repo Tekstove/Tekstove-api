@@ -23,10 +23,27 @@ class TekstoveApiPropelModelFixCommand extends ContainerAwareCommand
         $dir = __DIR__ . '/../../../../';
         $projectHome = realpath($dir);
         $output->writeln($projectHome);
+        
         $finder = new \Symfony\Component\Finder\Finder();
         $finder->in($projectHome . '/Tekstove');
         $finder->name('*.php');
         $finder->path('/\/Base\//')->path('/\/Map\//');
+        
+        $this->handleFinder($finder, $output, $projectHome);
+        
+        $finderNewFiles = new \Symfony\Component\Finder\Finder();
+        $finderNewFiles->in($projectHome . '/Tekstove');
+        $finderNewFiles->name('*.php');
+        $this->handleFinder($finderNewFiles, $output, $projectHome, false);
+        
+        
+        $fs = new \Symfony\Component\Filesystem\Filesystem();
+        $fs->remove($projectHome . '/Tekstove');
+        $output->writeln('<info>Command result.</info>');
+    }
+    
+    private function handleFinder($finder, $output, $projectHome, $replace = true)
+    {
         $files = $finder->files();
         
         $replaceBasePath = $projectHome .  '/src/';
@@ -44,19 +61,27 @@ class TekstoveApiPropelModelFixCommand extends ContainerAwareCommand
             
             $replacePath = $replaceBasePath . $relativePath;
             if (is_file($replacePath)) {
-                $output->writeln("<comment>{$replacePath} will be replaced</comment>");
+                if ($replace) {
+                    $output->writeln("<comment>{$replacePath} will be replaced</comment>");
+                    $this->moveFile($path, $replacePath);
+                } elseif ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
+                    $output->writeln("Skipping {$replacePath}");
+                }
             } else {
                 $output->writeln("<info>{$replacePath} will be created</info>");
+                $this->moveFile($path, $replacePath);
             }
-            
-            $fileDir = dirname($replacePath);
-            if (!$fs->exists($fileDir)) {
-                $fs->mkdir($fileDir);
-            }
-            $fs->rename($path, $replacePath, true);
         }
+    }
+    
+    protected function moveFile($original, $destination)
+    {
+        $fs = new \Symfony\Component\Filesystem\Filesystem;
         
-        $fs->remove($projectHome . '/Tekstove');
-        $output->writeln('<info>Command result.</info>');
+        $fileDir = dirname($destination);
+        if (!$fs->exists($fileDir)) {
+            $fs->mkdir($fileDir);
+        }
+        $fs->rename($original, $destination, true);
     }
 }

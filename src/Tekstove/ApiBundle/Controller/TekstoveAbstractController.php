@@ -95,6 +95,9 @@ class TekstoveAbstractController extends FOSRestController
                 case 'in':
                     $data->{$filterMethod}($value, Criteria::IN);
                     break;
+                case 'like':
+                    $data->{$filterMethod}("%{$value}%", Criteria::LIKE);
+                    break;
                 default:
                     throw new \Exception("Unknown operator {$operator}");
             }

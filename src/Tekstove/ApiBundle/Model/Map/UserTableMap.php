@@ -156,7 +156,7 @@ class UserTableMap extends TableMap
         // attributes
         $this->setName('user');
         $this->setPhpName('User');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\User');
         $this->setPackage('src.Tekstove.ApiBundle.Model');
         $this->setUseIdGenerator(true);

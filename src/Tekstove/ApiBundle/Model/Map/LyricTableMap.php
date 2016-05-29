@@ -191,7 +191,7 @@ class LyricTableMap extends TableMap
         // attributes
         $this->setName('lyric');
         $this->setPhpName('Lyric');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Lyric');
         $this->setPackage('src.Tekstove.ApiBundle.Model');
         $this->setUseIdGenerator(true);

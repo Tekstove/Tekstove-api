@@ -5,6 +5,8 @@ namespace Tekstove\ApiBundle\Controller;
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
+use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\Artist\ArtistLyric;
 
 use Potaka\Helper\Casing\CaseHelper;
 
@@ -69,6 +71,7 @@ class LyricController extends Controller
         $repo = $this->get('tekstove.lyric.repository');
         /* @var $repo \Tekstove\ApiBundle\Model\Lyric\LyricRepository */
         $lyricQuery = new LyricQuery();
+        /* @var $lyric Lyric */
         $lyric = $lyricQuery->findOneById($id);
         
         // @OTO change to real patch!
@@ -83,7 +86,8 @@ class LyricController extends Controller
             $allowedFields = $user->getAllowedLyricFields($lyric);
             
             $caseHelper = new CaseHelper();
-            $pathData = json_decode($request->getContent(), true);
+            $content = $request->getContent();
+            $pathData = json_decode($content, true);
             foreach ($allowedFields as $field) {
                 foreach ($pathData as $path) {
                     switch ($path['op']) {
@@ -92,7 +96,43 @@ class LyricController extends Controller
                                 $bumpyCase = $caseHelper->bumpyCase($field);
                                 $setter = 'set' . $bumpyCase;
                                 $value = $path['value'];
-                                $lyric->{$setter}($value);
+                                if (is_array($value)) {
+                                    if ($field === 'artists') {
+                                        $artistLyrics = new \Propel\Runtime\Collection\Collection();
+                                        $artistOrder = 1;
+                                        foreach ($value as $artistId) {
+                                            $artistQuery = new \Tekstove\ApiBundle\Model\ArtistQuery();
+                                            $artist = $artistQuery->findOneById($artistId);
+                                            if ($artist === null) {
+                                                throw new \Exception("Can not find artist #{$artistId}");
+                                            }
+                                            $artistFound = false;
+                                            foreach ($lyric->getArtistLyrics() as $artistLyricExisting) {
+                                                if ($artistLyricExisting->getLyric()->getId() == $lyric->getId()
+                                                        && $artistLyricExisting->getArtist()->getId() == $artistId) {
+                                                    $artistLyricExisting->setOrder($artistOrder);
+                                                    $artistLyrics->append($artistLyricExisting);
+                                                    $artistFound = true;
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            if (!$artistFound) {
+                                                $artistLyric = new ArtistLyric();
+                                                $artistLyric->setLyric($lyric);
+                                                $artistLyric->setArtist($artist);
+                                                $artistLyric->setOrder($artistOrder);
+                                                $artistLyrics->append($artistLyric);
+                                            }
+                                            $artistOrder++;
+                                        }
+                                        $lyric->setArtistLyrics($artistLyrics);
+                                    } else {
+                                        throw new \Exception("not implemented");
+                                    }
+                                } else {
+                                    $lyric->{$setter}($value);
+                                }
                             }
                             break;
                         default:

@@ -170,7 +170,7 @@ abstract class PermissionGroupUserQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT user_id, group_id FROM permission_group_user WHERE user_id = :p0 AND group_id = :p1';
+        $sql = 'SELECT `user_id`, `group_id` FROM `permission_group_user` WHERE `user_id` = :p0 AND `group_id` = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);

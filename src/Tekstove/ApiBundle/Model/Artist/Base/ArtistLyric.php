@@ -698,17 +698,17 @@ abstract class ArtistLyric implements ActiveRecordInterface
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(ArtistLyricTableMap::COL_LYRIC_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'lyric_id';
+            $modifiedColumns[':p' . $index++]  = '`lyric_id`';
         }
         if ($this->isColumnModified(ArtistLyricTableMap::COL_ARTIST_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'artist_id';
+            $modifiedColumns[':p' . $index++]  = '`artist_id`';
         }
         if ($this->isColumnModified(ArtistLyricTableMap::COL_ORDER)) {
-            $modifiedColumns[':p' . $index++]  = 'order';
+            $modifiedColumns[':p' . $index++]  = '`order`';
         }
 
         $sql = sprintf(
-            'INSERT INTO artist_lyric (%s) VALUES (%s)',
+            'INSERT INTO `artist_lyric` (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -717,13 +717,13 @@ abstract class ArtistLyric implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'lyric_id':
+                    case '`lyric_id`':
                         $stmt->bindValue($identifier, $this->lyric_id, PDO::PARAM_INT);
                         break;
-                    case 'artist_id':
+                    case '`artist_id`':
                         $stmt->bindValue($identifier, $this->artist_id, PDO::PARAM_INT);
                         break;
-                    case 'order':
+                    case '`order`':
                         $stmt->bindValue($identifier, $this->order, PDO::PARAM_INT);
                         break;
                 }

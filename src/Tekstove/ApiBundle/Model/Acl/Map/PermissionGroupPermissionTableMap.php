@@ -126,7 +126,7 @@ class PermissionGroupPermissionTableMap extends TableMap
         // attributes
         $this->setName('permission_group_permission');
         $this->setPhpName('PermissionGroupPermission');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Acl\\PermissionGroupPermission');
         $this->setPackage('Tekstove.ApiBundle.Model.Acl');
         $this->setUseIdGenerator(false);

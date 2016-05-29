@@ -131,7 +131,7 @@ class PermissionTableMap extends TableMap
         // attributes
         $this->setName('permission');
         $this->setPhpName('Permission');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Acl\\Permission');
         $this->setPackage('Tekstove.ApiBundle.Model.Acl');
         $this->setUseIdGenerator(true);

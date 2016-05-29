@@ -131,7 +131,7 @@ class LyricVoteTableMap extends TableMap
         // attributes
         $this->setName('lyric_vote');
         $this->setPhpName('LyricVote');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricVote');
         $this->setPackage('Tekstove.ApiBundle.Model.Lyric');
         $this->setUseIdGenerator(true);

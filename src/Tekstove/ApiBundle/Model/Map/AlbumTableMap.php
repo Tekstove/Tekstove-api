@@ -141,7 +141,7 @@ class AlbumTableMap extends TableMap
         // attributes
         $this->setName('album');
         $this->setPhpName('Album');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Album');
         $this->setPackage('src.Tekstove.ApiBundle.Model');
         $this->setUseIdGenerator(true);

@@ -1095,32 +1095,32 @@ abstract class User implements ActiveRecordInterface
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(UserTableMap::COL_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'id';
+            $modifiedColumns[':p' . $index++]  = '`id`';
         }
         if ($this->isColumnModified(UserTableMap::COL_USERNAME)) {
-            $modifiedColumns[':p' . $index++]  = 'username';
+            $modifiedColumns[':p' . $index++]  = '`username`';
         }
         if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
-            $modifiedColumns[':p' . $index++]  = 'password';
+            $modifiedColumns[':p' . $index++]  = '`password`';
         }
         if ($this->isColumnModified(UserTableMap::COL_API_KEY)) {
-            $modifiedColumns[':p' . $index++]  = 'api_key';
+            $modifiedColumns[':p' . $index++]  = '`api_key`';
         }
         if ($this->isColumnModified(UserTableMap::COL_MAIL)) {
-            $modifiedColumns[':p' . $index++]  = 'mail';
+            $modifiedColumns[':p' . $index++]  = '`mail`';
         }
         if ($this->isColumnModified(UserTableMap::COL_AVATAR)) {
-            $modifiedColumns[':p' . $index++]  = 'avatar';
+            $modifiedColumns[':p' . $index++]  = '`avatar`';
         }
         if ($this->isColumnModified(UserTableMap::COL_ABOUT)) {
-            $modifiedColumns[':p' . $index++]  = 'about';
+            $modifiedColumns[':p' . $index++]  = '`about`';
         }
         if ($this->isColumnModified(UserTableMap::COL_AUTOPLAY)) {
-            $modifiedColumns[':p' . $index++]  = 'autoplay';
+            $modifiedColumns[':p' . $index++]  = '`autoplay`';
         }
 
         $sql = sprintf(
-            'INSERT INTO user (%s) VALUES (%s)',
+            'INSERT INTO `user` (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -1129,28 +1129,28 @@ abstract class User implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'id':
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'username':
+                    case '`username`':
                         $stmt->bindValue($identifier, $this->username, PDO::PARAM_STR);
                         break;
-                    case 'password':
+                    case '`password`':
                         $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
                         break;
-                    case 'api_key':
+                    case '`api_key`':
                         $stmt->bindValue($identifier, $this->api_key, PDO::PARAM_STR);
                         break;
-                    case 'mail':
+                    case '`mail`':
                         $stmt->bindValue($identifier, $this->mail, PDO::PARAM_STR);
                         break;
-                    case 'avatar':
+                    case '`avatar`':
                         $stmt->bindValue($identifier, $this->avatar, PDO::PARAM_STR);
                         break;
-                    case 'about':
+                    case '`about`':
                         $stmt->bindValue($identifier, $this->about, PDO::PARAM_STR);
                         break;
-                    case 'autoplay':
+                    case '`autoplay`':
                         $stmt->bindValue($identifier, $this->autoplay, PDO::PARAM_INT);
                         break;
                 }

@@ -136,7 +136,7 @@ class LyricTranslationTableMap extends TableMap
         // attributes
         $this->setName('lyric_translation');
         $this->setPhpName('LyricTranslation');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricTranslation');
         $this->setPackage('Tekstove.ApiBundle.Model.Lyric');
         $this->setUseIdGenerator(true);

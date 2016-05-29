@@ -176,7 +176,7 @@ abstract class ArtistLyricQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT lyric_id, artist_id, order FROM artist_lyric WHERE lyric_id = :p0 AND artist_id = :p1';
+        $sql = 'SELECT `lyric_id`, `artist_id`, `order` FROM `artist_lyric` WHERE `lyric_id` = :p0 AND `artist_id` = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);

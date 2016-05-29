@@ -171,7 +171,7 @@ abstract class LyricLanguageQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT lyric_id, language_id FROM lyric_language WHERE lyric_id = :p0 AND language_id = :p1';
+        $sql = 'SELECT `lyric_id`, `language_id` FROM `lyric_language` WHERE `lyric_id` = :p0 AND `language_id` = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);

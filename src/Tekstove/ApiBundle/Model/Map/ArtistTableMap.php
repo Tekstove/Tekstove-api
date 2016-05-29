@@ -131,7 +131,7 @@ class ArtistTableMap extends TableMap
         // attributes
         $this->setName('artist');
         $this->setPhpName('Artist');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Artist');
         $this->setPackage('src.Tekstove.ApiBundle.Model');
         $this->setUseIdGenerator(true);

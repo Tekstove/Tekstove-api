@@ -760,23 +760,23 @@ abstract class Album implements ActiveRecordInterface
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(AlbumTableMap::COL_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'id';
+            $modifiedColumns[':p' . $index++]  = '`id`';
         }
         if ($this->isColumnModified(AlbumTableMap::COL_NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'name';
+            $modifiedColumns[':p' . $index++]  = '`name`';
         }
         if ($this->isColumnModified(AlbumTableMap::COL_YEAR)) {
-            $modifiedColumns[':p' . $index++]  = 'year';
+            $modifiedColumns[':p' . $index++]  = '`year`';
         }
         if ($this->isColumnModified(AlbumTableMap::COL_IMAGE)) {
-            $modifiedColumns[':p' . $index++]  = 'image';
+            $modifiedColumns[':p' . $index++]  = '`image`';
         }
         if ($this->isColumnModified(AlbumTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
+            $modifiedColumns[':p' . $index++]  = '`user_id`';
         }
 
         $sql = sprintf(
-            'INSERT INTO album (%s) VALUES (%s)',
+            'INSERT INTO `album` (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -785,19 +785,19 @@ abstract class Album implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'id':
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'name':
+                    case '`name`':
                         $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
                         break;
-                    case 'year':
+                    case '`year`':
                         $stmt->bindValue($identifier, $this->year, PDO::PARAM_INT);
                         break;
-                    case 'image':
+                    case '`image`':
                         $stmt->bindValue($identifier, $this->image, PDO::PARAM_STR);
                         break;
-                    case 'user_id':
+                    case '`user_id`':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                 }

@@ -126,7 +126,7 @@ class LyricLanguageTableMap extends TableMap
         // attributes
         $this->setName('lyric_language');
         $this->setPhpName('LyricLanguage');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricLanguage');
         $this->setPackage('Tekstove.ApiBundle.Model.Lyric');
         $this->setUseIdGenerator(false);

@@ -658,14 +658,14 @@ abstract class LyricLanguage implements ActiveRecordInterface
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(LyricLanguageTableMap::COL_LYRIC_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'lyric_id';
+            $modifiedColumns[':p' . $index++]  = '`lyric_id`';
         }
         if ($this->isColumnModified(LyricLanguageTableMap::COL_LANGUAGE_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'language_id';
+            $modifiedColumns[':p' . $index++]  = '`language_id`';
         }
 
         $sql = sprintf(
-            'INSERT INTO lyric_language (%s) VALUES (%s)',
+            'INSERT INTO `lyric_language` (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -674,10 +674,10 @@ abstract class LyricLanguage implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'lyric_id':
+                    case '`lyric_id`':
                         $stmt->bindValue($identifier, $this->lyric_id, PDO::PARAM_INT);
                         break;
-                    case 'language_id':
+                    case '`language_id`':
                         $stmt->bindValue($identifier, $this->language_id, PDO::PARAM_INT);
                         break;
                 }

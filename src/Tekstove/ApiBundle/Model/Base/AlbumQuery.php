@@ -174,7 +174,7 @@ abstract class AlbumQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, name, year, image, user_id FROM album WHERE id = :p0';
+        $sql = 'SELECT `id`, `name`, `year`, `image`, `user_id` FROM `album` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);

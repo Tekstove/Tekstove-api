@@ -126,7 +126,7 @@ class LanguageTableMap extends TableMap
         // attributes
         $this->setName('language');
         $this->setPhpName('Language');
-        $this->setIdentifierQuoting(false);
+        $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Language');
         $this->setPackage('src.Tekstove.ApiBundle.Model');
         $this->setUseIdGenerator(true);

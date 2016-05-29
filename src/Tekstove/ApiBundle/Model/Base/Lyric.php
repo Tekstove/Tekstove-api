@@ -1443,53 +1443,53 @@ abstract class Lyric implements ActiveRecordInterface
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(LyricTableMap::COL_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'id';
+            $modifiedColumns[':p' . $index++]  = '`id`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_TITLE)) {
-            $modifiedColumns[':p' . $index++]  = 'title';
+            $modifiedColumns[':p' . $index++]  = '`title`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_TEXT)) {
-            $modifiedColumns[':p' . $index++]  = 'text';
+            $modifiedColumns[':p' . $index++]  = '`text`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_TEXT_BG)) {
-            $modifiedColumns[':p' . $index++]  = 'text_bg';
+            $modifiedColumns[':p' . $index++]  = '`text_bg`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_TEXT_BG_ADDED)) {
-            $modifiedColumns[':p' . $index++]  = 'text_bg_added';
+            $modifiedColumns[':p' . $index++]  = '`text_bg_added`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_EXTRA_INFO)) {
-            $modifiedColumns[':p' . $index++]  = 'extra_info';
+            $modifiedColumns[':p' . $index++]  = '`extra_info`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_SEND_BY)) {
-            $modifiedColumns[':p' . $index++]  = 'send_by';
+            $modifiedColumns[':p' . $index++]  = '`send_by`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_TITLE_SHORT)) {
-            $modifiedColumns[':p' . $index++]  = 'cache_title_short';
+            $modifiedColumns[':p' . $index++]  = '`cache_title_short`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_VIEWS)) {
-            $modifiedColumns[':p' . $index++]  = 'views';
+            $modifiedColumns[':p' . $index++]  = '`views`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_POPULARITY)) {
-            $modifiedColumns[':p' . $index++]  = 'popularity';
+            $modifiedColumns[':p' . $index++]  = '`popularity`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_VOTES_COUNT)) {
-            $modifiedColumns[':p' . $index++]  = 'votes_count';
+            $modifiedColumns[':p' . $index++]  = '`votes_count`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_VIDEO_YOUTUBE)) {
-            $modifiedColumns[':p' . $index++]  = 'video_youtube';
+            $modifiedColumns[':p' . $index++]  = '`video_youtube`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_VIDEO_VBOX7)) {
-            $modifiedColumns[':p' . $index++]  = 'video_vbox7';
+            $modifiedColumns[':p' . $index++]  = '`video_vbox7`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_VIDEO_METACAFE)) {
-            $modifiedColumns[':p' . $index++]  = 'video_metacafe';
+            $modifiedColumns[':p' . $index++]  = '`video_metacafe`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_DOWNLOAD)) {
-            $modifiedColumns[':p' . $index++]  = 'download';
+            $modifiedColumns[':p' . $index++]  = '`download`';
         }
 
         $sql = sprintf(
-            'INSERT INTO lyric (%s) VALUES (%s)',
+            'INSERT INTO `lyric` (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -1498,49 +1498,49 @@ abstract class Lyric implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'id':
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'title':
+                    case '`title`':
                         $stmt->bindValue($identifier, $this->title, PDO::PARAM_STR);
                         break;
-                    case 'text':
+                    case '`text`':
                         $stmt->bindValue($identifier, $this->text, PDO::PARAM_STR);
                         break;
-                    case 'text_bg':
+                    case '`text_bg`':
                         $stmt->bindValue($identifier, $this->text_bg, PDO::PARAM_STR);
                         break;
-                    case 'text_bg_added':
+                    case '`text_bg_added`':
                         $stmt->bindValue($identifier, $this->text_bg_added ? $this->text_bg_added->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
-                    case 'extra_info':
+                    case '`extra_info`':
                         $stmt->bindValue($identifier, $this->extra_info, PDO::PARAM_STR);
                         break;
-                    case 'send_by':
+                    case '`send_by`':
                         $stmt->bindValue($identifier, $this->send_by, PDO::PARAM_INT);
                         break;
-                    case 'cache_title_short':
+                    case '`cache_title_short`':
                         $stmt->bindValue($identifier, $this->cache_title_short, PDO::PARAM_STR);
                         break;
-                    case 'views':
+                    case '`views`':
                         $stmt->bindValue($identifier, $this->views, PDO::PARAM_INT);
                         break;
-                    case 'popularity':
+                    case '`popularity`':
                         $stmt->bindValue($identifier, $this->popularity, PDO::PARAM_INT);
                         break;
-                    case 'votes_count':
+                    case '`votes_count`':
                         $stmt->bindValue($identifier, $this->votes_count, PDO::PARAM_INT);
                         break;
-                    case 'video_youtube':
+                    case '`video_youtube`':
                         $stmt->bindValue($identifier, $this->video_youtube, PDO::PARAM_STR);
                         break;
-                    case 'video_vbox7':
+                    case '`video_vbox7`':
                         $stmt->bindValue($identifier, $this->video_vbox7, PDO::PARAM_STR);
                         break;
-                    case 'video_metacafe':
+                    case '`video_metacafe`':
                         $stmt->bindValue($identifier, $this->video_metacafe, PDO::PARAM_STR);
                         break;
-                    case 'download':
+                    case '`download`':
                         $stmt->bindValue($identifier, $this->download, PDO::PARAM_STR);
                         break;
                 }

@@ -268,7 +268,7 @@ abstract class LyricQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, title, text, text_bg, text_bg_added, extra_info, send_by, cache_title_short, views, popularity, votes_count, video_youtube, video_vbox7, video_metacafe, download FROM lyric WHERE id = :p0';
+        $sql = 'SELECT `id`, `title`, `text`, `text_bg`, `text_bg_added`, `extra_info`, `send_by`, `cache_title_short`, `views`, `popularity`, `votes_count`, `video_youtube`, `video_vbox7`, `video_metacafe`, `download` FROM `lyric` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);

@@ -51,6 +51,7 @@ class User extends BaseUser
     {
         $allowedFields = [
             'title',
+            'artists',
             'text',
             'extraInfo',
             'video_youtube',

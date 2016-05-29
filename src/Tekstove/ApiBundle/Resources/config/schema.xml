@@ -86,7 +86,19 @@
         </behavior>
     </table>
     
-    <table name="lyric_language" isCrossRef="true" namespace="\Tekstove\ApiBundle\Model\Lyric" >
+    <table name="artist_lyric" isCrossRef="true" namespace="\Tekstove\ApiBundle\Model\Artist">
+        <column name="lyric_id" type="integer" primaryKey="true"/>
+        <foreign-key foreignTable="lyric">
+            <reference local="lyric_id" foreign="id"/>
+        </foreign-key>
+        <column name="artist_id" type="integer" primaryKey="true"/>
+        <foreign-key foreignTable="artist">
+            <reference local="artist_id" foreign="id"/>
+        </foreign-key>
+        <column name="order" type="integer" primaryKey="false"/>
+    </table>
+    
+    <table name="lyric_language" isCrossRef="true" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="lyric_id" type="integer" primaryKey="true"/>
         <column name="language_id" type="integer" primaryKey="true"/>
         <foreign-key foreignTable="lyric">
@@ -97,7 +109,7 @@
         </foreign-key>
     </table>
     
-    <table name="lyric_translation" namespace="\Tekstove\ApiBundle\Model\Lyric" >
+    <table name="lyric_translation" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
         <column name="lyric_id" type="integer"/>
         <column name="user_id" type="integer"/>

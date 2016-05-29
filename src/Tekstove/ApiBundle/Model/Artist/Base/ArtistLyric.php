@@ -15,6 +15,10 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Tekstove\ApiBundle\Model\Artist;
+use Tekstove\ApiBundle\Model\ArtistQuery;
+use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\LyricQuery;
 use Tekstove\ApiBundle\Model\Artist\ArtistLyricQuery as ChildArtistLyricQuery;
 use Tekstove\ApiBundle\Model\Artist\Map\ArtistLyricTableMap;
 
@@ -79,6 +83,16 @@ abstract class ArtistLyric implements ActiveRecordInterface
      * @var        int
      */
     protected $order;
+
+    /**
+     * @var        Lyric
+     */
+    protected $aLyric;
+
+    /**
+     * @var        Artist
+     */
+    protected $aArtist;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -360,6 +374,10 @@ abstract class ArtistLyric implements ActiveRecordInterface
             $this->modifiedColumns[ArtistLyricTableMap::COL_LYRIC_ID] = true;
         }
 
+        if ($this->aLyric !== null && $this->aLyric->getId() !== $v) {
+            $this->aLyric = null;
+        }
+
         return $this;
     } // setLyricId()
 
@@ -378,6 +396,10 @@ abstract class ArtistLyric implements ActiveRecordInterface
         if ($this->artist_id !== $v) {
             $this->artist_id = $v;
             $this->modifiedColumns[ArtistLyricTableMap::COL_ARTIST_ID] = true;
+        }
+
+        if ($this->aArtist !== null && $this->aArtist->getId() !== $v) {
+            $this->aArtist = null;
         }
 
         return $this;
@@ -477,6 +499,12 @@ abstract class ArtistLyric implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aLyric !== null && $this->lyric_id !== $this->aLyric->getId()) {
+            $this->aLyric = null;
+        }
+        if ($this->aArtist !== null && $this->artist_id !== $this->aArtist->getId()) {
+            $this->aArtist = null;
+        }
     } // ensureConsistency
 
     /**
@@ -516,6 +544,8 @@ abstract class ArtistLyric implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aLyric = null;
+            $this->aArtist = null;
         } // if (deep)
     }
 
@@ -614,6 +644,25 @@ abstract class ArtistLyric implements ActiveRecordInterface
         $affectedRows = 0; // initialize var to track total num of affected rows
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
+
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aLyric !== null) {
+                if ($this->aLyric->isModified() || $this->aLyric->isNew()) {
+                    $affectedRows += $this->aLyric->save($con);
+                }
+                $this->setLyric($this->aLyric);
+            }
+
+            if ($this->aArtist !== null) {
+                if ($this->aArtist->isModified() || $this->aArtist->isNew()) {
+                    $affectedRows += $this->aArtist->save($con);
+                }
+                $this->setArtist($this->aArtist);
+            }
 
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
@@ -758,10 +807,11 @@ abstract class ArtistLyric implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
         if (isset($alreadyDumpedObjects['ArtistLyric'][$this->hashCode()])) {
@@ -779,6 +829,38 @@ abstract class ArtistLyric implements ActiveRecordInterface
             $result[$key] = $virtualColumn;
         }
 
+        if ($includeForeignObjects) {
+            if (null !== $this->aLyric) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'lyric';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'lyric';
+                        break;
+                    default:
+                        $key = 'Lyric';
+                }
+
+                $result[$key] = $this->aLyric->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aArtist) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'artist';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'artist';
+                        break;
+                    default:
+                        $key = 'Artist';
+                }
+
+                $result[$key] = $this->aArtist->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+        }
 
         return $result;
     }
@@ -940,8 +1022,22 @@ abstract class ArtistLyric implements ActiveRecordInterface
         $validPk = null !== $this->getLyricId() &&
             null !== $this->getArtistId();
 
-        $validPrimaryKeyFKs = 0;
+        $validPrimaryKeyFKs = 2;
         $primaryKeyFKs = [];
+
+        //relation artist_lyric_fk_caf60d to table lyric
+        if ($this->aLyric && $hash = spl_object_hash($this->aLyric)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
+
+        //relation artist_lyric_fk_6fe112 to table artist
+        if ($this->aArtist && $hash = spl_object_hash($this->aArtist)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1031,12 +1127,120 @@ abstract class ArtistLyric implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a Lyric object.
+     *
+     * @param  Lyric $v
+     * @return $this|\Tekstove\ApiBundle\Model\Artist\ArtistLyric The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setLyric(Lyric $v = null)
+    {
+        if ($v === null) {
+            $this->setLyricId(NULL);
+        } else {
+            $this->setLyricId($v->getId());
+        }
+
+        $this->aLyric = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the Lyric object, it will not be re-added.
+        if ($v !== null) {
+            $v->addArtistLyric($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated Lyric object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return Lyric The associated Lyric object.
+     * @throws PropelException
+     */
+    public function getLyric(ConnectionInterface $con = null)
+    {
+        if ($this->aLyric === null && ($this->lyric_id !== null)) {
+            $this->aLyric = LyricQuery::create()->findPk($this->lyric_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aLyric->addArtistLyrics($this);
+             */
+        }
+
+        return $this->aLyric;
+    }
+
+    /**
+     * Declares an association between this object and a Artist object.
+     *
+     * @param  Artist $v
+     * @return $this|\Tekstove\ApiBundle\Model\Artist\ArtistLyric The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setArtist(Artist $v = null)
+    {
+        if ($v === null) {
+            $this->setArtistId(NULL);
+        } else {
+            $this->setArtistId($v->getId());
+        }
+
+        $this->aArtist = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the Artist object, it will not be re-added.
+        if ($v !== null) {
+            $v->addArtistLyric($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated Artist object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return Artist The associated Artist object.
+     * @throws PropelException
+     */
+    public function getArtist(ConnectionInterface $con = null)
+    {
+        if ($this->aArtist === null && ($this->artist_id !== null)) {
+            $this->aArtist = ArtistQuery::create()->findPk($this->artist_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aArtist->addArtistLyrics($this);
+             */
+        }
+
+        return $this->aArtist;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
+        if (null !== $this->aLyric) {
+            $this->aLyric->removeArtistLyric($this);
+        }
+        if (null !== $this->aArtist) {
+            $this->aArtist->removeArtistLyric($this);
+        }
         $this->lyric_id = null;
         $this->artist_id = null;
         $this->order = null;
@@ -1060,6 +1264,8 @@ abstract class ArtistLyric implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aLyric = null;
+        $this->aArtist = null;
     }
 
     /**

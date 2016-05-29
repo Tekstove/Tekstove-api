@@ -4,5 +4,7 @@
     read_only: true
     virtual_properties:
         acl:
-            expose: true
             groups: [Acl]
+        getOrderedArtists:
+            groups: [Details]
+            serialized_name: artists

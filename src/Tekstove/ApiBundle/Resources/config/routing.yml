@@ -52,3 +52,8 @@ tekstove_api_lyric_patch:
 tekstove_api_languages:
     path: /languages
     defaults: { _controller: TekstoveApiBundle:Language\Languages:index }
+    
+tekstove_api_artist:
+    path: "/artists"
+    defaults: { _controller: TekstoveApiBundle:Artist:index }
+    methods: [GET]

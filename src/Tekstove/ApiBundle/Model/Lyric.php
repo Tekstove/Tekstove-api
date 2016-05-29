@@ -63,4 +63,30 @@ class Lyric extends BaseLyric
         $event = new LyricEvent($lyric);
         $this->getEventDispacher()->dispatch('tekstove.lyric.save', $event);
     }
+    
+    /**
+     *
+     * @return array
+     */
+    public function getOrderedArtists()
+    {
+        $return = [];
+        foreach ($this->getArtistLyrics() as $artistLyric) {
+            $artist = $artistLyric->getArtist();
+            $return[] = [
+                'id' => $artist->getId(),
+                'name' => $artist->getName(),
+                'order' => $artistLyric->getOrder(),
+            ];
+        }
+        
+        uasort(
+            $return,
+            function ($a, $b) {
+                return $a['order'] > $b['order'];
+            }
+        );
+        
+        return $return;
+    }
 }

@@ -7,9 +7,12 @@ use \PDO;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
+use Propel\Runtime\ActiveQuery\ModelJoin;
 use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
+use Tekstove\ApiBundle\Model\Artist;
+use Tekstove\ApiBundle\Model\Lyric;
 use Tekstove\ApiBundle\Model\Artist\ArtistLyric as ChildArtistLyric;
 use Tekstove\ApiBundle\Model\Artist\ArtistLyricQuery as ChildArtistLyricQuery;
 use Tekstove\ApiBundle\Model\Artist\Map\ArtistLyricTableMap;
@@ -34,6 +37,28 @@ use Tekstove\ApiBundle\Model\Artist\Map\ArtistLyricTableMap;
  * @method     ChildArtistLyricQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
  * @method     ChildArtistLyricQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildArtistLyricQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
+ * @method     ChildArtistLyricQuery leftJoinLyric($relationAlias = null) Adds a LEFT JOIN clause to the query using the Lyric relation
+ * @method     ChildArtistLyricQuery rightJoinLyric($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Lyric relation
+ * @method     ChildArtistLyricQuery innerJoinLyric($relationAlias = null) Adds a INNER JOIN clause to the query using the Lyric relation
+ *
+ * @method     ChildArtistLyricQuery joinWithLyric($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Lyric relation
+ *
+ * @method     ChildArtistLyricQuery leftJoinWithLyric() Adds a LEFT JOIN clause and with to the query using the Lyric relation
+ * @method     ChildArtistLyricQuery rightJoinWithLyric() Adds a RIGHT JOIN clause and with to the query using the Lyric relation
+ * @method     ChildArtistLyricQuery innerJoinWithLyric() Adds a INNER JOIN clause and with to the query using the Lyric relation
+ *
+ * @method     ChildArtistLyricQuery leftJoinArtist($relationAlias = null) Adds a LEFT JOIN clause to the query using the Artist relation
+ * @method     ChildArtistLyricQuery rightJoinArtist($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Artist relation
+ * @method     ChildArtistLyricQuery innerJoinArtist($relationAlias = null) Adds a INNER JOIN clause to the query using the Artist relation
+ *
+ * @method     ChildArtistLyricQuery joinWithArtist($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Artist relation
+ *
+ * @method     ChildArtistLyricQuery leftJoinWithArtist() Adds a LEFT JOIN clause and with to the query using the Artist relation
+ * @method     ChildArtistLyricQuery rightJoinWithArtist() Adds a RIGHT JOIN clause and with to the query using the Artist relation
+ * @method     ChildArtistLyricQuery innerJoinWithArtist() Adds a INNER JOIN clause and with to the query using the Artist relation
+ *
+ * @method     \Tekstove\ApiBundle\Model\LyricQuery|\Tekstove\ApiBundle\Model\ArtistQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildArtistLyric findOne(ConnectionInterface $con = null) Return the first ChildArtistLyric matching the query
  * @method     ChildArtistLyric findOneOrCreate(ConnectionInterface $con = null) Return the first ChildArtistLyric matching the query, or a new ChildArtistLyric object populated from the query conditions when no match is found
@@ -263,6 +288,8 @@ abstract class ArtistLyricQuery extends ModelCriteria
      * $query->filterByLyricId(array('min' => 12)); // WHERE lyric_id > 12
      * </code>
      *
+     * @see       filterByLyric()
+     *
      * @param     mixed $lyricId The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
@@ -303,6 +330,8 @@ abstract class ArtistLyricQuery extends ModelCriteria
      * $query->filterByArtistId(array(12, 34)); // WHERE artist_id IN (12, 34)
      * $query->filterByArtistId(array('min' => 12)); // WHERE artist_id > 12
      * </code>
+     *
+     * @see       filterByArtist()
      *
      * @param     mixed $artistId The value to use as filter.
      *              Use scalar values for equality.
@@ -374,6 +403,160 @@ abstract class ArtistLyricQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ArtistLyricTableMap::COL_ORDER, $order, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\Lyric object
+     *
+     * @param \Tekstove\ApiBundle\Model\Lyric|ObjectCollection $lyric The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildArtistLyricQuery The current query, for fluid interface
+     */
+    public function filterByLyric($lyric, $comparison = null)
+    {
+        if ($lyric instanceof \Tekstove\ApiBundle\Model\Lyric) {
+            return $this
+                ->addUsingAlias(ArtistLyricTableMap::COL_LYRIC_ID, $lyric->getId(), $comparison);
+        } elseif ($lyric instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ArtistLyricTableMap::COL_LYRIC_ID, $lyric->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByLyric() only accepts arguments of type \Tekstove\ApiBundle\Model\Lyric or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Lyric relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildArtistLyricQuery The current query, for fluid interface
+     */
+    public function joinLyric($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Lyric');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Lyric');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Lyric relation Lyric object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\LyricQuery A secondary query class using the current class as primary query
+     */
+    public function useLyricQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinLyric($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Lyric', '\Tekstove\ApiBundle\Model\LyricQuery');
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\Artist object
+     *
+     * @param \Tekstove\ApiBundle\Model\Artist|ObjectCollection $artist The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildArtistLyricQuery The current query, for fluid interface
+     */
+    public function filterByArtist($artist, $comparison = null)
+    {
+        if ($artist instanceof \Tekstove\ApiBundle\Model\Artist) {
+            return $this
+                ->addUsingAlias(ArtistLyricTableMap::COL_ARTIST_ID, $artist->getId(), $comparison);
+        } elseif ($artist instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ArtistLyricTableMap::COL_ARTIST_ID, $artist->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByArtist() only accepts arguments of type \Tekstove\ApiBundle\Model\Artist or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Artist relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildArtistLyricQuery The current query, for fluid interface
+     */
+    public function joinArtist($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Artist');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Artist');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Artist relation Artist object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\ArtistQuery A secondary query class using the current class as primary query
+     */
+    public function useArtistQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinArtist($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Artist', '\Tekstove\ApiBundle\Model\ArtistQuery');
     }
 
     /**

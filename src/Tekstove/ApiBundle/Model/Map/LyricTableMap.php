@@ -225,6 +225,13 @@ class LyricTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, null, false);
+        $this->addRelation('ArtistLyric', '\\Tekstove\\ApiBundle\\Model\\Artist\\ArtistLyric', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':lyric_id',
+    1 => ':id',
+  ),
+), null, null, 'ArtistLyrics', false);
         $this->addRelation('LyricLanguage', '\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricLanguage', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -246,6 +253,7 @@ class LyricTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'LyricVotes', false);
+        $this->addRelation('Artist', '\\Tekstove\\ApiBundle\\Model\\Artist', RelationMap::MANY_TO_MANY, array(), null, null, 'Artists');
         $this->addRelation('Language', '\\Tekstove\\ApiBundle\\Model\\Language', RelationMap::MANY_TO_MANY, array(), null, null, 'Languages');
     } // buildRelations()
 

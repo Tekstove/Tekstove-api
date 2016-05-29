@@ -137,8 +137,8 @@ class ArtistLyricTableMap extends TableMap
         $this->setUseIdGenerator(false);
         $this->setIsCrossRef(true);
         // columns
-        $this->addPrimaryKey('lyric_id', 'LyricId', 'INTEGER', true, null, null);
-        $this->addPrimaryKey('artist_id', 'ArtistId', 'INTEGER', true, null, null);
+        $this->addForeignPrimaryKey('lyric_id', 'LyricId', 'INTEGER' , 'lyric', 'id', true, null, null);
+        $this->addForeignPrimaryKey('artist_id', 'ArtistId', 'INTEGER' , 'artist', 'id', true, null, null);
         $this->addColumn('order', 'Order', 'INTEGER', false, null, null);
     } // initialize()
 
@@ -147,6 +147,20 @@ class ArtistLyricTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('Lyric', '\\Tekstove\\ApiBundle\\Model\\Lyric', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':lyric_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
+        $this->addRelation('Artist', '\\Tekstove\\ApiBundle\\Model\\Artist', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':artist_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
     } // buildRelations()
 
     /**

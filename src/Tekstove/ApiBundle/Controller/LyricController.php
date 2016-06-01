@@ -52,7 +52,38 @@ class LyricController extends Controller
                 $camel = $caseHelper->camelCase($field);
                 $setter = 'set' . $bumpyCase;
                 $value = $request->get($camel);
-                $lyric->{$setter}($value);
+                if ($setter == 'setArtists') {
+                    $artistLyrics = new \Propel\Runtime\Collection\Collection();
+                    $artistOrder = 1;
+                    foreach ($value as $artistId) {
+                        $artistQuery = new \Tekstove\ApiBundle\Model\ArtistQuery();
+                        $artist = $artistQuery->findOneById($artistId);
+                        if ($artist === null) {
+                            throw new \Exception("Can not find artist #{$artistId}");
+                        }
+                        $artistFound = false;
+                        foreach ($lyric->getArtistLyrics() as $artistLyricExisting) {
+                            if ($artistLyricExisting->getLyric()->getId() == $lyric->getId()
+                                    && $artistLyricExisting->getArtist()->getId() == $artistId) {
+                                $artistLyricExisting->setOrder($artistOrder);
+                                $artistLyrics->append($artistLyricExisting);
+                                $artistFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!$artistFound) {
+                            $artistLyric = new ArtistLyric();
+                            $artistLyric->setLyric($lyric);
+                            $artistLyric->setArtist($artist);
+                            $artistLyric->setOrder($artistOrder);
+                            $artistLyrics->append($artistLyric);
+                        }
+                        $artistOrder++;
+                    }
+                } else {
+                    $lyric->{$setter}($value);
+                }
             }
             $repo->save($lyric);
             return $this->handleData($request, $lyric);

@@ -139,4 +139,45 @@ class TekstoveAbstractController extends FOSRestController
         
         return $data;
     }
+    
+    protected function propelMappingSetter($object, $values, $setter)
+    {
+        $relectionClass = new \ReflectionClass($object);
+        
+        $mappClass = $relectionClass->getNamespaceName() . '\\Map\\' . $relectionClass->getShortName() . 'TableMap';
+        $tableMap = $mappClass::getTableMap();
+        /* @var $tableMap \Propel\Runtime\Map\TableMap */
+        
+        $setterWithoutSet = preg_replace('/^set([A-Z])/', '$1', $setter);
+        $setterSingular = preg_replace('/s$/', '', $setterWithoutSet);
+        
+        $relation = $tableMap->getRelation($setterSingular);
+        /* @var $relation \Propel\Runtime\Map\RelationMap */
+        $foreignClass = $relation->getLocalTable()->getClassName();
+        $primaryKeys = $relation->getLocalTable()->getPrimaryKeys();
+        if (count($primaryKeys) > 1) {
+            throw new \Exception("Not implemented for composite PK");
+        }
+        
+        $primaryKey = current($primaryKeys);
+        /* @var $primaryKey \Propel\Runtime\Map\ColumnMap */
+        $idName = $primaryKey->getPhpName();
+        
+        $foreignClassQuery = $foreignClass . 'Query';
+        $foreignQuery = new $foreignClassQuery();
+        /* @var $foreignQuery \Propel\Runtime\ActiveQuery\ModelCriteria */
+        
+        $itemsToMap = new \Propel\Runtime\Collection\ArrayCollection();
+        foreach ($values as $value) {
+            $foreignQuery = new $foreignClassQuery();
+            /* @var $foreignQuery \Propel\Runtime\ActiveQuery\ModelCriteria */
+            $mapObject = $foreignQuery->findOneBy($idName, $value);
+            if (empty($mapObject)) {
+                throw new Exception("Can't find #{$value}");
+            }
+            $itemsToMap->append($mapObject);
+        }
+        
+        $object->$setter($itemsToMap);
+    }
 }

@@ -4,6 +4,7 @@ namespace Tekstove\ApiBundle\Model;
 
 use Propel\Runtime\Connection\ConnectionInterface;
 use Tekstove\ApiBundle\Model\Base\Lyric as BaseLyric;
+use Tekstove\ApiBundle\Model\Artist\ArtistLyric;
 
 use Tekstove\ApiBundle\EventDispatcher\EventDispacher;
 use Tekstove\ApiBundle\EventDispatcher\Lyric\LyricEvent;
@@ -88,5 +89,43 @@ class Lyric extends BaseLyric
         );
         
         return $return;
+    }
+    
+    /**
+     * Update artists to given array of ids.
+     * Order is the same as keys in the array
+     * @param array $artistsIds
+     * @throws \Exception
+     */
+    public function setArtistsIds(array $artistsIds)
+    {
+        $artistLyrics = new \Propel\Runtime\Collection\Collection();
+        $artistOrder = 1;
+        foreach ($artistsIds as $artistId) {
+            $artistQuery = new \Tekstove\ApiBundle\Model\ArtistQuery();
+            $artist = $artistQuery->findOneById($artistId);
+            if ($artist === null) {
+                throw new \Exception("Can not find artist #{$artistId}");
+            }
+            $artistFound = false;
+            foreach ($this->getArtistLyrics() as $artistLyricExisting) {
+                if ($artistLyricExisting->getArtist()->getId() == $artistId) {
+                    $artistLyricExisting->setOrder($artistOrder);
+                    $artistLyrics->append($artistLyricExisting);
+                    $artistFound = true;
+                    break;
+                }
+            }
+
+            if (!$artistFound) {
+                $artistLyric = new ArtistLyric();
+                $artistLyric->setLyric($this);
+                $artistLyric->setArtist($artist);
+                $artistLyric->setOrder($artistOrder);
+                $artistLyrics->append($artistLyric);
+            }
+            $artistOrder++;
+        }
+        $this->setArtistLyrics($artistLyrics);
     }
 }

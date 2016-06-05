@@ -8,3 +8,7 @@
         getOrderedArtists:
             groups: [Details]
             serialized_name: artists
+        getLanguages:
+            type: array<Tekstove\ApiBundle\Model\Language>
+            groups: [Details]
+            serialized_name: languages

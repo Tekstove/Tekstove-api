@@ -49,10 +49,12 @@ class User extends BaseUser
      */
     public function getAllowedLyricFields(Lyric $lyric)
     {
+        // @TODO filter for edit!
         $allowedFields = [
             'title',
             'artists',
             'text',
+            'languages',
             'extraInfo',
             'video_youtube',
             'video_vbox7',

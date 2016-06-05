@@ -6,7 +6,6 @@ use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
 use Tekstove\ApiBundle\Model\Lyric;
-use Tekstove\ApiBundle\Model\Artist\ArtistLyric;
 
 use Potaka\Helper\Casing\CaseHelper;
 
@@ -51,38 +50,12 @@ class LyricController extends Controller
                 $bumpyCase = $caseHelper->bumpyCase($field);
                 $camel = $caseHelper->camelCase($field);
                 $setter = 'set' . $bumpyCase;
-                $value = $request->get($camel);
                 if ($setter == 'setArtists') {
-                    $artistLyrics = new \Propel\Runtime\Collection\Collection();
-                    $artistOrder = 1;
-                    foreach ($value as $artistId) {
-                        $artistQuery = new \Tekstove\ApiBundle\Model\ArtistQuery();
-                        $artist = $artistQuery->findOneById($artistId);
-                        if ($artist === null) {
-                            throw new \Exception("Can not find artist #{$artistId}");
-                        }
-                        $artistFound = false;
-                        foreach ($lyric->getArtistLyrics() as $artistLyricExisting) {
-                            if ($artistLyricExisting->getLyric()->getId() == $lyric->getId()
-                                    && $artistLyricExisting->getArtist()->getId() == $artistId) {
-                                $artistLyricExisting->setOrder($artistOrder);
-                                $artistLyrics->append($artistLyricExisting);
-                                $artistFound = true;
-                                break;
-                            }
-                        }
-
-                        if (!$artistFound) {
-                            $artistLyric = new ArtistLyric();
-                            $artistLyric->setLyric($lyric);
-                            $artistLyric->setArtist($artist);
-                            $artistLyric->setOrder($artistOrder);
-                            $artistLyrics->append($artistLyric);
-                        }
-                        $artistOrder++;
-                    }
+                    $value = $request->get($camel, []);
+                    $lyric->setArtistsIds($value);
                 } else {
-                    $lyric->{$setter}($value);
+                    $value = $request->get($camel);
+                    $this->propelMappingSetter($lyric, $value, $setter);
                 }
             }
             $repo->save($lyric);
@@ -129,37 +102,9 @@ class LyricController extends Controller
                                 $value = $path['value'];
                                 if (is_array($value)) {
                                     if ($field === 'artists') {
-                                        $artistLyrics = new \Propel\Runtime\Collection\Collection();
-                                        $artistOrder = 1;
-                                        foreach ($value as $artistId) {
-                                            $artistQuery = new \Tekstove\ApiBundle\Model\ArtistQuery();
-                                            $artist = $artistQuery->findOneById($artistId);
-                                            if ($artist === null) {
-                                                throw new \Exception("Can not find artist #{$artistId}");
-                                            }
-                                            $artistFound = false;
-                                            foreach ($lyric->getArtistLyrics() as $artistLyricExisting) {
-                                                if ($artistLyricExisting->getLyric()->getId() == $lyric->getId()
-                                                        && $artistLyricExisting->getArtist()->getId() == $artistId) {
-                                                    $artistLyricExisting->setOrder($artistOrder);
-                                                    $artistLyrics->append($artistLyricExisting);
-                                                    $artistFound = true;
-                                                    break;
-                                                }
-                                            }
-                                            
-                                            if (!$artistFound) {
-                                                $artistLyric = new ArtistLyric();
-                                                $artistLyric->setLyric($lyric);
-                                                $artistLyric->setArtist($artist);
-                                                $artistLyric->setOrder($artistOrder);
-                                                $artistLyrics->append($artistLyric);
-                                            }
-                                            $artistOrder++;
-                                        }
-                                        $lyric->setArtistLyrics($artistLyrics);
+                                        $lyric->setArtistsIds($value);
                                     } else {
-                                        throw new \Exception("not implemented");
+                                        $this->propelMappingSetter($lyric, $value, $setter);
                                     }
                                 } else {
                                     $lyric->{$setter}($value);

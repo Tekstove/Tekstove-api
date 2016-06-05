@@ -55,7 +55,8 @@ class LyricController extends Controller
                     $lyric->setArtistsIds($value);
                 } else {
                     $value = $request->get($camel);
-                    $this->propelMappingSetter($lyric, $value, $setter);
+                    // @TODO user service!
+                    $this->propelSetter($lyric, $value, $setter);
                 }
             }
             $repo->save($lyric);
@@ -104,7 +105,8 @@ class LyricController extends Controller
                                     if ($field === 'artists') {
                                         $lyric->setArtistsIds($value);
                                     } else {
-                                        $this->propelMappingSetter($lyric, $value, $setter);
+                                        // @TODO user service!
+                                        $this->propelSetter($lyric, $value, $setter);
                                     }
                                 } else {
                                     $lyric->{$setter}($value);

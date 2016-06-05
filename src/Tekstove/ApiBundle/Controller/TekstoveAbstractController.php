@@ -140,8 +140,20 @@ class TekstoveAbstractController extends FOSRestController
         return $data;
     }
     
-    protected function propelMappingSetter($object, $values, $setter)
+    protected function propelSetter($object, $values, $setter)
     {
+        if (!is_array($values)) {
+            // @TODO use property accessor!
+            $getter = preg_replace('/^set/', 'get', $setter);
+            $originalData = $object->$getter();
+            if ($originalData instanceof \Propel\Runtime\Collection\Collection) {
+                $object->$setter(new \Propel\Runtime\Collection\ArrayCollection());
+            } else {
+                $object->$setter($values);
+            }
+            return true;
+        }
+        
         $relectionClass = new \ReflectionClass($object);
         
         $mappClass = $relectionClass->getNamespaceName() . '\\Map\\' . $relectionClass->getShortName() . 'TableMap';

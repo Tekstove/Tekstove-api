@@ -49,18 +49,26 @@ class User extends BaseUser
      */
     public function getAllowedLyricFields(Lyric $lyric)
     {
-        // @TODO filter for edit!
-        $allowedFields = [
-            'title',
-            'artists',
-            'text',
-            'languages',
-            'extraInfo',
-            'video_youtube',
-            'video_vbox7',
-            'video_metacafe',
-        ];
-
+        $owner = false;
+        if ($lyric->getId() === $this->getId()) {
+            $owner = true;
+        }
+        
+        if (!$lyric->getId()) {
+            $owner = true;
+        }
+        
+        if ($owner) {
+            $allowedFields[] = 'title';
+            $allowedFields[] = 'artists';
+            $allowedFields[] = 'text';
+            $allowedFields[] = 'languages';
+            $allowedFields[] = 'extraInfo';
+            $allowedFields[] = 'video_youtube';
+            $allowedFields[] = 'video_vbox7';
+            $allowedFields[] = 'video_metacafe';
+        }
+        
         $permissions = $this->getPermissions();
         
         if (array_key_exists('lyric_download', $permissions)) {

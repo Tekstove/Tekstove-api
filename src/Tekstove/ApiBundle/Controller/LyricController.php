@@ -45,16 +45,25 @@ class LyricController extends Controller
 
             $allowedFields = $user->getAllowedLyricFields($lyric);
             
+            $lyricDataJson = $request->getContent();
+            $lyricData = json_decode($lyricDataJson, true);
+            
             $caseHelper = new CaseHelper();
             foreach ($allowedFields as $field) {
                 $bumpyCase = $caseHelper->bumpyCase($field);
                 $camel = $caseHelper->camelCase($field);
                 $setter = 'set' . $bumpyCase;
                 if ($setter == 'setArtists') {
-                    $value = $request->get($camel, []);
+                    if (!isset($lyricData[$camel])) {
+                        $lyricData[$camel] = [];
+                    }
+                    $value = $lyricData[$camel];
                     $lyric->setArtistsIds($value);
                 } else {
-                    $value = $request->get($camel);
+                    if (!isset($lyricData[$camel])) {
+                        $lyricData[$camel] = null;
+                    }
+                    $value = $lyricData[$camel];
                     // @TODO user service!
                     $this->propelSetter($lyric, $value, $setter);
                 }

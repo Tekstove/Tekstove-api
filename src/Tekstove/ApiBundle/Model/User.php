@@ -64,14 +64,14 @@ class User extends BaseUser
             $allowedFields[] = 'text';
             $allowedFields[] = 'languages';
             $allowedFields[] = 'extraInfo';
-            $allowedFields[] = 'video_youtube';
-            $allowedFields[] = 'video_vbox7';
-            $allowedFields[] = 'video_metacafe';
+            $allowedFields[] = 'videoYoutube';
+            $allowedFields[] = 'videoVbox7';
+            $allowedFields[] = 'videoMetacafe';
         }
         
         $permissions = $this->getPermissions();
         
-        if (array_key_exists('lyric_download', $permissions)) {
+        if (array_key_exists('lyricDownload', $permissions)) {
             $allowedFields[] = 'download';
         }
         

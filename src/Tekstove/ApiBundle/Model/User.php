@@ -49,8 +49,9 @@ class User extends BaseUser
      */
     public function getAllowedLyricFields(Lyric $lyric)
     {
+        $allowedFields = [];
         $owner = false;
-        if ($lyric->getId() === $this->getId()) {
+        if ($lyric->getsendBy() === $this->getId()) {
             $owner = true;
         }
         

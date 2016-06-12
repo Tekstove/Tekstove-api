@@ -418,9 +418,6 @@ abstract class LyricTranslationQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($text)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $text)) {
-                $text = str_replace('*', '%', $text);
-                $comparison = Criteria::LIKE;
             }
         }
 

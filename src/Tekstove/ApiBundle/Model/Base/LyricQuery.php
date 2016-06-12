@@ -419,9 +419,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($title)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $title)) {
-                $title = str_replace('*', '%', $title);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -448,9 +445,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($text)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $text)) {
-                $text = str_replace('*', '%', $text);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -477,9 +471,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($textBg)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $textBg)) {
-                $textBg = str_replace('*', '%', $textBg);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -549,9 +540,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($extraInfo)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $extraInfo)) {
-                $extraInfo = str_replace('*', '%', $extraInfo);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -621,9 +609,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($cacheTitleShort)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $cacheTitleShort)) {
-                $cacheTitleShort = str_replace('*', '%', $cacheTitleShort);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -773,9 +758,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($videoYoutube)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $videoYoutube)) {
-                $videoYoutube = str_replace('*', '%', $videoYoutube);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -802,9 +784,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($videoVbox7)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $videoVbox7)) {
-                $videoVbox7 = str_replace('*', '%', $videoVbox7);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -831,9 +810,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($videoMetacafe)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $videoMetacafe)) {
-                $videoMetacafe = str_replace('*', '%', $videoMetacafe);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -860,9 +836,6 @@ abstract class LyricQuery extends ModelCriteria
         if (null === $comparison) {
             if (is_array($download)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $download)) {
-                $download = str_replace('*', '%', $download);
-                $comparison = Criteria::LIKE;
             }
         }
 

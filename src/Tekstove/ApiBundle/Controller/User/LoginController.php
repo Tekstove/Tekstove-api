@@ -17,8 +17,10 @@ class LoginController extends TekstoveAbstractController
         $userQuery = new UserQuery();
         $userQuery->filterByUsername($username, Criteria::EQUAL);
         
+        $content = $request->getContent();
+        $loginData = json_decode($content, true);
         
-        $password = $request->get('password');
+        $password = $loginData['password'];
         $passwordHashed = md5($password);
         $userQuery->filterByPassword($passwordHashed, Criteria::EQUAL);
         

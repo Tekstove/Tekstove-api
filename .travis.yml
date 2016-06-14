@@ -10,6 +10,8 @@ before_script:
 script:
     - composer install -d Test/codeSniffer/
     - Test/codeSniffer/vendor/bin/phpcs --standard=Test/codeSniffer/phpcs.xml src/
+    - composer install --prefer-dist
+    - vendor/bin/phpunit -c Test/Phpunit/phpunit.xml --no-coverage 
 
 matrix:
     allow_failures:

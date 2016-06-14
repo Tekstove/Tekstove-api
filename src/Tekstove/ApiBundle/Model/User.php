@@ -51,7 +51,8 @@ class User extends BaseUser
     {
         $allowedFields = [];
         $owner = false;
-        if ($lyric->getsendBy() === $this->getId()) {
+        // $this->getId is check if user is guest
+        if ($this->getId() && $lyric->getsendBy() === $this->getId()) {
             $owner = true;
         }
         

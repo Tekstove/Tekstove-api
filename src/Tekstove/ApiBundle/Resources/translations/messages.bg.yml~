@@ -1,0 +1,4 @@
+'This value should not be blank.': 'Полето не може да е празно'
+'This value should not be blank': 'Полето не може да е празно'
+'This value is too long. It should have %max% characters or less.': 'wwww %max%'
+'This value is too long. It should have 60 characters or less.': 'wwww {0}'

@@ -4,6 +4,7 @@ namespace Tekstove\ApiBundle\Model;
 
 use Tekstove\ApiBundle\Model\Base\User as BaseUser;
 use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\Acl\Permission;
 
 /**
  * Skeleton subclass for representing a row from the 'user' table.
@@ -73,7 +74,7 @@ class User extends BaseUser
         
         $permissions = $this->getPermissions();
         
-        if (array_key_exists('lyric_download', $permissions)) {
+        if (array_key_exists(Permission::LYRIC_EDIT_DOWNLOAD, $permissions)) {
             $allowedFields[] = 'download';
         }
         

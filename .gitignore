@@ -4,7 +4,8 @@
 
 /app/config/parameters.yml
 /app/bootstrap.php.cache
-/var
+/var/*
+!/var/.gitkeep
 /web/bundles
 
 /app/scripts/migrations/vendor

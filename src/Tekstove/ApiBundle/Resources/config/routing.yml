@@ -29,8 +29,8 @@ tekstove_api_lyric:
     methods: [GET]
 
 tekstove_api_lyric_credentials:
-    path: "/lyrics/credentials"
-    defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index }
+    path: "/lyrics/credentials/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index, id: ~ }
     methods: [GET]
 
 

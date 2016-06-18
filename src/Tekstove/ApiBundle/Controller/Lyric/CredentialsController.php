@@ -6,6 +6,7 @@ use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\LyricQuery;
 use Tekstove\ApiBundle\Model\User;
 
 /**
@@ -15,7 +16,7 @@ use Tekstove\ApiBundle\Model\User;
  */
 class CredentialsController extends Controller
 {
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $id)
     {
         if ($this->getUser()) {
             $user = $this->getUser();
@@ -23,7 +24,14 @@ class CredentialsController extends Controller
             $user = new User();
         }
         
-        $allowedFields = $user->getAllowedLyricFields(new Lyric());
+        if ($id) {
+            $lyricQuery = new LyricQuery();
+            $lyric = $lyricQuery->findOneById($id);
+        } else {
+            $lyric = new Lyric();
+        }
+        
+        $allowedFields = $user->getAllowedLyricFields($lyric);
         
         $data = [
             'item' => [

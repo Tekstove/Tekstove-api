@@ -73,7 +73,7 @@ class User extends BaseUser
         
         $permissions = $this->getPermissions();
         
-        if (array_key_exists('lyricDownload', $permissions)) {
+        if (array_key_exists('lyric_download', $permissions)) {
             $allowedFields[] = 'download';
         }
         

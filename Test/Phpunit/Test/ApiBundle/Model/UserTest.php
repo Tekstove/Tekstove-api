@@ -4,6 +4,7 @@ namespace Test\ApiBundle\Model;
 
 use Tekstove\ApiBundle\Model\User;
 use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\Acl\Permission;
 
 /*
  * UserTest
@@ -30,7 +31,11 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $user = $userMockBuilder->getMock();
         $user->expects($this->once())
                 ->method('getPermissions')
-                ->will($this->returnValue(['lyricDownload' => 'lyricDownload']));
+                ->will(
+                    $this->returnValue(
+                        [Permission::LYRIC_EDIT_DOWNLOAD => Permission::LYRIC_EDIT_DOWNLOAD]
+                    )
+                );
         $lyric = new \Tekstove\ApiBundle\Model\Lyric();
         $lyric->setId(5);
         $allowedFields = $user->getAllowedLyricFields($lyric);

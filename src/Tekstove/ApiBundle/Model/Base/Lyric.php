@@ -3852,6 +3852,7 @@ abstract class Lyric implements ActiveRecordInterface
         $metadata->addPropertyConstraint('text', new NotBlank());
         $metadata->addPropertyConstraint('text', new Length(array ('min' => 10,)));
         $metadata->addPropertyConstraint('title', new NotBlank());
+        $metadata->addPropertyConstraint('title', new Length(array ('max' => 60,)));
     }
 
     /**

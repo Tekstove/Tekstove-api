@@ -80,9 +80,11 @@
         <column name="download" type="varchar" phpName="download" />
         
         <behavior name="validate">
-            <parameter name="textValidationNotEmpty" value="{column: text, validator: NotBlank}" />
+            <parameter name="textValidationNotEmpty"  value="{column: text, validator: NotBlank}" />
             <parameter name="textValidationMinLength" value="{column: text, validator: Length, options: {min: 10}}" />
-            <parameter name="titleValidationNotEmpty" value="{column: title, validator: NotBlank}" />
+
+            <parameter name="titleValidationNotEmpty"  value="{column: title, validator: NotBlank}" />
+            <parameter name="titleValidationMaxLength" value="{column: title, validator: Length, options: {max: 60}}" />
         </behavior>
     </table>
     

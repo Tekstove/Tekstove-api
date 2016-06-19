@@ -12,8 +12,10 @@ use Tekstove\ApiBundle\EventDispatcher\EventDispacher;
  */
 class LyricRepository
 {
-    private $eventDispacher;
+    use \Tekstove\ApiBundle\Validator\ValidationableTrait;
     
+    private $eventDispacher;
+
     public function __construct(EventDispacher $eventDispacher)
     {
         $this->eventDispacher = $eventDispacher;
@@ -22,6 +24,7 @@ class LyricRepository
     public function save(Lyric $lyric)
     {
         $lyric->setEventDispacher($this->eventDispacher);
+        $lyric->setValidator($this->validator);
         $lyric->save();
     }
     

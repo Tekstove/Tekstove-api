@@ -24,12 +24,13 @@ use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
 class Lyric extends BaseLyric
 {
     use AclTrait;
+    use \Tekstove\ApiBundle\Validator\ValidationableTrait;
     
     private $eventDispacher;
     
     public function preSave(ConnectionInterface $con = null)
     {
-        if (!$this->validate()) {
+        if (!$this->validate($this->validator)) {
             $errors = $this->getValidationFailures();
             $exception = new LyricHumanReadableException('Validation failed.');
             foreach ($errors as $error) {

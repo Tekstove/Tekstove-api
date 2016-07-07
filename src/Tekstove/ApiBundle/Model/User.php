@@ -65,6 +65,7 @@ class User extends BaseUser
             $allowedFields[] = 'title';
             $allowedFields[] = 'artists';
             $allowedFields[] = 'text';
+            $allowedFields[] = 'textBg';
             $allowedFields[] = 'languages';
             $allowedFields[] = 'extraInfo';
             $allowedFields[] = 'videoYoutube';

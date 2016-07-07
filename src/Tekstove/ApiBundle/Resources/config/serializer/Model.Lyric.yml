@@ -12,3 +12,6 @@
             type: array<Tekstove\ApiBundle\Model\Language>
             groups: [Details]
             serialized_name: languages
+        getTextBg:
+            groups: [Details]
+            serialized_name: textBg

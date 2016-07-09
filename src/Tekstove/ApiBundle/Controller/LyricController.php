@@ -88,8 +88,6 @@ class LyricController extends Controller
         /* @var $lyric Lyric */
         $lyric = $lyricQuery->findOneById($id);
         
-        // @OTO change to real patch!
-        
         try {
             if ($this->getUser()) {
                 $user = $this->getUser();
@@ -134,5 +132,37 @@ class LyricController extends Controller
             $view->setStatusCode(400);
             return $view;
         }
+    }
+    
+    public function deleteAction(Request $request, $id)
+    {
+        $this->getContext()
+                ->setGroups(['Details']);
+        
+        $repo = $this->get('tekstove.lyric.repository');
+        /* @var $repo \Tekstove\ApiBundle\Model\Lyric\LyricRepository */
+        $lyricQuery = new LyricQuery();
+        /* @var $lyric Lyric */
+        $lyric = $lyricQuery->findOneById($id);
+        
+        try {
+            if ($this->getUser()) {
+                $user = $this->getUser();
+            } else {
+                $user = new User();
+            }
+
+            $allowedFields = $user->getAllowedLyricFields($lyric);
+            if (!in_array('delete', $allowedFields)) {
+                throw new \Exception("Delete not allowed");
+            }
+            $lyric->delete();
+            return $this->handleData($request, $lyric);
+        } catch (LyricHumanReadableException $e) {
+            $view = $this->handleData($request, $e->getErrors());
+            $view->setStatusCode(400);
+            return $view;
+        }
+        
     }
 }

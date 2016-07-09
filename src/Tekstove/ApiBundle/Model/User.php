@@ -71,6 +71,11 @@ class User extends BaseUser
             $allowedFields[] = 'videoYoutube';
             $allowedFields[] = 'videoVbox7';
             $allowedFields[] = 'videoMetacafe';
+            
+            // do not allow delete on new lyric
+            if ($lyric->getId()) {
+                $allowedFields[] = 'delete';
+            }
         }
         
         $permissions = $this->getPermissions();

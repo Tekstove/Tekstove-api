@@ -48,6 +48,11 @@ tekstove_api_lyric_patch:
     path: "/lyrics/{id}"
     defaults: { _controller: TekstoveApiBundle:Lyric:patch}
     methods: [PATCH]
+    
+tekstove_api_lyric.delete:
+    path: "/lyrics/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric:delete}
+    methods: [DELETE]
 
 tekstove_api_languages:
     path: /languages

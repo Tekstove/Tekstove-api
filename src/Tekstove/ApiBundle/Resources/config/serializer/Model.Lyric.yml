@@ -15,3 +15,9 @@
         getTextBg:
             groups: [Details]
             serialized_name: textBg
+        getVideoYoutube:
+            groups: [Details]
+            serialized_name: videoYoutube
+        getVideoVbox7:
+            groups: [Details]
+            serialized_name: videoVbox7

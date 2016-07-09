@@ -3,6 +3,8 @@
 namespace Tekstove\ApiBundle\Model\Lyric;
 
 use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\LyricQuery;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Tekstove\ApiBundle\EventDispatcher\EventDispacher;
 
 /**

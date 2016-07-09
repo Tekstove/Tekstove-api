@@ -185,7 +185,7 @@ class TekstoveAbstractController extends FOSRestController
             /* @var $foreignQuery \Propel\Runtime\ActiveQuery\ModelCriteria */
             $mapObject = $foreignQuery->findOneBy($idName, $value);
             if (empty($mapObject)) {
-                throw new Exception("Can't find #{$value}");
+                throw new \Exception("Can't find #{$value}");
             }
             $itemsToMap->append($mapObject);
         }

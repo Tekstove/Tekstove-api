@@ -14,4 +14,15 @@ class ArtistController extends Controller
         $artistQuery = new ArtistQuery();
         return $this->handleData($request, $artistQuery);
     }
+    
+    public function getAction(Request $request, $id)
+    {
+        $this->applyGroups($request);
+        $artistQuery = new ArtistQuery();
+        $artist = $artistQuery->findOneById($id);
+        return $this->handleData(
+            $request,
+            $artist
+        );
+    }
 }

@@ -37,6 +37,7 @@ class TekstoveAbstractController extends FOSRestController
      */
     protected function handleData(Request $request, $data)
     {
+        $this->applyPaginationOptions($request);
         $data = $this->applyFilters($request, $data);
         $data = $this->propelQueryToPagination($request, $data);
         $data = $this->paginationToArray($data);
@@ -50,6 +51,12 @@ class TekstoveAbstractController extends FOSRestController
          $view = $this->view($data, 200);
          $view->setSerializationContext($this->getContext());
          return $view;
+    }
+    
+    protected function applyPaginationOptions(Request $request)
+    {
+        $limit = $request->get('limit', 10);
+        $this->setItemsPerPage($limit);
     }
     
     public function setItemsPerPage($itemsPerPage)
@@ -96,7 +103,7 @@ class TekstoveAbstractController extends FOSRestController
                     $data->{$filterMethod}($value, Criteria::IN);
                     break;
                 case 'like':
-                    $data->{$filterMethod}("%{$value}%", Criteria::LIKE);
+                    $data->{$filterMethod}("{$value}", Criteria::LIKE);
                     break;
                 default:
                     throw new \Exception("Unknown operator {$operator}");

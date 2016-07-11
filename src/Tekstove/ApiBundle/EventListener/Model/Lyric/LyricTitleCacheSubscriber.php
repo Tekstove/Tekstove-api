@@ -33,7 +33,24 @@ class LyricTitleCacheSubscriber implements \Symfony\Component\EventDispatcher\Ev
     public function updateCache(Lyric $lyric)
     {
         $cacheTitleShort = '';
+        
+        $artists = $lyric->getOrderedArtists();
+        
+        array_slice($artists, 0, 2);
+        if (isset($artists[0])) {
+            $cacheTitleShort .= $artists[0]['name'];
+        }
+        
+        if (isset($artists[1])) {
+            // @TODO translate!
+            $cacheTitleShort .= ' и ' . $artists[1]['name'];
+        }
+        
+        if ($cacheTitleShort) {
+            $cacheTitleShort .= ' - ';
+        }
         $cacheTitleShort .= $lyric->getTitle();
+        
         $lyric->setcacheTitleShort($cacheTitleShort);
     }
 }

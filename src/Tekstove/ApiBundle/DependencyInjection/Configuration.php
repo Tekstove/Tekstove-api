@@ -19,6 +19,13 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('tekstove_api');
+        $rootNode->children()
+                    ->arrayNode('recaptcha')
+                        ->children()
+                            ->scalarNode('key')->end()
+                        ->end()
+                    ->end()
+                 ->end();
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

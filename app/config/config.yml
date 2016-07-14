@@ -63,3 +63,7 @@ jms_serializer:
     metadata:
         auto_detection: true
         debug: "%kernel.debug%"
+
+tekstove_api:
+    recaptcha:
+        key: '%tekstove_api.recaptcha.key%'

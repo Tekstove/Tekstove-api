@@ -5,6 +5,9 @@ namespace Tekstove\ApiBundle\Controller\User;
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
+use Tekstove\ApiBundle\Model\User;
+use Tekstove\ApiBundle\Model\User\Exception\UserHumanReadableException;
+
 /**
  * Description of RegisterController
  *
@@ -25,5 +28,23 @@ class RegisterController extends TekstoveAbstractController
             ],
         ];
         return $this->handleData($request, $returnData);
+    }
+    
+    public function postAction(Request $request)
+    {
+        $repo = $this->get('tekstove.user.repository');
+        /* @var $repo \Tekstove\ApiBundle\Model\User\UserRepository */
+        
+        $user = new User();
+        
+        $user->setUsername(uniqid());
+        $user->setMail(uniqid().'@gmail.com');
+        try {
+            $repo->save($user);
+        } catch (UserHumanReadableException $e) {
+            $view = $this->handleData($request, $e->getErrors());
+            $view->setStatusCode(400);
+            return $view;
+        }
     }
 }

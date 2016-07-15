@@ -5,6 +5,9 @@ namespace Tekstove\ApiBundle\Model;
 use Tekstove\ApiBundle\Model\Base\User as BaseUser;
 use Tekstove\ApiBundle\Model\Lyric;
 use Tekstove\ApiBundle\Model\Acl\Permission;
+use Tekstove\ApiBundle\Model\User\Exception\UserHumanReadableException;
+
+use Propel\Runtime\Connection\ConnectionInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'user' table.
@@ -18,6 +21,25 @@ use Tekstove\ApiBundle\Model\Acl\Permission;
  */
 class User extends BaseUser
 {
+    use \Tekstove\ApiBundle\Validator\ValidationableTrait;
+    
+    public function preSave(ConnectionInterface $con = null)
+    {
+        if (!$this->validate($this->validator)) {
+            $errors = $this->getValidationFailures();
+            $exception = new UserHumanReadableException('Validation failed.');
+            foreach ($errors as $error) {
+                /* @var $error \Symfony\Component\Validator\ConstraintViolationInterface */
+                $exception->addError($error->getPropertyPath(), $error->getMessage());
+            }
+            throw $exception;
+        }
+        
+        // $this->notifyPreSave($this);
+        
+        return parent::preSave($con);
+    }
+    
     /**
      * Return array
      * [permissioName] => permissionValue

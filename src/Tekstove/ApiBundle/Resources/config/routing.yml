@@ -7,6 +7,11 @@ tekstove_api_user_register_index:
     path: "/users/register"
     defaults: { _controller: TekstoveApiBundle:User/Register:index }
     methods: [GET]
+    
+tekstove_api_user_register_post:
+    path: "/users/register"
+    defaults: { _controller: TekstoveApiBundle:User/Register:post }
+    methods: [POST]
 
 tekstove_api_user_get:
     path: "/users/{id}"

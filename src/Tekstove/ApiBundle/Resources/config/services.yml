@@ -17,6 +17,12 @@ services:
         arguments: ["@tekstove.event_dispacher"]
         calls:
             - [setValidator, ["@validator"]]
+            
+    tekstove.user.repository:
+        class: Tekstove\ApiBundle\Model\User\UserRepository
+        arguments: ["@tekstove.event_dispacher"]
+        calls:
+            - [setValidator, ["@validator"]]
         
     tekstove.event_dispacher.factory:
         class: Tekstove\ApiBundle\EventDispatcher\EventDispacherFactory

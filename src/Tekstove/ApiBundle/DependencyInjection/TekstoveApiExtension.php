@@ -27,6 +27,11 @@ class TekstoveApiExtension extends Extension
             $config['recaptcha']['key']
         );
 
+        $container->setParameter(
+            'tekstove_api.recaptcha.secret',
+            $config['recaptcha']['secret']
+        );
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

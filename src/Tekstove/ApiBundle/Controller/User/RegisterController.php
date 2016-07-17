@@ -34,13 +34,23 @@ class RegisterController extends TekstoveAbstractController
     {
         $repo = $this->get('tekstove.user.repository');
         /* @var $repo \Tekstove\ApiBundle\Model\User\UserRepository */
+        $recaptchaSecret = $this->container->getParameter('tekstove_api.recaptcha.secret');
         
         $requestData = \json_decode($request->getContent(), true);
         $userData = $requestData['user'];
+        $recaptchaData = $requestData['recaptcha'];
         
         $user = new User();
         
         try {
+            $recaptcha = new \ReCaptcha\ReCaptcha($recaptchaSecret);
+            $recaptchaResponse = $recaptcha->verify($recaptchaData['g-recaptcha-response']);
+            if (!$recaptchaResponse->isSuccess()) {
+                $recaptchaException = new UserHumanReadableException("Recaptcha validation failed");
+                $recaptchaException->addError("recaptcha", "Validation failed");
+                throw $recaptchaException;
+            }
+            
             $user->setUsername($userData['username']);
             $user->setMail($userData['mail']);
             $user->setPassword(

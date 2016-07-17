@@ -19,3 +19,4 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
     tekstove_api.recaptcha.key: yourKeyHere
+    tekstove_api.recaptcha.secret: yourSecretHere

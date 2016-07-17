@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
                     ->arrayNode('recaptcha')
                         ->children()
                             ->scalarNode('key')->end()
+                            ->scalarNode('secret')->end()
                         ->end()
                     ->end()
                  ->end();

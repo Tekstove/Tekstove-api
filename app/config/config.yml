@@ -67,3 +67,4 @@ jms_serializer:
 tekstove_api:
     recaptcha:
         key: '%tekstove_api.recaptcha.key%'
+        secret: '%tekstove_api.recaptcha.secret%'

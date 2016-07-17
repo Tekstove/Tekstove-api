@@ -20,6 +20,8 @@
             <parameter name="uniqueUsername" value="{column: username, validator: Unique}"/>
 
             <parameter name="requiredPassword" value="{column: password, validator: NotBlank}"/>
+            
+            <parameter name="requiredApiKey" value="{column: api_key, validator: NotBlank}" />
         </behavior>
     </table>
     

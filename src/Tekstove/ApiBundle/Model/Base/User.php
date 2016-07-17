@@ -3271,6 +3271,7 @@ abstract class User implements ActiveRecordInterface
         $metadata->addPropertyConstraint('username', new NotBlank());
         $metadata->addPropertyConstraint('username', new Unique());
         $metadata->addPropertyConstraint('password', new NotBlank());
+        $metadata->addPropertyConstraint('api_key', new NotBlank());
     }
 
     /**

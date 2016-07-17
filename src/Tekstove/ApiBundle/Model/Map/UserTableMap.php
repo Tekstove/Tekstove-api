@@ -230,7 +230,7 @@ class UserTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'validate' => array('requiredEmail' => array ('column' => 'mail','validator' => 'NotBlank',), 'validEmail' => array ('column' => 'mail','validator' => 'Email',), 'uniqueEmail' => array ('column' => 'mail','validator' => 'Unique',), 'requiredUsername' => array ('column' => 'username','validator' => 'NotBlank',), 'uniqueUsername' => array ('column' => 'username','validator' => 'Unique',), 'requiredPassword' => array ('column' => 'password','validator' => 'NotBlank',), ),
+            'validate' => array('requiredEmail' => array ('column' => 'mail','validator' => 'NotBlank',), 'validEmail' => array ('column' => 'mail','validator' => 'Email',), 'uniqueEmail' => array ('column' => 'mail','validator' => 'Unique',), 'requiredUsername' => array ('column' => 'username','validator' => 'NotBlank',), 'uniqueUsername' => array ('column' => 'username','validator' => 'Unique',), 'requiredPassword' => array ('column' => 'password','validator' => 'NotBlank',), 'requiredApiKey' => array ('column' => 'api_key','validator' => 'NotBlank',), ),
         );
     } // getBehaviors()
 

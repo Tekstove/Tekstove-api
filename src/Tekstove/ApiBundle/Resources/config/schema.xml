@@ -12,9 +12,14 @@
         <column name="autoplay" type="smallint" />
         
         <behavior name="validate">
-            <parameter name="emailValid" value="{column: mail, validator: Email}" />
+            <parameter name="requiredEmail" value="{column: mail, validator: NotBlank}" />
+            <parameter name="validEmail" value="{column: mail, validator: Email}" />
             <parameter name="uniqueEmail" value="{column: mail, validator: Unique}" />
+            
+            <parameter name="requiredUsername" value="{column: username, validator: NotBlank}" />
             <parameter name="uniqueUsername" value="{column: username, validator: Unique}"/>
+
+            <parameter name="requiredPassword" value="{column: password, validator: NotBlank}"/>
         </behavior>
     </table>
     

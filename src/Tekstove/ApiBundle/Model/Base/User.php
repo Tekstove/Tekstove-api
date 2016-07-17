@@ -21,6 +21,7 @@ use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\Factory\LazyLoadingMetadataFactory;
@@ -3264,9 +3265,12 @@ abstract class User implements ActiveRecordInterface
      */
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
+        $metadata->addPropertyConstraint('mail', new NotBlank());
         $metadata->addPropertyConstraint('mail', new Email());
         $metadata->addPropertyConstraint('mail', new Unique());
+        $metadata->addPropertyConstraint('username', new NotBlank());
         $metadata->addPropertyConstraint('username', new Unique());
+        $metadata->addPropertyConstraint('password', new NotBlank());
     }
 
     /**

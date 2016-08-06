@@ -106,6 +106,13 @@ class User extends BaseUser
             $allowedFields[] = 'download';
         }
         
+        if ($lyric->isForbidden()) {
+            $hasTextField = array_search('text', $allowedFields);
+            if (false !== $hasTextField) {
+                unset ($allowedFields[$hasTextField]);
+            }
+        }
+        
         return $allowedFields;
     }
 }

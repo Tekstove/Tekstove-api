@@ -109,7 +109,7 @@ class User extends BaseUser
         if ($lyric->isForbidden()) {
             $hasTextField = array_search('text', $allowedFields);
             if (false !== $hasTextField) {
-                unset ($allowedFields[$hasTextField]);
+                unset($allowedFields[$hasTextField]);
             }
         }
         

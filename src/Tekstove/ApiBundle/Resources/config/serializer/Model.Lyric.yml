@@ -21,3 +21,6 @@
         getVideoVbox7:
             groups: [Details]
             serialized_name: videoVbox7
+        isForbidden:
+            groups: [Details]
+            serialized_name: forbidden

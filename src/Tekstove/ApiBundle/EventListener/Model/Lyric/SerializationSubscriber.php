@@ -4,8 +4,11 @@ namespace Tekstove\ApiBundle\EventListener\Model\Lyric;
 
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
+use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+
+use Tekstove\ApiBundle\Model\Lyric;
 
 /**
  * Description of SerializationListener
@@ -30,6 +33,12 @@ class SerializationSubscriber implements EventSubscriberInterface
                 'method' => 'onPostSerialize',
                 'format' => 'json',
             ],
+            [
+                'event' => 'serializer.pre_serialize',
+                'class' => \Tekstove\ApiBundle\Model\Lyric::class,
+                'method' => 'onPreSerialize',
+                'format' => 'json',
+            ]
         ];
     }
     
@@ -60,6 +69,23 @@ class SerializationSubscriber implements EventSubscriberInterface
                 }
             }
             $visitor->addData('acl', $acl);
+        }
+        
+        $this->clearForbiddenLyricsData($lyric);
+    }
+    
+    public function onPreSerialize(PreSerializeEvent $event)
+    {
+        $lyric = $event->getObject();
+        /* @lyric \Tekstove\ApiBundle\Model\Lyric */
+        $this->clearForbiddenLyricsData($lyric);
+    }
+    
+    private function clearForbiddenLyricsData(Lyric $lyric)
+    {
+        $forbiddenArtist = $lyric->getForbidden();
+        if ($forbiddenArtist) {
+            $lyric->setText("Artist {$forbiddenArtist->getName()} is forbidden");
         }
     }
 }

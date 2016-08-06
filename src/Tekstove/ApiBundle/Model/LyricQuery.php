@@ -16,6 +16,10 @@ use Tekstove\ApiBundle\Model\Base\LyricQuery as BaseLyricQuery;
  */
 class LyricQuery extends BaseLyricQuery
 {
+    /**
+     * @inheritDoc
+     * Also allow filtering by artistId
+     */
     public function filterByArtist($artist, $comparison = null)
     {
         if (is_numeric($artist)) {

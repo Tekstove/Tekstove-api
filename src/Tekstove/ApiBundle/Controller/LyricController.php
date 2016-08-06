@@ -139,8 +139,6 @@ class LyricController extends Controller
         $this->getContext()
                 ->setGroups(['Details']);
         
-        $repo = $this->get('tekstove.lyric.repository');
-        /* @var $repo \Tekstove\ApiBundle\Model\Lyric\LyricRepository */
         $lyricQuery = new LyricQuery();
         /* @var $lyric Lyric */
         $lyric = $lyricQuery->findOneById($id);
@@ -163,6 +161,5 @@ class LyricController extends Controller
             $view->setStatusCode(400);
             return $view;
         }
-        
     }
 }

@@ -3,3 +3,5 @@
     exclude: false
     read_only: true
     properties:
+        forbidden:
+            groups: [Details]

@@ -91,6 +91,13 @@ abstract class Artist implements ActiveRecordInterface
     protected $user_id;
 
     /**
+     * The value for the forbidden field.
+     *
+     * @var        int
+     */
+    protected $forbidden;
+
+    /**
      * @var        ChildUser
      */
     protected $aUser;
@@ -387,6 +394,16 @@ abstract class Artist implements ActiveRecordInterface
     }
 
     /**
+     * Get the [forbidden] column value.
+     *
+     * @return int
+     */
+    public function getForbidden()
+    {
+        return $this->forbidden;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -451,6 +468,26 @@ abstract class Artist implements ActiveRecordInterface
     } // setUserId()
 
     /**
+     * Set the value of [forbidden] column.
+     *
+     * @param int $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\Artist The current object (for fluent API support)
+     */
+    public function setForbidden($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->forbidden !== $v) {
+            $this->forbidden = $v;
+            $this->modifiedColumns[ArtistTableMap::COL_FORBIDDEN] = true;
+        }
+
+        return $this;
+    } // setForbidden()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -494,6 +531,9 @@ abstract class Artist implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ArtistTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ArtistTableMap::translateFieldName('Forbidden', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->forbidden = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -502,7 +542,7 @@ abstract class Artist implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = ArtistTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = ArtistTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Artist'), 0, $e);
@@ -773,6 +813,9 @@ abstract class Artist implements ActiveRecordInterface
         if ($this->isColumnModified(ArtistTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = '`user_id`';
         }
+        if ($this->isColumnModified(ArtistTableMap::COL_FORBIDDEN)) {
+            $modifiedColumns[':p' . $index++]  = '`forbidden`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `artist` (%s) VALUES (%s)',
@@ -792,6 +835,9 @@ abstract class Artist implements ActiveRecordInterface
                         break;
                     case '`user_id`':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                        break;
+                    case '`forbidden`':
+                        $stmt->bindValue($identifier, $this->forbidden, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -864,6 +910,9 @@ abstract class Artist implements ActiveRecordInterface
             case 2:
                 return $this->getUserId();
                 break;
+            case 3:
+                return $this->getForbidden();
+                break;
             default:
                 return null;
                 break;
@@ -897,6 +946,7 @@ abstract class Artist implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
             $keys[2] => $this->getUserId(),
+            $keys[3] => $this->getForbidden(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -977,6 +1027,9 @@ abstract class Artist implements ActiveRecordInterface
             case 2:
                 $this->setUserId($value);
                 break;
+            case 3:
+                $this->setForbidden($value);
+                break;
         } // switch()
 
         return $this;
@@ -1011,6 +1064,9 @@ abstract class Artist implements ActiveRecordInterface
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setUserId($arr[$keys[2]]);
+        }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setForbidden($arr[$keys[3]]);
         }
     }
 
@@ -1061,6 +1117,9 @@ abstract class Artist implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ArtistTableMap::COL_USER_ID)) {
             $criteria->add(ArtistTableMap::COL_USER_ID, $this->user_id);
+        }
+        if ($this->isColumnModified(ArtistTableMap::COL_FORBIDDEN)) {
+            $criteria->add(ArtistTableMap::COL_FORBIDDEN, $this->forbidden);
         }
 
         return $criteria;
@@ -1150,6 +1209,7 @@ abstract class Artist implements ActiveRecordInterface
     {
         $copyObj->setName($this->getName());
         $copyObj->setUserId($this->getUserId());
+        $copyObj->setForbidden($this->getForbidden());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1768,6 +1828,7 @@ abstract class Artist implements ActiveRecordInterface
         $this->id = null;
         $this->name = null;
         $this->user_id = null;
+        $this->forbidden = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();

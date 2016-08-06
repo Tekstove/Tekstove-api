@@ -7,3 +7,5 @@
             groups: [List, Details]
         name:
             groups: [List, Details]
+        forbidden:
+            groups: [Details]

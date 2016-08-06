@@ -24,10 +24,12 @@ use Tekstove\ApiBundle\Model\Map\ArtistTableMap;
  * @method     ChildArtistQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildArtistQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildArtistQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
+ * @method     ChildArtistQuery orderByForbidden($order = Criteria::ASC) Order by the forbidden column
  *
  * @method     ChildArtistQuery groupById() Group by the id column
  * @method     ChildArtistQuery groupByName() Group by the name column
  * @method     ChildArtistQuery groupByUserId() Group by the user_id column
+ * @method     ChildArtistQuery groupByForbidden() Group by the forbidden column
  *
  * @method     ChildArtistQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildArtistQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -64,7 +66,8 @@ use Tekstove\ApiBundle\Model\Map\ArtistTableMap;
  *
  * @method     ChildArtist findOneById(int $id) Return the first ChildArtist filtered by the id column
  * @method     ChildArtist findOneByName(string $name) Return the first ChildArtist filtered by the name column
- * @method     ChildArtist findOneByUserId(int $user_id) Return the first ChildArtist filtered by the user_id column *
+ * @method     ChildArtist findOneByUserId(int $user_id) Return the first ChildArtist filtered by the user_id column
+ * @method     ChildArtist findOneByForbidden(int $forbidden) Return the first ChildArtist filtered by the forbidden column *
 
  * @method     ChildArtist requirePk($key, ConnectionInterface $con = null) Return the ChildArtist by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArtist requireOne(ConnectionInterface $con = null) Return the first ChildArtist matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -72,11 +75,13 @@ use Tekstove\ApiBundle\Model\Map\ArtistTableMap;
  * @method     ChildArtist requireOneById(int $id) Return the first ChildArtist filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArtist requireOneByName(string $name) Return the first ChildArtist filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArtist requireOneByUserId(int $user_id) Return the first ChildArtist filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildArtist requireOneByForbidden(int $forbidden) Return the first ChildArtist filtered by the forbidden column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildArtist[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildArtist objects based on current ModelCriteria
  * @method     ChildArtist[]|ObjectCollection findById(int $id) Return ChildArtist objects filtered by the id column
  * @method     ChildArtist[]|ObjectCollection findByName(string $name) Return ChildArtist objects filtered by the name column
  * @method     ChildArtist[]|ObjectCollection findByUserId(int $user_id) Return ChildArtist objects filtered by the user_id column
+ * @method     ChildArtist[]|ObjectCollection findByForbidden(int $forbidden) Return ChildArtist objects filtered by the forbidden column
  * @method     ChildArtist[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -175,7 +180,7 @@ abstract class ArtistQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `name`, `user_id` FROM `artist` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `name`, `user_id`, `forbidden` FROM `artist` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -373,6 +378,47 @@ abstract class ArtistQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ArtistTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
+     * Filter the query on the forbidden column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByForbidden(1234); // WHERE forbidden = 1234
+     * $query->filterByForbidden(array(12, 34)); // WHERE forbidden IN (12, 34)
+     * $query->filterByForbidden(array('min' => 12)); // WHERE forbidden > 12
+     * </code>
+     *
+     * @param     mixed $forbidden The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildArtistQuery The current query, for fluid interface
+     */
+    public function filterByForbidden($forbidden = null, $comparison = null)
+    {
+        if (is_array($forbidden)) {
+            $useMinMax = false;
+            if (isset($forbidden['min'])) {
+                $this->addUsingAlias(ArtistTableMap::COL_FORBIDDEN, $forbidden['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($forbidden['max'])) {
+                $this->addUsingAlias(ArtistTableMap::COL_FORBIDDEN, $forbidden['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ArtistTableMap::COL_FORBIDDEN, $forbidden, $comparison);
     }
 
     /**

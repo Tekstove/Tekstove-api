@@ -154,7 +154,7 @@
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="name" type="varchar" />
         <column name="user_id" type="integer" />
-        <!-- Add forbidden, redirect_toArtist -->
+        <column name="forbidden" type="smallint" />
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id" />
         </foreign-key>

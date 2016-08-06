@@ -129,4 +129,19 @@ class Lyric extends BaseLyric
         }
         $this->setArtistLyrics($artistLyrics);
     }
+    
+    /**
+     * check if some artist do not allow lyrics listing
+     * @return bool
+     */
+    public function isForbidden()
+    {
+        foreach ($this->getArtists() as $artist) {
+            if ($artist->getForbidden()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }

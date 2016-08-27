@@ -19,4 +19,15 @@ class AlbumController extends Controller
         $lyricQuery = new AlbumQuery();
         return $this->handleData($request, $lyricQuery);
     }
+    
+    public function getAction(Request $request, $id)
+    {
+        $this->applyGroups($request);
+        $albumsQuery = new AlbumQuery();
+        $artist = $albumsQuery->findOneById($id);
+        return $this->handleData(
+            $request,
+            $artist
+        );
+    }
 }

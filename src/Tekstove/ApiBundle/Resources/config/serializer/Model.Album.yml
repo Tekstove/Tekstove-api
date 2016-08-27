@@ -3,6 +3,8 @@
     exclude: false
     read_only: true
     virtual_properties:
+        acl:
+            groups: [Acl]
         getId:
             groups: [Details, List]
             serialized_name: id

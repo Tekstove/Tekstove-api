@@ -108,8 +108,8 @@ class AlbumTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Year', 'Image', 'UserId', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'year', 'image', 'userId', ),
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'Year', 'Image', 'sendBy', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'year', 'image', 'sendBy', ),
         self::TYPE_COLNAME       => array(AlbumTableMap::COL_ID, AlbumTableMap::COL_NAME, AlbumTableMap::COL_YEAR, AlbumTableMap::COL_IMAGE, AlbumTableMap::COL_USER_ID, ),
         self::TYPE_FIELDNAME     => array('id', 'name', 'year', 'image', 'user_id', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
@@ -122,8 +122,8 @@ class AlbumTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Year' => 2, 'Image' => 3, 'UserId' => 4, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'year' => 2, 'image' => 3, 'userId' => 4, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Year' => 2, 'Image' => 3, 'sendBy' => 4, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'year' => 2, 'image' => 3, 'sendBy' => 4, ),
         self::TYPE_COLNAME       => array(AlbumTableMap::COL_ID => 0, AlbumTableMap::COL_NAME => 1, AlbumTableMap::COL_YEAR => 2, AlbumTableMap::COL_IMAGE => 3, AlbumTableMap::COL_USER_ID => 4, ),
         self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'year' => 2, 'image' => 3, 'user_id' => 4, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
@@ -150,7 +150,7 @@ class AlbumTableMap extends TableMap
         $this->addColumn('name', 'Name', 'VARCHAR', false, 255, null);
         $this->addColumn('year', 'Year', 'INTEGER', false, null, null);
         $this->addColumn('image', 'Image', 'VARCHAR', false, 255, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', false, null, null);
+        $this->addForeignKey('user_id', 'sendBy', 'INTEGER', 'user', 'id', false, null, null);
     } // initialize()
 
     /**

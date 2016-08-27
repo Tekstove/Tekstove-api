@@ -38,7 +38,7 @@ class AclSubscriber implements EventSubscriberInterface
     {
         $object = $event->getObject();
         
-        if (false == $object instanceof AutoAclSerializableInterface) {
+        if (false === $object instanceof AutoAclSerializableInterface) {
             return true;
         }
         

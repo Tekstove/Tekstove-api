@@ -1,0 +1,18 @@
+"Tekstove\\ApiBundle\\Model\\Album":
+    exclusion_policy: none
+    exclude: false
+    read_only: true
+    virtual_properties:
+        getId:
+            groups: [Details, List]
+            serialized_name: id
+        getName:
+            groups: [Details, List]
+            serialized_name: name
+        getImage:
+            groups: [Details, List]
+            serialized_name: image
+        getYear:
+            groups: [Details, List]
+            serialized_name: year
+

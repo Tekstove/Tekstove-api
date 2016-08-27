@@ -77,3 +77,8 @@ tekstove_api_artist.get:
     path: "/artists/{id}"
     defaults: { _controller: TekstoveApiBundle:Artist:get }
     methods: [GET]
+
+tekstove_api_lyric_album_index:
+    path: "/albums"
+    defaults: { _controller: TekstoveApiBundle:Album:index, id: ~ }
+    methods: [GET]

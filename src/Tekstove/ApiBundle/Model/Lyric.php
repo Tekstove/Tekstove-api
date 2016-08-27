@@ -8,6 +8,7 @@ use Tekstove\ApiBundle\Model\Artist\ArtistLyric;
 
 use Tekstove\ApiBundle\EventDispatcher\EventDispacher;
 use Tekstove\ApiBundle\EventDispatcher\Lyric\LyricEvent;
+use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
 
 use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
 
@@ -21,7 +22,7 @@ use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
  * long as it does not already exist in the output directory.
  *
  */
-class Lyric extends BaseLyric
+class Lyric extends BaseLyric implements AutoAclSerializableInterface
 {
     use AclTrait;
     use \Tekstove\ApiBundle\Validator\ValidationableTrait;

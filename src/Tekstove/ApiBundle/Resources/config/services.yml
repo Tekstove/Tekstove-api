@@ -5,6 +5,12 @@ services:
         tags:
             - { name: "jms_serializer.event_subscriber" }
 
+    tekstove.api.serializer.autoacl_subscriber:
+        class: Tekstove\ApiBundle\EventListener\Model\Serialize\AclSubscriber
+        arguments: ["@security.authorization_checker"]
+        tags:
+            - { name: "jms_serializer.event_subscriber" }
+
     tekstove.api.user_provider:
         class: Tekstove\ApiBundle\Security\ApiUserProvider
 

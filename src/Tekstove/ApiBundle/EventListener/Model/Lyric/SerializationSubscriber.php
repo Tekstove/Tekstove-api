@@ -46,30 +46,6 @@ class SerializationSubscriber implements EventSubscriberInterface
     {
         $lyric = $event->getObject();
         /* @lyric \Tekstove\ApiBundle\Model\Lyric */
-        $visitor = $event->getVisitor();
-        $context = $event->getContext();
-        
-        $propertyMetadata = $context->getmetadataFactory()
-                                        ->getMetadataForClass(\Tekstove\ApiBundle\Model\Lyric::class)
-                                            ->propertyMetadata;
-        
-        $aclMetaData = $propertyMetadata['acl'];
-        
-        $exclusionStrategy = $context->getExclusionStrategy();
-        
-        // @TODO use voters to get acl data
-        
-        
-        if (false == $exclusionStrategy->shouldSkipProperty($aclMetaData, $context)) {
-            $acl = [];
-            $permissions = ['edit'];
-            foreach ($permissions as $permission) {
-                if ($this->authorizationChecker->isGranted($permission, $lyric)) {
-                    $acl[$permission] = 1;
-                }
-            }
-            $visitor->addData('acl', $acl);
-        }
         
         $this->clearForbiddenLyricsData($lyric);
     }

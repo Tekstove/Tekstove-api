@@ -87,3 +87,8 @@ tekstove_api_lyric_album_index:
     path: "/albums"
     defaults: { _controller: TekstoveApiBundle:Album:index }
     methods: [GET]
+
+tekstove_api_forum_category_index:
+    path: "/forum/category"
+    defaults: { _controller: TekstoveApiBundle:Forum\Category:index }
+    methods: [GET]

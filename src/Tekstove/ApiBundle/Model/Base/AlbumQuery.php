@@ -24,13 +24,13 @@ use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
  * @method     ChildAlbumQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildAlbumQuery orderByYear($order = Criteria::ASC) Order by the year column
  * @method     ChildAlbumQuery orderByImage($order = Criteria::ASC) Order by the image column
- * @method     ChildAlbumQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
+ * @method     ChildAlbumQuery orderBysendBy($order = Criteria::ASC) Order by the user_id column
  *
  * @method     ChildAlbumQuery groupById() Group by the id column
  * @method     ChildAlbumQuery groupByName() Group by the name column
  * @method     ChildAlbumQuery groupByYear() Group by the year column
  * @method     ChildAlbumQuery groupByImage() Group by the image column
- * @method     ChildAlbumQuery groupByUserId() Group by the user_id column
+ * @method     ChildAlbumQuery groupBysendBy() Group by the user_id column
  *
  * @method     ChildAlbumQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildAlbumQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -59,7 +59,7 @@ use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
  * @method     ChildAlbum findOneByName(string $name) Return the first ChildAlbum filtered by the name column
  * @method     ChildAlbum findOneByYear(int $year) Return the first ChildAlbum filtered by the year column
  * @method     ChildAlbum findOneByImage(string $image) Return the first ChildAlbum filtered by the image column
- * @method     ChildAlbum findOneByUserId(int $user_id) Return the first ChildAlbum filtered by the user_id column *
+ * @method     ChildAlbum findOneBysendBy(int $user_id) Return the first ChildAlbum filtered by the user_id column *
 
  * @method     ChildAlbum requirePk($key, ConnectionInterface $con = null) Return the ChildAlbum by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAlbum requireOne(ConnectionInterface $con = null) Return the first ChildAlbum matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -68,14 +68,14 @@ use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
  * @method     ChildAlbum requireOneByName(string $name) Return the first ChildAlbum filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAlbum requireOneByYear(int $year) Return the first ChildAlbum filtered by the year column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAlbum requireOneByImage(string $image) Return the first ChildAlbum filtered by the image column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildAlbum requireOneByUserId(int $user_id) Return the first ChildAlbum filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildAlbum requireOneBysendBy(int $user_id) Return the first ChildAlbum filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildAlbum[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildAlbum objects based on current ModelCriteria
  * @method     ChildAlbum[]|ObjectCollection findById(int $id) Return ChildAlbum objects filtered by the id column
  * @method     ChildAlbum[]|ObjectCollection findByName(string $name) Return ChildAlbum objects filtered by the name column
  * @method     ChildAlbum[]|ObjectCollection findByYear(int $year) Return ChildAlbum objects filtered by the year column
  * @method     ChildAlbum[]|ObjectCollection findByImage(string $image) Return ChildAlbum objects filtered by the image column
- * @method     ChildAlbum[]|ObjectCollection findByUserId(int $user_id) Return ChildAlbum objects filtered by the user_id column
+ * @method     ChildAlbum[]|ObjectCollection findBysendBy(int $user_id) Return ChildAlbum objects filtered by the user_id column
  * @method     ChildAlbum[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -403,14 +403,14 @@ abstract class AlbumQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByUserId(1234); // WHERE user_id = 1234
-     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
-     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * $query->filterBysendBy(1234); // WHERE user_id = 1234
+     * $query->filterBysendBy(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterBysendBy(array('min' => 12)); // WHERE user_id > 12
      * </code>
      *
      * @see       filterByUser()
      *
-     * @param     mixed $userId The value to use as filter.
+     * @param     mixed $sendBy The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -418,16 +418,16 @@ abstract class AlbumQuery extends ModelCriteria
      *
      * @return $this|ChildAlbumQuery The current query, for fluid interface
      */
-    public function filterByUserId($userId = null, $comparison = null)
+    public function filterBysendBy($sendBy = null, $comparison = null)
     {
-        if (is_array($userId)) {
+        if (is_array($sendBy)) {
             $useMinMax = false;
-            if (isset($userId['min'])) {
-                $this->addUsingAlias(AlbumTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+            if (isset($sendBy['min'])) {
+                $this->addUsingAlias(AlbumTableMap::COL_USER_ID, $sendBy['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($userId['max'])) {
-                $this->addUsingAlias(AlbumTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+            if (isset($sendBy['max'])) {
+                $this->addUsingAlias(AlbumTableMap::COL_USER_ID, $sendBy['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -438,7 +438,7 @@ abstract class AlbumQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(AlbumTableMap::COL_USER_ID, $userId, $comparison);
+        return $this->addUsingAlias(AlbumTableMap::COL_USER_ID, $sendBy, $comparison);
     }
 
     /**

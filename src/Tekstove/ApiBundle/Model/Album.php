@@ -4,6 +4,8 @@ namespace Tekstove\ApiBundle\Model;
 
 use Tekstove\ApiBundle\Model\Base\Album as BaseAlbum;
 
+use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
+
 /**
  * Skeleton subclass for representing a row from the 'album' table.
  *
@@ -14,7 +16,7 @@ use Tekstove\ApiBundle\Model\Base\Album as BaseAlbum;
  * long as it does not already exist in the output directory.
  *
  */
-class Album extends BaseAlbum
+class Album extends BaseAlbum implements AutoAclSerializableInterface
 {
-
+    use AclTrait;
 }

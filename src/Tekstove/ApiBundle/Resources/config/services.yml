@@ -5,6 +5,12 @@ services:
         tags:
             - { name: "jms_serializer.event_subscriber" }
 
+    tekstove.api.serializer.autoacl_subscriber:
+        class: Tekstove\ApiBundle\EventListener\Model\Serialize\AclSubscriber
+        arguments: ["@security.authorization_checker"]
+        tags:
+            - { name: "jms_serializer.event_subscriber" }
+
     tekstove.api.user_provider:
         class: Tekstove\ApiBundle\Security\ApiUserProvider
 
@@ -36,6 +42,11 @@ services:
 
     tekstove.api.security.lyric_voter:
         class: Tekstove\ApiBundle\Security\Authorization\Voter\LyricVoter
+        public: false
+        tags:
+            - { name: security.voter }
+    tekstove.api.security.album.voter:
+        class: Tekstove\ApiBundle\Security\Authorization\Voter\AlbumVoter
         public: false
         tags:
             - { name: security.voter }

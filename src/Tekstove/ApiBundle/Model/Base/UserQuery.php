@@ -947,7 +947,7 @@ abstract class UserQuery extends ModelCriteria
     {
         if ($album instanceof \Tekstove\ApiBundle\Model\Album) {
             return $this
-                ->addUsingAlias(UserTableMap::COL_ID, $album->getUserId(), $comparison);
+                ->addUsingAlias(UserTableMap::COL_ID, $album->getsendBy(), $comparison);
         } elseif ($album instanceof ObjectCollection) {
             return $this
                 ->useAlbumQuery()

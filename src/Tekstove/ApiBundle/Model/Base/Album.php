@@ -379,7 +379,7 @@ abstract class Album implements ActiveRecordInterface
      *
      * @return int
      */
-    public function getUserId()
+    public function getsendBy()
     {
         return $this->user_id;
     }
@@ -470,7 +470,7 @@ abstract class Album implements ActiveRecordInterface
      * @param int $v new value
      * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
      */
-    public function setUserId($v)
+    public function setsendBy($v)
     {
         if ($v !== null) {
             $v = (int) $v;
@@ -486,7 +486,7 @@ abstract class Album implements ActiveRecordInterface
         }
 
         return $this;
-    } // setUserId()
+    } // setsendBy()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -536,7 +536,7 @@ abstract class Album implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AlbumTableMap::translateFieldName('Image', TableMap::TYPE_PHPNAME, $indexType)];
             $this->image = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AlbumTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AlbumTableMap::translateFieldName('sendBy', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -875,7 +875,7 @@ abstract class Album implements ActiveRecordInterface
                 return $this->getImage();
                 break;
             case 4:
-                return $this->getUserId();
+                return $this->getsendBy();
                 break;
             default:
                 return null;
@@ -911,7 +911,7 @@ abstract class Album implements ActiveRecordInterface
             $keys[1] => $this->getName(),
             $keys[2] => $this->getYear(),
             $keys[3] => $this->getImage(),
-            $keys[4] => $this->getUserId(),
+            $keys[4] => $this->getsendBy(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -981,7 +981,7 @@ abstract class Album implements ActiveRecordInterface
                 $this->setImage($value);
                 break;
             case 4:
-                $this->setUserId($value);
+                $this->setsendBy($value);
                 break;
         } // switch()
 
@@ -1022,7 +1022,7 @@ abstract class Album implements ActiveRecordInterface
             $this->setImage($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUserId($arr[$keys[4]]);
+            $this->setsendBy($arr[$keys[4]]);
         }
     }
 
@@ -1169,7 +1169,7 @@ abstract class Album implements ActiveRecordInterface
         $copyObj->setName($this->getName());
         $copyObj->setYear($this->getYear());
         $copyObj->setImage($this->getImage());
-        $copyObj->setUserId($this->getUserId());
+        $copyObj->setsendBy($this->getsendBy());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1208,9 +1208,9 @@ abstract class Album implements ActiveRecordInterface
     public function setUser(ChildUser $v = null)
     {
         if ($v === null) {
-            $this->setUserId(NULL);
+            $this->setsendBy(NULL);
         } else {
-            $this->setUserId($v->getId());
+            $this->setsendBy($v->getId());
         }
 
         $this->aUser = $v;

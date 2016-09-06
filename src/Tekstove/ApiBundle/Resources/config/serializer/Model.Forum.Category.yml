@@ -1,0 +1,11 @@
+"Tekstove\\ApiBundle\\Model\\Forum\\Category":
+    exclusion_policy: none
+    exclude: false
+    read_only: true
+    virtual_properties:
+        getId:
+            groups: [Details, List, Acl]
+            serialized_name: id
+        getName:
+            groups: [Details, List]
+            serialized_name: name

@@ -170,5 +170,11 @@
             <reference local="user_id" foreign="id" />
         </foreign-key>
     </table>
-
+    
+    <table name="forum_category" readOnly="true" namespace="\Tekstove\ApiBundle\Model\Forum" phpName="Category">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
+        <column name="name" type="varchar" />
+        <column name="order" type="integer" />
+        <column name="hidden" type="integer" />
+    </table>
 </database>

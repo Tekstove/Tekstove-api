@@ -2,6 +2,7 @@ global_exclude_dirs:
     - vendor
     - Test
     - app/scripts/cron
+    - src/Tekstove/ApiBundle/Model/Base/
 
 exclude_patterns:
     - app/config/parameters_travis.yml

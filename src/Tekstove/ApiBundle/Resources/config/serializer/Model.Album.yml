@@ -17,4 +17,6 @@
         getYear:
             groups: [Details, List]
             serialized_name: year
-
+        getUser:
+            groups: [Details]
+            serialized_name: user

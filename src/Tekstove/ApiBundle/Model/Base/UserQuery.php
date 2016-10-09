@@ -379,11 +379,10 @@ abstract class UserQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByUsername('fooValue');   // WHERE username = 'fooValue'
-     * $query->filterByUsername('%fooValue%'); // WHERE username LIKE '%fooValue%'
+     * $query->filterByUsername('%fooValue%', Criteria::LIKE); // WHERE username LIKE '%fooValue%'
      * </code>
      *
      * @param     string $username The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildUserQuery The current query, for fluid interface
@@ -405,11 +404,10 @@ abstract class UserQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByPassword('fooValue');   // WHERE password = 'fooValue'
-     * $query->filterByPassword('%fooValue%'); // WHERE password LIKE '%fooValue%'
+     * $query->filterByPassword('%fooValue%', Criteria::LIKE); // WHERE password LIKE '%fooValue%'
      * </code>
      *
      * @param     string $password The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildUserQuery The current query, for fluid interface
@@ -431,11 +429,10 @@ abstract class UserQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByapiKey('fooValue');   // WHERE api_key = 'fooValue'
-     * $query->filterByapiKey('%fooValue%'); // WHERE api_key LIKE '%fooValue%'
+     * $query->filterByapiKey('%fooValue%', Criteria::LIKE); // WHERE api_key LIKE '%fooValue%'
      * </code>
      *
      * @param     string $apiKey The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildUserQuery The current query, for fluid interface
@@ -457,11 +454,10 @@ abstract class UserQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByMail('fooValue');   // WHERE mail = 'fooValue'
-     * $query->filterByMail('%fooValue%'); // WHERE mail LIKE '%fooValue%'
+     * $query->filterByMail('%fooValue%', Criteria::LIKE); // WHERE mail LIKE '%fooValue%'
      * </code>
      *
      * @param     string $mail The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildUserQuery The current query, for fluid interface
@@ -483,11 +479,10 @@ abstract class UserQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByAvatar('fooValue');   // WHERE avatar = 'fooValue'
-     * $query->filterByAvatar('%fooValue%'); // WHERE avatar LIKE '%fooValue%'
+     * $query->filterByAvatar('%fooValue%', Criteria::LIKE); // WHERE avatar LIKE '%fooValue%'
      * </code>
      *
      * @param     string $avatar The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildUserQuery The current query, for fluid interface
@@ -509,11 +504,10 @@ abstract class UserQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByAbout('fooValue');   // WHERE about = 'fooValue'
-     * $query->filterByAbout('%fooValue%'); // WHERE about LIKE '%fooValue%'
+     * $query->filterByAbout('%fooValue%', Criteria::LIKE); // WHERE about LIKE '%fooValue%'
      * </code>
      *
      * @param     string $about The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildUserQuery The current query, for fluid interface

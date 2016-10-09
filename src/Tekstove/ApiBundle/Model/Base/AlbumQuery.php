@@ -321,11 +321,10 @@ abstract class AlbumQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByName('fooValue');   // WHERE name = 'fooValue'
-     * $query->filterByName('%fooValue%'); // WHERE name LIKE '%fooValue%'
+     * $query->filterByName('%fooValue%', Criteria::LIKE); // WHERE name LIKE '%fooValue%'
      * </code>
      *
      * @param     string $name The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildAlbumQuery The current query, for fluid interface
@@ -388,11 +387,10 @@ abstract class AlbumQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByImage('fooValue');   // WHERE image = 'fooValue'
-     * $query->filterByImage('%fooValue%'); // WHERE image LIKE '%fooValue%'
+     * $query->filterByImage('%fooValue%', Criteria::LIKE); // WHERE image LIKE '%fooValue%'
      * </code>
      *
      * @param     string $image The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildAlbumQuery The current query, for fluid interface

@@ -404,11 +404,10 @@ abstract class LyricTranslationQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByText('fooValue');   // WHERE text = 'fooValue'
-     * $query->filterByText('%fooValue%'); // WHERE text LIKE '%fooValue%'
+     * $query->filterByText('%fooValue%', Criteria::LIKE); // WHERE text LIKE '%fooValue%'
      * </code>
      *
      * @param     string $text The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricTranslationQuery The current query, for fluid interface

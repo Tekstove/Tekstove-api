@@ -415,11 +415,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByTitle('fooValue');   // WHERE title = 'fooValue'
-     * $query->filterByTitle('%fooValue%'); // WHERE title LIKE '%fooValue%'
+     * $query->filterByTitle('%fooValue%', Criteria::LIKE); // WHERE title LIKE '%fooValue%'
      * </code>
      *
      * @param     string $title The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
@@ -441,11 +440,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByText('fooValue');   // WHERE text = 'fooValue'
-     * $query->filterByText('%fooValue%'); // WHERE text LIKE '%fooValue%'
+     * $query->filterByText('%fooValue%', Criteria::LIKE); // WHERE text LIKE '%fooValue%'
      * </code>
      *
      * @param     string $text The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
@@ -467,11 +465,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterBytextBg('fooValue');   // WHERE text_bg = 'fooValue'
-     * $query->filterBytextBg('%fooValue%'); // WHERE text_bg LIKE '%fooValue%'
+     * $query->filterBytextBg('%fooValue%', Criteria::LIKE); // WHERE text_bg LIKE '%fooValue%'
      * </code>
      *
      * @param     string $textBg The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
@@ -536,11 +533,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByextraInfo('fooValue');   // WHERE extra_info = 'fooValue'
-     * $query->filterByextraInfo('%fooValue%'); // WHERE extra_info LIKE '%fooValue%'
+     * $query->filterByextraInfo('%fooValue%', Criteria::LIKE); // WHERE extra_info LIKE '%fooValue%'
      * </code>
      *
      * @param     string $extraInfo The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
@@ -605,11 +601,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterBycacheTitleShort('fooValue');   // WHERE cache_title_short = 'fooValue'
-     * $query->filterBycacheTitleShort('%fooValue%'); // WHERE cache_title_short LIKE '%fooValue%'
+     * $query->filterBycacheTitleShort('%fooValue%', Criteria::LIKE); // WHERE cache_title_short LIKE '%fooValue%'
      * </code>
      *
      * @param     string $cacheTitleShort The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
@@ -754,11 +749,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByvideoYoutube('fooValue');   // WHERE video_youtube = 'fooValue'
-     * $query->filterByvideoYoutube('%fooValue%'); // WHERE video_youtube LIKE '%fooValue%'
+     * $query->filterByvideoYoutube('%fooValue%', Criteria::LIKE); // WHERE video_youtube LIKE '%fooValue%'
      * </code>
      *
      * @param     string $videoYoutube The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
@@ -780,11 +774,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByvideoVbox7('fooValue');   // WHERE video_vbox7 = 'fooValue'
-     * $query->filterByvideoVbox7('%fooValue%'); // WHERE video_vbox7 LIKE '%fooValue%'
+     * $query->filterByvideoVbox7('%fooValue%', Criteria::LIKE); // WHERE video_vbox7 LIKE '%fooValue%'
      * </code>
      *
      * @param     string $videoVbox7 The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
@@ -806,11 +799,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterByvideoMetacafe('fooValue');   // WHERE video_metacafe = 'fooValue'
-     * $query->filterByvideoMetacafe('%fooValue%'); // WHERE video_metacafe LIKE '%fooValue%'
+     * $query->filterByvideoMetacafe('%fooValue%', Criteria::LIKE); // WHERE video_metacafe LIKE '%fooValue%'
      * </code>
      *
      * @param     string $videoMetacafe The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface
@@ -832,11 +824,10 @@ abstract class LyricQuery extends ModelCriteria
      * Example usage:
      * <code>
      * $query->filterBydownload('fooValue');   // WHERE download = 'fooValue'
-     * $query->filterBydownload('%fooValue%'); // WHERE download LIKE '%fooValue%'
+     * $query->filterBydownload('%fooValue%', Criteria::LIKE); // WHERE download LIKE '%fooValue%'
      * </code>
      *
      * @param     string $download The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildLyricQuery The current query, for fluid interface

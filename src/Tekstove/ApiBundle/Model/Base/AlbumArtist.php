@@ -9,7 +9,6 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
-use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -17,27 +16,25 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 use Tekstove\ApiBundle\Model\Album as ChildAlbum;
-use Tekstove\ApiBundle\Model\AlbumLyric as ChildAlbumLyric;
-use Tekstove\ApiBundle\Model\AlbumLyricQuery as ChildAlbumLyricQuery;
+use Tekstove\ApiBundle\Model\AlbumArtistQuery as ChildAlbumArtistQuery;
 use Tekstove\ApiBundle\Model\AlbumQuery as ChildAlbumQuery;
-use Tekstove\ApiBundle\Model\User as ChildUser;
-use Tekstove\ApiBundle\Model\UserQuery as ChildUserQuery;
-use Tekstove\ApiBundle\Model\Map\AlbumLyricTableMap;
-use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
+use Tekstove\ApiBundle\Model\Artist as ChildArtist;
+use Tekstove\ApiBundle\Model\ArtistQuery as ChildArtistQuery;
+use Tekstove\ApiBundle\Model\Map\AlbumArtistTableMap;
 
 /**
- * Base class that represents a row from the 'album' table.
+ * Base class that represents a row from the 'album_artist' table.
  *
  *
  *
  * @package    propel.generator.src.Tekstove.ApiBundle.Model.Base
  */
-abstract class Album implements ActiveRecordInterface
+abstract class AlbumArtist implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Tekstove\\ApiBundle\\Model\\Map\\AlbumTableMap';
+    const TABLE_MAP = '\\Tekstove\\ApiBundle\\Model\\Map\\AlbumArtistTableMap';
 
 
     /**
@@ -74,6 +71,13 @@ abstract class Album implements ActiveRecordInterface
     protected $id;
 
     /**
+     * The value for the album_id field.
+     *
+     * @var        int
+     */
+    protected $album_id;
+
+    /**
      * The value for the name field.
      *
      * @var        string
@@ -81,36 +85,28 @@ abstract class Album implements ActiveRecordInterface
     protected $name;
 
     /**
-     * The value for the year field.
+     * The value for the artist_id field.
      *
      * @var        int
      */
-    protected $year;
+    protected $artist_id;
 
     /**
-     * The value for the image field.
-     *
-     * @var        string
-     */
-    protected $image;
-
-    /**
-     * The value for the user_id field.
+     * The value for the order field.
      *
      * @var        int
      */
-    protected $user_id;
+    protected $order;
 
     /**
-     * @var        ChildUser
+     * @var        ChildAlbum
      */
-    protected $aUser;
+    protected $aAlbum;
 
     /**
-     * @var        ObjectCollection|ChildAlbumLyric[] Collection to store aggregation of ChildAlbumLyric objects.
+     * @var        ChildArtist
      */
-    protected $collAlbumLyrics;
-    protected $collAlbumLyricsPartial;
+    protected $aArtist;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -121,13 +117,7 @@ abstract class Album implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildAlbumLyric[]
-     */
-    protected $albumLyricsScheduledForDeletion = null;
-
-    /**
-     * Initializes internal state of Tekstove\ApiBundle\Model\Base\Album object.
+     * Initializes internal state of Tekstove\ApiBundle\Model\Base\AlbumArtist object.
      */
     public function __construct()
     {
@@ -222,9 +212,9 @@ abstract class Album implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>Album</code> instance.  If
-     * <code>obj</code> is an instance of <code>Album</code>, delegates to
-     * <code>equals(Album)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>AlbumArtist</code> instance.  If
+     * <code>obj</code> is an instance of <code>AlbumArtist</code>, delegates to
+     * <code>equals(AlbumArtist)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -290,7 +280,7 @@ abstract class Album implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|Album The current object, for fluid interface
+     * @return $this|AlbumArtist The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -362,6 +352,16 @@ abstract class Album implements ActiveRecordInterface
     }
 
     /**
+     * Get the [album_id] column value.
+     *
+     * @return int
+     */
+    public function getAlbumId()
+    {
+        return $this->album_id;
+    }
+
+    /**
      * Get the [name] column value.
      *
      * @return string
@@ -372,40 +372,30 @@ abstract class Album implements ActiveRecordInterface
     }
 
     /**
-     * Get the [year] column value.
+     * Get the [artist_id] column value.
      *
      * @return int
      */
-    public function getYear()
+    public function getArtistId()
     {
-        return $this->year;
+        return $this->artist_id;
     }
 
     /**
-     * Get the [image] column value.
-     *
-     * @return string
-     */
-    public function getImage()
-    {
-        return $this->image;
-    }
-
-    /**
-     * Get the [user_id] column value.
+     * Get the [order] column value.
      *
      * @return int
      */
-    public function getsendBy()
+    public function getOrder()
     {
-        return $this->user_id;
+        return $this->order;
     }
 
     /**
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -415,17 +405,41 @@ abstract class Album implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[AlbumTableMap::COL_ID] = true;
+            $this->modifiedColumns[AlbumArtistTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
+     * Set the value of [album_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object (for fluent API support)
+     */
+    public function setAlbumId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->album_id !== $v) {
+            $this->album_id = $v;
+            $this->modifiedColumns[AlbumArtistTableMap::COL_ALBUM_ID] = true;
+        }
+
+        if ($this->aAlbum !== null && $this->aAlbum->getId() !== $v) {
+            $this->aAlbum = null;
+        }
+
+        return $this;
+    } // setAlbumId()
+
+    /**
      * Set the value of [name] column.
      *
      * @param string $v new value
-     * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object (for fluent API support)
      */
     public function setName($v)
     {
@@ -435,75 +449,55 @@ abstract class Album implements ActiveRecordInterface
 
         if ($this->name !== $v) {
             $this->name = $v;
-            $this->modifiedColumns[AlbumTableMap::COL_NAME] = true;
+            $this->modifiedColumns[AlbumArtistTableMap::COL_NAME] = true;
         }
 
         return $this;
     } // setName()
 
     /**
-     * Set the value of [year] column.
+     * Set the value of [artist_id] column.
      *
      * @param int $v new value
-     * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object (for fluent API support)
      */
-    public function setYear($v)
+    public function setArtistId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->year !== $v) {
-            $this->year = $v;
-            $this->modifiedColumns[AlbumTableMap::COL_YEAR] = true;
+        if ($this->artist_id !== $v) {
+            $this->artist_id = $v;
+            $this->modifiedColumns[AlbumArtistTableMap::COL_ARTIST_ID] = true;
+        }
+
+        if ($this->aArtist !== null && $this->aArtist->getId() !== $v) {
+            $this->aArtist = null;
         }
 
         return $this;
-    } // setYear()
+    } // setArtistId()
 
     /**
-     * Set the value of [image] column.
-     *
-     * @param string $v new value
-     * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
-     */
-    public function setImage($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->image !== $v) {
-            $this->image = $v;
-            $this->modifiedColumns[AlbumTableMap::COL_IMAGE] = true;
-        }
-
-        return $this;
-    } // setImage()
-
-    /**
-     * Set the value of [user_id] column.
+     * Set the value of [order] column.
      *
      * @param int $v new value
-     * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object (for fluent API support)
      */
-    public function setsendBy($v)
+    public function setOrder($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[AlbumTableMap::COL_USER_ID] = true;
-        }
-
-        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
-            $this->aUser = null;
+        if ($this->order !== $v) {
+            $this->order = $v;
+            $this->modifiedColumns[AlbumArtistTableMap::COL_ORDER] = true;
         }
 
         return $this;
-    } // setsendBy()
+    } // setOrder()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -541,20 +535,20 @@ abstract class Album implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AlbumTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AlbumArtistTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AlbumTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AlbumArtistTableMap::translateFieldName('AlbumId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->album_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AlbumArtistTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
             $this->name = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AlbumTableMap::translateFieldName('Year', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->year = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AlbumArtistTableMap::translateFieldName('ArtistId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->artist_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AlbumTableMap::translateFieldName('Image', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->image = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AlbumTableMap::translateFieldName('sendBy', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AlbumArtistTableMap::translateFieldName('Order', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->order = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -563,10 +557,10 @@ abstract class Album implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = AlbumTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = AlbumArtistTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Album'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\AlbumArtist'), 0, $e);
         }
     }
 
@@ -585,8 +579,11 @@ abstract class Album implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
-            $this->aUser = null;
+        if ($this->aAlbum !== null && $this->album_id !== $this->aAlbum->getId()) {
+            $this->aAlbum = null;
+        }
+        if ($this->aArtist !== null && $this->artist_id !== $this->aArtist->getId()) {
+            $this->aArtist = null;
         }
     } // ensureConsistency
 
@@ -611,13 +608,13 @@ abstract class Album implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(AlbumTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(AlbumArtistTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildAlbumQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildAlbumArtistQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -627,9 +624,8 @@ abstract class Album implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
-            $this->collAlbumLyrics = null;
-
+            $this->aAlbum = null;
+            $this->aArtist = null;
         } // if (deep)
     }
 
@@ -639,8 +635,8 @@ abstract class Album implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see Album::setDeleted()
-     * @see Album::isDeleted()
+     * @see AlbumArtist::setDeleted()
+     * @see AlbumArtist::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -649,11 +645,11 @@ abstract class Album implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(AlbumTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AlbumArtistTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildAlbumQuery::create()
+            $deleteQuery = ChildAlbumArtistQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -684,7 +680,7 @@ abstract class Album implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(AlbumTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AlbumArtistTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -703,7 +699,7 @@ abstract class Album implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                AlbumTableMap::addInstanceToPool($this);
+                AlbumArtistTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -734,11 +730,18 @@ abstract class Album implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
+            if ($this->aAlbum !== null) {
+                if ($this->aAlbum->isModified() || $this->aAlbum->isNew()) {
+                    $affectedRows += $this->aAlbum->save($con);
                 }
-                $this->setUser($this->aUser);
+                $this->setAlbum($this->aAlbum);
+            }
+
+            if ($this->aArtist !== null) {
+                if ($this->aArtist->isModified() || $this->aArtist->isNew()) {
+                    $affectedRows += $this->aArtist->save($con);
+                }
+                $this->setArtist($this->aArtist);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -750,23 +753,6 @@ abstract class Album implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
-            }
-
-            if ($this->albumLyricsScheduledForDeletion !== null) {
-                if (!$this->albumLyricsScheduledForDeletion->isEmpty()) {
-                    \Tekstove\ApiBundle\Model\AlbumLyricQuery::create()
-                        ->filterByPrimaryKeys($this->albumLyricsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->albumLyricsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collAlbumLyrics !== null) {
-                foreach ($this->collAlbumLyrics as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
             }
 
             $this->alreadyInSave = false;
@@ -789,30 +775,30 @@ abstract class Album implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[AlbumTableMap::COL_ID] = true;
+        $this->modifiedColumns[AlbumArtistTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . AlbumTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . AlbumArtistTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(AlbumTableMap::COL_ID)) {
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = '`id`';
         }
-        if ($this->isColumnModified(AlbumTableMap::COL_NAME)) {
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_ALBUM_ID)) {
+            $modifiedColumns[':p' . $index++]  = '`album_id`';
+        }
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_NAME)) {
             $modifiedColumns[':p' . $index++]  = '`name`';
         }
-        if ($this->isColumnModified(AlbumTableMap::COL_YEAR)) {
-            $modifiedColumns[':p' . $index++]  = '`year`';
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_ARTIST_ID)) {
+            $modifiedColumns[':p' . $index++]  = '`artist_id`';
         }
-        if ($this->isColumnModified(AlbumTableMap::COL_IMAGE)) {
-            $modifiedColumns[':p' . $index++]  = '`image`';
-        }
-        if ($this->isColumnModified(AlbumTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = '`user_id`';
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_ORDER)) {
+            $modifiedColumns[':p' . $index++]  = '`order`';
         }
 
         $sql = sprintf(
-            'INSERT INTO `album` (%s) VALUES (%s)',
+            'INSERT INTO `album_artist` (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -824,17 +810,17 @@ abstract class Album implements ActiveRecordInterface
                     case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
+                    case '`album_id`':
+                        $stmt->bindValue($identifier, $this->album_id, PDO::PARAM_INT);
+                        break;
                     case '`name`':
                         $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
                         break;
-                    case '`year`':
-                        $stmt->bindValue($identifier, $this->year, PDO::PARAM_INT);
+                    case '`artist_id`':
+                        $stmt->bindValue($identifier, $this->artist_id, PDO::PARAM_INT);
                         break;
-                    case '`image`':
-                        $stmt->bindValue($identifier, $this->image, PDO::PARAM_STR);
-                        break;
-                    case '`user_id`':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                    case '`order`':
+                        $stmt->bindValue($identifier, $this->order, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -882,7 +868,7 @@ abstract class Album implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = AlbumTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = AlbumArtistTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -902,16 +888,16 @@ abstract class Album implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getName();
+                return $this->getAlbumId();
                 break;
             case 2:
-                return $this->getYear();
+                return $this->getName();
                 break;
             case 3:
-                return $this->getImage();
+                return $this->getArtistId();
                 break;
             case 4:
-                return $this->getsendBy();
+                return $this->getOrder();
                 break;
             default:
                 return null;
@@ -937,17 +923,17 @@ abstract class Album implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['Album'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['AlbumArtist'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['Album'][$this->hashCode()] = true;
-        $keys = AlbumTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['AlbumArtist'][$this->hashCode()] = true;
+        $keys = AlbumArtistTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getName(),
-            $keys[2] => $this->getYear(),
-            $keys[3] => $this->getImage(),
-            $keys[4] => $this->getsendBy(),
+            $keys[1] => $this->getAlbumId(),
+            $keys[2] => $this->getName(),
+            $keys[3] => $this->getArtistId(),
+            $keys[4] => $this->getOrder(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -955,35 +941,35 @@ abstract class Album implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
+            if (null !== $this->aAlbum) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
+                        $key = 'album';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'user';
+                        $key = 'album';
                         break;
                     default:
-                        $key = 'User';
+                        $key = 'Album';
                 }
 
-                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aAlbum->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->collAlbumLyrics) {
+            if (null !== $this->aArtist) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'albumLyrics';
+                        $key = 'artist';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'album_lyrics';
+                        $key = 'artist';
                         break;
                     default:
-                        $key = 'AlbumLyrics';
+                        $key = 'Artist';
                 }
 
-                $result[$key] = $this->collAlbumLyrics->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->aArtist->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -999,11 +985,11 @@ abstract class Album implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Tekstove\ApiBundle\Model\Album
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = AlbumTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = AlbumArtistTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1014,7 +1000,7 @@ abstract class Album implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Tekstove\ApiBundle\Model\Album
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist
      */
     public function setByPosition($pos, $value)
     {
@@ -1023,16 +1009,16 @@ abstract class Album implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setName($value);
+                $this->setAlbumId($value);
                 break;
             case 2:
-                $this->setYear($value);
+                $this->setName($value);
                 break;
             case 3:
-                $this->setImage($value);
+                $this->setArtistId($value);
                 break;
             case 4:
-                $this->setsendBy($value);
+                $this->setOrder($value);
                 break;
         } // switch()
 
@@ -1058,22 +1044,22 @@ abstract class Album implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = AlbumTableMap::getFieldNames($keyType);
+        $keys = AlbumArtistTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setName($arr[$keys[1]]);
+            $this->setAlbumId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setYear($arr[$keys[2]]);
+            $this->setName($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setImage($arr[$keys[3]]);
+            $this->setArtistId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setsendBy($arr[$keys[4]]);
+            $this->setOrder($arr[$keys[4]]);
         }
     }
 
@@ -1094,7 +1080,7 @@ abstract class Album implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Tekstove\ApiBundle\Model\Album The current object, for fluid interface
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1114,22 +1100,22 @@ abstract class Album implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(AlbumTableMap::DATABASE_NAME);
+        $criteria = new Criteria(AlbumArtistTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(AlbumTableMap::COL_ID)) {
-            $criteria->add(AlbumTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_ID)) {
+            $criteria->add(AlbumArtistTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(AlbumTableMap::COL_NAME)) {
-            $criteria->add(AlbumTableMap::COL_NAME, $this->name);
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_ALBUM_ID)) {
+            $criteria->add(AlbumArtistTableMap::COL_ALBUM_ID, $this->album_id);
         }
-        if ($this->isColumnModified(AlbumTableMap::COL_YEAR)) {
-            $criteria->add(AlbumTableMap::COL_YEAR, $this->year);
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_NAME)) {
+            $criteria->add(AlbumArtistTableMap::COL_NAME, $this->name);
         }
-        if ($this->isColumnModified(AlbumTableMap::COL_IMAGE)) {
-            $criteria->add(AlbumTableMap::COL_IMAGE, $this->image);
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_ARTIST_ID)) {
+            $criteria->add(AlbumArtistTableMap::COL_ARTIST_ID, $this->artist_id);
         }
-        if ($this->isColumnModified(AlbumTableMap::COL_USER_ID)) {
-            $criteria->add(AlbumTableMap::COL_USER_ID, $this->user_id);
+        if ($this->isColumnModified(AlbumArtistTableMap::COL_ORDER)) {
+            $criteria->add(AlbumArtistTableMap::COL_ORDER, $this->order);
         }
 
         return $criteria;
@@ -1147,8 +1133,8 @@ abstract class Album implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildAlbumQuery::create();
-        $criteria->add(AlbumTableMap::COL_ID, $this->id);
+        $criteria = ChildAlbumArtistQuery::create();
+        $criteria->add(AlbumArtistTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1210,31 +1196,17 @@ abstract class Album implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Tekstove\ApiBundle\Model\Album (or compatible) type.
+     * @param      object $copyObj An object of \Tekstove\ApiBundle\Model\AlbumArtist (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
+        $copyObj->setAlbumId($this->getAlbumId());
         $copyObj->setName($this->getName());
-        $copyObj->setYear($this->getYear());
-        $copyObj->setImage($this->getImage());
-        $copyObj->setsendBy($this->getsendBy());
-
-        if ($deepCopy) {
-            // important: temporarily setNew(false) because this affects the behavior of
-            // the getter/setter methods for fkey referrer objects.
-            $copyObj->setNew(false);
-
-            foreach ($this->getAlbumLyrics() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addAlbumLyric($relObj->copy($deepCopy));
-                }
-            }
-
-        } // if ($deepCopy)
-
+        $copyObj->setArtistId($this->getArtistId());
+        $copyObj->setOrder($this->getOrder());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1250,7 +1222,7 @@ abstract class Album implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Tekstove\ApiBundle\Model\Album Clone of current object.
+     * @return \Tekstove\ApiBundle\Model\AlbumArtist Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1264,26 +1236,26 @@ abstract class Album implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildUser object.
+     * Declares an association between this object and a ChildAlbum object.
      *
-     * @param  ChildUser $v
-     * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
+     * @param  ChildAlbum $v
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setUser(ChildUser $v = null)
+    public function setAlbum(ChildAlbum $v = null)
     {
         if ($v === null) {
-            $this->setsendBy(NULL);
+            $this->setAlbumId(NULL);
         } else {
-            $this->setsendBy($v->getId());
+            $this->setAlbumId($v->getId());
         }
 
-        $this->aUser = $v;
+        $this->aAlbum = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
+        // If this object has already been added to the ChildAlbum object, it will not be re-added.
         if ($v !== null) {
-            $v->addAlbum($this);
+            $v->addAlbumArtist($this);
         }
 
 
@@ -1292,292 +1264,77 @@ abstract class Album implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildUser object
+     * Get the associated ChildAlbum object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
+     * @return ChildAlbum The associated ChildAlbum object.
      * @throws PropelException
      */
-    public function getUser(ConnectionInterface $con = null)
+    public function getAlbum(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+        if ($this->aAlbum === null && ($this->album_id !== null)) {
+            $this->aAlbum = ChildAlbumQuery::create()->findPk($this->album_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aUser->addAlbums($this);
+                $this->aAlbum->addAlbumArtists($this);
              */
         }
 
-        return $this->aUser;
-    }
-
-
-    /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
-     *
-     * @param      string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('AlbumLyric' == $relationName) {
-            return $this->initAlbumLyrics();
-        }
+        return $this->aAlbum;
     }
 
     /**
-     * Clears out the collAlbumLyrics collection
+     * Declares an association between this object and a ChildArtist object.
      *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addAlbumLyrics()
-     */
-    public function clearAlbumLyrics()
-    {
-        $this->collAlbumLyrics = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collAlbumLyrics collection loaded partially.
-     */
-    public function resetPartialAlbumLyrics($v = true)
-    {
-        $this->collAlbumLyricsPartial = $v;
-    }
-
-    /**
-     * Initializes the collAlbumLyrics collection.
-     *
-     * By default this just sets the collAlbumLyrics collection to an empty array (like clearcollAlbumLyrics());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initAlbumLyrics($overrideExisting = true)
-    {
-        if (null !== $this->collAlbumLyrics && !$overrideExisting) {
-            return;
-        }
-
-        $collectionClassName = AlbumLyricTableMap::getTableMap()->getCollectionClassName();
-
-        $this->collAlbumLyrics = new $collectionClassName;
-        $this->collAlbumLyrics->setModel('\Tekstove\ApiBundle\Model\AlbumLyric');
-    }
-
-    /**
-     * Gets an array of ChildAlbumLyric objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildAlbum is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildAlbumLyric[] List of ChildAlbumLyric objects
+     * @param  ChildArtist $v
+     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object (for fluent API support)
      * @throws PropelException
      */
-    public function getAlbumLyrics(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function setArtist(ChildArtist $v = null)
     {
-        $partial = $this->collAlbumLyricsPartial && !$this->isNew();
-        if (null === $this->collAlbumLyrics || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collAlbumLyrics) {
-                // return empty collection
-                $this->initAlbumLyrics();
-            } else {
-                $collAlbumLyrics = ChildAlbumLyricQuery::create(null, $criteria)
-                    ->filterByAlbum($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collAlbumLyricsPartial && count($collAlbumLyrics)) {
-                        $this->initAlbumLyrics(false);
-
-                        foreach ($collAlbumLyrics as $obj) {
-                            if (false == $this->collAlbumLyrics->contains($obj)) {
-                                $this->collAlbumLyrics->append($obj);
-                            }
-                        }
-
-                        $this->collAlbumLyricsPartial = true;
-                    }
-
-                    return $collAlbumLyrics;
-                }
-
-                if ($partial && $this->collAlbumLyrics) {
-                    foreach ($this->collAlbumLyrics as $obj) {
-                        if ($obj->isNew()) {
-                            $collAlbumLyrics[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collAlbumLyrics = $collAlbumLyrics;
-                $this->collAlbumLyricsPartial = false;
-            }
+        if ($v === null) {
+            $this->setArtistId(NULL);
+        } else {
+            $this->setArtistId($v->getId());
         }
 
-        return $this->collAlbumLyrics;
-    }
+        $this->aArtist = $v;
 
-    /**
-     * Sets a collection of ChildAlbumLyric objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $albumLyrics A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildAlbum The current object (for fluent API support)
-     */
-    public function setAlbumLyrics(Collection $albumLyrics, ConnectionInterface $con = null)
-    {
-        /** @var ChildAlbumLyric[] $albumLyricsToDelete */
-        $albumLyricsToDelete = $this->getAlbumLyrics(new Criteria(), $con)->diff($albumLyrics);
-
-
-        $this->albumLyricsScheduledForDeletion = $albumLyricsToDelete;
-
-        foreach ($albumLyricsToDelete as $albumLyricRemoved) {
-            $albumLyricRemoved->setAlbum(null);
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildArtist object, it will not be re-added.
+        if ($v !== null) {
+            $v->addAlbumArtist($this);
         }
 
-        $this->collAlbumLyrics = null;
-        foreach ($albumLyrics as $albumLyric) {
-            $this->addAlbumLyric($albumLyric);
-        }
-
-        $this->collAlbumLyrics = $albumLyrics;
-        $this->collAlbumLyricsPartial = false;
 
         return $this;
     }
 
+
     /**
-     * Returns the number of related AlbumLyric objects.
+     * Get the associated ChildArtist object
      *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related AlbumLyric objects.
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildArtist The associated ChildArtist object.
      * @throws PropelException
      */
-    public function countAlbumLyrics(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function getArtist(ConnectionInterface $con = null)
     {
-        $partial = $this->collAlbumLyricsPartial && !$this->isNew();
-        if (null === $this->collAlbumLyrics || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collAlbumLyrics) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getAlbumLyrics());
-            }
-
-            $query = ChildAlbumLyricQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByAlbum($this)
-                ->count($con);
+        if ($this->aArtist === null && ($this->artist_id !== null)) {
+            $this->aArtist = ChildArtistQuery::create()->findPk($this->artist_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aArtist->addAlbumArtists($this);
+             */
         }
 
-        return count($this->collAlbumLyrics);
-    }
-
-    /**
-     * Method called to associate a ChildAlbumLyric object to this object
-     * through the ChildAlbumLyric foreign key attribute.
-     *
-     * @param  ChildAlbumLyric $l ChildAlbumLyric
-     * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
-     */
-    public function addAlbumLyric(ChildAlbumLyric $l)
-    {
-        if ($this->collAlbumLyrics === null) {
-            $this->initAlbumLyrics();
-            $this->collAlbumLyricsPartial = true;
-        }
-
-        if (!$this->collAlbumLyrics->contains($l)) {
-            $this->doAddAlbumLyric($l);
-
-            if ($this->albumLyricsScheduledForDeletion and $this->albumLyricsScheduledForDeletion->contains($l)) {
-                $this->albumLyricsScheduledForDeletion->remove($this->albumLyricsScheduledForDeletion->search($l));
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildAlbumLyric $albumLyric The ChildAlbumLyric object to add.
-     */
-    protected function doAddAlbumLyric(ChildAlbumLyric $albumLyric)
-    {
-        $this->collAlbumLyrics[]= $albumLyric;
-        $albumLyric->setAlbum($this);
-    }
-
-    /**
-     * @param  ChildAlbumLyric $albumLyric The ChildAlbumLyric object to remove.
-     * @return $this|ChildAlbum The current object (for fluent API support)
-     */
-    public function removeAlbumLyric(ChildAlbumLyric $albumLyric)
-    {
-        if ($this->getAlbumLyrics()->contains($albumLyric)) {
-            $pos = $this->collAlbumLyrics->search($albumLyric);
-            $this->collAlbumLyrics->remove($pos);
-            if (null === $this->albumLyricsScheduledForDeletion) {
-                $this->albumLyricsScheduledForDeletion = clone $this->collAlbumLyrics;
-                $this->albumLyricsScheduledForDeletion->clear();
-            }
-            $this->albumLyricsScheduledForDeletion[]= clone $albumLyric;
-            $albumLyric->setAlbum(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Album is new, it will return
-     * an empty collection; or if this Album has previously
-     * been saved, it will retrieve related AlbumLyrics from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Album.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildAlbumLyric[] List of ChildAlbumLyric objects
-     */
-    public function getAlbumLyricsJoinLyric(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildAlbumLyricQuery::create(null, $criteria);
-        $query->joinWith('Lyric', $joinBehavior);
-
-        return $this->getAlbumLyrics($query, $con);
+        return $this->aArtist;
     }
 
     /**
@@ -1587,14 +1344,17 @@ abstract class Album implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeAlbum($this);
+        if (null !== $this->aAlbum) {
+            $this->aAlbum->removeAlbumArtist($this);
+        }
+        if (null !== $this->aArtist) {
+            $this->aArtist->removeAlbumArtist($this);
         }
         $this->id = null;
+        $this->album_id = null;
         $this->name = null;
-        $this->year = null;
-        $this->image = null;
-        $this->user_id = null;
+        $this->artist_id = null;
+        $this->order = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1613,15 +1373,10 @@ abstract class Album implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collAlbumLyrics) {
-                foreach ($this->collAlbumLyrics as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collAlbumLyrics = null;
-        $this->aUser = null;
+        $this->aAlbum = null;
+        $this->aArtist = null;
     }
 
     /**
@@ -1631,7 +1386,7 @@ abstract class Album implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(AlbumTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(AlbumArtistTableMap::DEFAULT_STRING_FORMAT);
     }
 
     /**

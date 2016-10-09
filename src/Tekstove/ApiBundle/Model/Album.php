@@ -19,4 +19,13 @@ use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
 class Album extends BaseAlbum implements AutoAclSerializableInterface
 {
     use AclTrait;
+    
+    public function getOrderedAlbumLyrics()
+    {
+        $return = [];
+        foreach ($this->getAlbumLyrics() as $albumLyric) {
+            $return[] = $albumLyric;
+        }
+        return $return;
+    }
 }

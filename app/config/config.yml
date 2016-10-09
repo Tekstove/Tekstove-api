@@ -63,6 +63,9 @@ jms_serializer:
     metadata:
         auto_detection: true
         debug: "%kernel.debug%"
+    visitors:
+        json:
+            options: [JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE]
 
 tekstove_api:
     recaptcha:

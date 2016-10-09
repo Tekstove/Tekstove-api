@@ -171,6 +171,22 @@
         </foreign-key>
     </table>
     
+    <table name="album_lyric">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
+        <column name="album_id" type="integer" required="true" />
+        <column name="name" type="varchar" />
+        <column name="lyric_id" type="integer" />
+        <column name="order" type="integer" />
+
+        <foreign-key foreignTable="album">
+            <reference local="album_id" foreign="id" />
+        </foreign-key>
+        
+        <foreign-key foreignTable="lyric">
+            <reference local="lyric_id" foreign="id" />
+        </foreign-key>
+    </table>
+    
     <table name="forum_category" readOnly="true" namespace="\Tekstove\ApiBundle\Model\Forum" phpName="Category">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
         <column name="name" type="varchar" />

@@ -50,7 +50,17 @@ use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
  * @method     ChildAlbumQuery rightJoinWithUser() Adds a RIGHT JOIN clause and with to the query using the User relation
  * @method     ChildAlbumQuery innerJoinWithUser() Adds a INNER JOIN clause and with to the query using the User relation
  *
- * @method     \Tekstove\ApiBundle\Model\UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildAlbumQuery leftJoinAlbumLyric($relationAlias = null) Adds a LEFT JOIN clause to the query using the AlbumLyric relation
+ * @method     ChildAlbumQuery rightJoinAlbumLyric($relationAlias = null) Adds a RIGHT JOIN clause to the query using the AlbumLyric relation
+ * @method     ChildAlbumQuery innerJoinAlbumLyric($relationAlias = null) Adds a INNER JOIN clause to the query using the AlbumLyric relation
+ *
+ * @method     ChildAlbumQuery joinWithAlbumLyric($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the AlbumLyric relation
+ *
+ * @method     ChildAlbumQuery leftJoinWithAlbumLyric() Adds a LEFT JOIN clause and with to the query using the AlbumLyric relation
+ * @method     ChildAlbumQuery rightJoinWithAlbumLyric() Adds a RIGHT JOIN clause and with to the query using the AlbumLyric relation
+ * @method     ChildAlbumQuery innerJoinWithAlbumLyric() Adds a INNER JOIN clause and with to the query using the AlbumLyric relation
+ *
+ * @method     \Tekstove\ApiBundle\Model\UserQuery|\Tekstove\ApiBundle\Model\AlbumLyricQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildAlbum findOne(ConnectionInterface $con = null) Return the first ChildAlbum matching the query
  * @method     ChildAlbum findOneOrCreate(ConnectionInterface $con = null) Return the first ChildAlbum matching the query, or a new ChildAlbum object populated from the query conditions when no match is found
@@ -516,6 +526,79 @@ abstract class AlbumQuery extends ModelCriteria
         return $this
             ->joinUser($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'User', '\Tekstove\ApiBundle\Model\UserQuery');
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\AlbumLyric object
+     *
+     * @param \Tekstove\ApiBundle\Model\AlbumLyric|ObjectCollection $albumLyric the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildAlbumQuery The current query, for fluid interface
+     */
+    public function filterByAlbumLyric($albumLyric, $comparison = null)
+    {
+        if ($albumLyric instanceof \Tekstove\ApiBundle\Model\AlbumLyric) {
+            return $this
+                ->addUsingAlias(AlbumTableMap::COL_ID, $albumLyric->getAlbumId(), $comparison);
+        } elseif ($albumLyric instanceof ObjectCollection) {
+            return $this
+                ->useAlbumLyricQuery()
+                ->filterByPrimaryKeys($albumLyric->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByAlbumLyric() only accepts arguments of type \Tekstove\ApiBundle\Model\AlbumLyric or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the AlbumLyric relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildAlbumQuery The current query, for fluid interface
+     */
+    public function joinAlbumLyric($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('AlbumLyric');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'AlbumLyric');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the AlbumLyric relation AlbumLyric object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\AlbumLyricQuery A secondary query class using the current class as primary query
+     */
+    public function useAlbumLyricQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinAlbumLyric($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'AlbumLyric', '\Tekstove\ApiBundle\Model\AlbumLyricQuery');
     }
 
     /**

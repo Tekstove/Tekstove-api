@@ -1,0 +1,17 @@
+"Tekstove\\ApiBundle\\Model\\AlbumLyric":
+    exclusion_policy: none
+    exclude: false
+    read_only: true
+    virtual_properties:
+        getId:
+            groups: [Details]
+            serialized_name: id
+        getLyric:
+            groups: [Details]
+            serialized_name: lyric
+        getOrder:
+            groups: [Details]
+            serialized_name: order
+        getName:
+            groups: [Details]
+            serialized_name: name

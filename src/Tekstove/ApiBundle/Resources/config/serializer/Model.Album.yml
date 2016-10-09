@@ -20,3 +20,6 @@
         getUser:
             groups: [Details]
             serialized_name: user
+        getOrderedAlbumLyrics:
+            groups: [Details]
+            serialized_name: lyrics

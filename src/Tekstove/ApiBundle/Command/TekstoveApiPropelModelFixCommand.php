@@ -23,7 +23,7 @@ class TekstoveApiPropelModelFixCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dir = __DIR__ . '/../../../../';
+        $dir = $this->getApplication()->getKernel()->getRootDir() . '/../';
         $projectHome = realpath($dir);
         $output->writeln($projectHome);
         

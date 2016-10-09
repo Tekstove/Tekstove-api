@@ -9,5 +9,6 @@ exclude_patterns:
     - app/check.php
     - src/Tekstove/ApiBundle/Model/*/Base/*
     - src/Tekstove/ApiBundle/Model/*/Map/*
+    - src/Tekstove/ApiBundle/Model/Map/*
 
 php_version: 7

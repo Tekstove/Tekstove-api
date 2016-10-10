@@ -170,7 +170,21 @@
             <reference local="user_id" foreign="id" />
         </foreign-key>
     </table>
-    
+
+    <table name="album_artist">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
+        <column name="album_id" type="integer" required="true" />
+        <column name="artist_id" type="integer" required="true" />
+        <column name="order" type="integer" />
+        <foreign-key foreignTable="album">
+            <reference local="album_id" foreign="id" />
+        </foreign-key>
+        
+        <foreign-key foreignTable="artist">
+            <reference local="artist_id" foreign="id" />
+        </foreign-key>
+    </table>
+            
     <table name="album_lyric">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="album_id" type="integer" required="true" />

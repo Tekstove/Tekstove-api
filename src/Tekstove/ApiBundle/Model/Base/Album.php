@@ -17,11 +17,14 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 use Tekstove\ApiBundle\Model\Album as ChildAlbum;
+use Tekstove\ApiBundle\Model\AlbumArtist as ChildAlbumArtist;
+use Tekstove\ApiBundle\Model\AlbumArtistQuery as ChildAlbumArtistQuery;
 use Tekstove\ApiBundle\Model\AlbumLyric as ChildAlbumLyric;
 use Tekstove\ApiBundle\Model\AlbumLyricQuery as ChildAlbumLyricQuery;
 use Tekstove\ApiBundle\Model\AlbumQuery as ChildAlbumQuery;
 use Tekstove\ApiBundle\Model\User as ChildUser;
 use Tekstove\ApiBundle\Model\UserQuery as ChildUserQuery;
+use Tekstove\ApiBundle\Model\Map\AlbumArtistTableMap;
 use Tekstove\ApiBundle\Model\Map\AlbumLyricTableMap;
 use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
 
@@ -107,6 +110,12 @@ abstract class Album implements ActiveRecordInterface
     protected $aUser;
 
     /**
+     * @var        ObjectCollection|ChildAlbumArtist[] Collection to store aggregation of ChildAlbumArtist objects.
+     */
+    protected $collAlbumArtists;
+    protected $collAlbumArtistsPartial;
+
+    /**
      * @var        ObjectCollection|ChildAlbumLyric[] Collection to store aggregation of ChildAlbumLyric objects.
      */
     protected $collAlbumLyrics;
@@ -119,6 +128,12 @@ abstract class Album implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildAlbumArtist[]
+     */
+    protected $albumArtistsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -628,6 +643,8 @@ abstract class Album implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aUser = null;
+            $this->collAlbumArtists = null;
+
             $this->collAlbumLyrics = null;
 
         } // if (deep)
@@ -750,6 +767,23 @@ abstract class Album implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->albumArtistsScheduledForDeletion !== null) {
+                if (!$this->albumArtistsScheduledForDeletion->isEmpty()) {
+                    \Tekstove\ApiBundle\Model\AlbumArtistQuery::create()
+                        ->filterByPrimaryKeys($this->albumArtistsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->albumArtistsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collAlbumArtists !== null) {
+                foreach ($this->collAlbumArtists as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->albumLyricsScheduledForDeletion !== null) {
@@ -969,6 +1003,21 @@ abstract class Album implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collAlbumArtists) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'albumArtists';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'album_artists';
+                        break;
+                    default:
+                        $key = 'AlbumArtists';
+                }
+
+                $result[$key] = $this->collAlbumArtists->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collAlbumLyrics) {
 
@@ -1227,6 +1276,12 @@ abstract class Album implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getAlbumArtists() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addAlbumArtist($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getAlbumLyrics() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addAlbumLyric($relObj->copy($deepCopy));
@@ -1325,9 +1380,262 @@ abstract class Album implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('AlbumArtist' == $relationName) {
+            return $this->initAlbumArtists();
+        }
         if ('AlbumLyric' == $relationName) {
             return $this->initAlbumLyrics();
         }
+    }
+
+    /**
+     * Clears out the collAlbumArtists collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addAlbumArtists()
+     */
+    public function clearAlbumArtists()
+    {
+        $this->collAlbumArtists = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collAlbumArtists collection loaded partially.
+     */
+    public function resetPartialAlbumArtists($v = true)
+    {
+        $this->collAlbumArtistsPartial = $v;
+    }
+
+    /**
+     * Initializes the collAlbumArtists collection.
+     *
+     * By default this just sets the collAlbumArtists collection to an empty array (like clearcollAlbumArtists());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initAlbumArtists($overrideExisting = true)
+    {
+        if (null !== $this->collAlbumArtists && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = AlbumArtistTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collAlbumArtists = new $collectionClassName;
+        $this->collAlbumArtists->setModel('\Tekstove\ApiBundle\Model\AlbumArtist');
+    }
+
+    /**
+     * Gets an array of ChildAlbumArtist objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildAlbum is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildAlbumArtist[] List of ChildAlbumArtist objects
+     * @throws PropelException
+     */
+    public function getAlbumArtists(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collAlbumArtistsPartial && !$this->isNew();
+        if (null === $this->collAlbumArtists || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collAlbumArtists) {
+                // return empty collection
+                $this->initAlbumArtists();
+            } else {
+                $collAlbumArtists = ChildAlbumArtistQuery::create(null, $criteria)
+                    ->filterByAlbum($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collAlbumArtistsPartial && count($collAlbumArtists)) {
+                        $this->initAlbumArtists(false);
+
+                        foreach ($collAlbumArtists as $obj) {
+                            if (false == $this->collAlbumArtists->contains($obj)) {
+                                $this->collAlbumArtists->append($obj);
+                            }
+                        }
+
+                        $this->collAlbumArtistsPartial = true;
+                    }
+
+                    return $collAlbumArtists;
+                }
+
+                if ($partial && $this->collAlbumArtists) {
+                    foreach ($this->collAlbumArtists as $obj) {
+                        if ($obj->isNew()) {
+                            $collAlbumArtists[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collAlbumArtists = $collAlbumArtists;
+                $this->collAlbumArtistsPartial = false;
+            }
+        }
+
+        return $this->collAlbumArtists;
+    }
+
+    /**
+     * Sets a collection of ChildAlbumArtist objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $albumArtists A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildAlbum The current object (for fluent API support)
+     */
+    public function setAlbumArtists(Collection $albumArtists, ConnectionInterface $con = null)
+    {
+        /** @var ChildAlbumArtist[] $albumArtistsToDelete */
+        $albumArtistsToDelete = $this->getAlbumArtists(new Criteria(), $con)->diff($albumArtists);
+
+
+        $this->albumArtistsScheduledForDeletion = $albumArtistsToDelete;
+
+        foreach ($albumArtistsToDelete as $albumArtistRemoved) {
+            $albumArtistRemoved->setAlbum(null);
+        }
+
+        $this->collAlbumArtists = null;
+        foreach ($albumArtists as $albumArtist) {
+            $this->addAlbumArtist($albumArtist);
+        }
+
+        $this->collAlbumArtists = $albumArtists;
+        $this->collAlbumArtistsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related AlbumArtist objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related AlbumArtist objects.
+     * @throws PropelException
+     */
+    public function countAlbumArtists(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collAlbumArtistsPartial && !$this->isNew();
+        if (null === $this->collAlbumArtists || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collAlbumArtists) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getAlbumArtists());
+            }
+
+            $query = ChildAlbumArtistQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByAlbum($this)
+                ->count($con);
+        }
+
+        return count($this->collAlbumArtists);
+    }
+
+    /**
+     * Method called to associate a ChildAlbumArtist object to this object
+     * through the ChildAlbumArtist foreign key attribute.
+     *
+     * @param  ChildAlbumArtist $l ChildAlbumArtist
+     * @return $this|\Tekstove\ApiBundle\Model\Album The current object (for fluent API support)
+     */
+    public function addAlbumArtist(ChildAlbumArtist $l)
+    {
+        if ($this->collAlbumArtists === null) {
+            $this->initAlbumArtists();
+            $this->collAlbumArtistsPartial = true;
+        }
+
+        if (!$this->collAlbumArtists->contains($l)) {
+            $this->doAddAlbumArtist($l);
+
+            if ($this->albumArtistsScheduledForDeletion and $this->albumArtistsScheduledForDeletion->contains($l)) {
+                $this->albumArtistsScheduledForDeletion->remove($this->albumArtistsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildAlbumArtist $albumArtist The ChildAlbumArtist object to add.
+     */
+    protected function doAddAlbumArtist(ChildAlbumArtist $albumArtist)
+    {
+        $this->collAlbumArtists[]= $albumArtist;
+        $albumArtist->setAlbum($this);
+    }
+
+    /**
+     * @param  ChildAlbumArtist $albumArtist The ChildAlbumArtist object to remove.
+     * @return $this|ChildAlbum The current object (for fluent API support)
+     */
+    public function removeAlbumArtist(ChildAlbumArtist $albumArtist)
+    {
+        if ($this->getAlbumArtists()->contains($albumArtist)) {
+            $pos = $this->collAlbumArtists->search($albumArtist);
+            $this->collAlbumArtists->remove($pos);
+            if (null === $this->albumArtistsScheduledForDeletion) {
+                $this->albumArtistsScheduledForDeletion = clone $this->collAlbumArtists;
+                $this->albumArtistsScheduledForDeletion->clear();
+            }
+            $this->albumArtistsScheduledForDeletion[]= clone $albumArtist;
+            $albumArtist->setAlbum(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Album is new, it will return
+     * an empty collection; or if this Album has previously
+     * been saved, it will retrieve related AlbumArtists from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Album.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildAlbumArtist[] List of ChildAlbumArtist objects
+     */
+    public function getAlbumArtistsJoinArtist(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildAlbumArtistQuery::create(null, $criteria);
+        $query->joinWith('Artist', $joinBehavior);
+
+        return $this->getAlbumArtists($query, $con);
     }
 
     /**
@@ -1613,6 +1921,11 @@ abstract class Album implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collAlbumArtists) {
+                foreach ($this->collAlbumArtists as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collAlbumLyrics) {
                 foreach ($this->collAlbumLyrics as $o) {
                     $o->clearAllReferences($deep);
@@ -1620,6 +1933,7 @@ abstract class Album implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collAlbumArtists = null;
         $this->collAlbumLyrics = null;
         $this->aUser = null;
     }

@@ -166,6 +166,13 @@ class ArtistTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'ArtistLyrics', false);
+        $this->addRelation('AlbumArtist', '\\Tekstove\\ApiBundle\\Model\\AlbumArtist', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':artist_id',
+    1 => ':id',
+  ),
+), null, null, 'AlbumArtists', false);
         $this->addRelation('Lyric', '\\Tekstove\\ApiBundle\\Model\\Lyric', RelationMap::MANY_TO_MANY, array(), null, null, 'Lyrics');
     } // buildRelations()
 

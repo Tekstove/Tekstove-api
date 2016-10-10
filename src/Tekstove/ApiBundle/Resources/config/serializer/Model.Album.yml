@@ -23,3 +23,6 @@
         getOrderedAlbumLyrics:
             groups: [Details]
             serialized_name: lyrics
+        getOrderedArtists:
+            groups: [Details]
+            serialized_name: artists

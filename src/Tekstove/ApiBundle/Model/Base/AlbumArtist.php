@@ -78,13 +78,6 @@ abstract class AlbumArtist implements ActiveRecordInterface
     protected $album_id;
 
     /**
-     * The value for the name field.
-     *
-     * @var        string
-     */
-    protected $name;
-
-    /**
      * The value for the artist_id field.
      *
      * @var        int
@@ -362,16 +355,6 @@ abstract class AlbumArtist implements ActiveRecordInterface
     }
 
     /**
-     * Get the [name] column value.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * Get the [artist_id] column value.
      *
      * @return int
@@ -434,26 +417,6 @@ abstract class AlbumArtist implements ActiveRecordInterface
 
         return $this;
     } // setAlbumId()
-
-    /**
-     * Set the value of [name] column.
-     *
-     * @param string $v new value
-     * @return $this|\Tekstove\ApiBundle\Model\AlbumArtist The current object (for fluent API support)
-     */
-    public function setName($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->name !== $v) {
-            $this->name = $v;
-            $this->modifiedColumns[AlbumArtistTableMap::COL_NAME] = true;
-        }
-
-        return $this;
-    } // setName()
 
     /**
      * Set the value of [artist_id] column.
@@ -541,13 +504,10 @@ abstract class AlbumArtist implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AlbumArtistTableMap::translateFieldName('AlbumId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->album_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AlbumArtistTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->name = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AlbumArtistTableMap::translateFieldName('ArtistId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AlbumArtistTableMap::translateFieldName('ArtistId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->artist_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AlbumArtistTableMap::translateFieldName('Order', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AlbumArtistTableMap::translateFieldName('Order', TableMap::TYPE_PHPNAME, $indexType)];
             $this->order = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -557,7 +517,7 @@ abstract class AlbumArtist implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = AlbumArtistTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = AlbumArtistTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\AlbumArtist'), 0, $e);
@@ -787,9 +747,6 @@ abstract class AlbumArtist implements ActiveRecordInterface
         if ($this->isColumnModified(AlbumArtistTableMap::COL_ALBUM_ID)) {
             $modifiedColumns[':p' . $index++]  = '`album_id`';
         }
-        if ($this->isColumnModified(AlbumArtistTableMap::COL_NAME)) {
-            $modifiedColumns[':p' . $index++]  = '`name`';
-        }
         if ($this->isColumnModified(AlbumArtistTableMap::COL_ARTIST_ID)) {
             $modifiedColumns[':p' . $index++]  = '`artist_id`';
         }
@@ -812,9 +769,6 @@ abstract class AlbumArtist implements ActiveRecordInterface
                         break;
                     case '`album_id`':
                         $stmt->bindValue($identifier, $this->album_id, PDO::PARAM_INT);
-                        break;
-                    case '`name`':
-                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
                         break;
                     case '`artist_id`':
                         $stmt->bindValue($identifier, $this->artist_id, PDO::PARAM_INT);
@@ -891,12 +845,9 @@ abstract class AlbumArtist implements ActiveRecordInterface
                 return $this->getAlbumId();
                 break;
             case 2:
-                return $this->getName();
-                break;
-            case 3:
                 return $this->getArtistId();
                 break;
-            case 4:
+            case 3:
                 return $this->getOrder();
                 break;
             default:
@@ -931,9 +882,8 @@ abstract class AlbumArtist implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getAlbumId(),
-            $keys[2] => $this->getName(),
-            $keys[3] => $this->getArtistId(),
-            $keys[4] => $this->getOrder(),
+            $keys[2] => $this->getArtistId(),
+            $keys[3] => $this->getOrder(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1012,12 +962,9 @@ abstract class AlbumArtist implements ActiveRecordInterface
                 $this->setAlbumId($value);
                 break;
             case 2:
-                $this->setName($value);
-                break;
-            case 3:
                 $this->setArtistId($value);
                 break;
-            case 4:
+            case 3:
                 $this->setOrder($value);
                 break;
         } // switch()
@@ -1053,13 +1000,10 @@ abstract class AlbumArtist implements ActiveRecordInterface
             $this->setAlbumId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setName($arr[$keys[2]]);
+            $this->setArtistId($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setArtistId($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setOrder($arr[$keys[4]]);
+            $this->setOrder($arr[$keys[3]]);
         }
     }
 
@@ -1107,9 +1051,6 @@ abstract class AlbumArtist implements ActiveRecordInterface
         }
         if ($this->isColumnModified(AlbumArtistTableMap::COL_ALBUM_ID)) {
             $criteria->add(AlbumArtistTableMap::COL_ALBUM_ID, $this->album_id);
-        }
-        if ($this->isColumnModified(AlbumArtistTableMap::COL_NAME)) {
-            $criteria->add(AlbumArtistTableMap::COL_NAME, $this->name);
         }
         if ($this->isColumnModified(AlbumArtistTableMap::COL_ARTIST_ID)) {
             $criteria->add(AlbumArtistTableMap::COL_ARTIST_ID, $this->artist_id);
@@ -1204,7 +1145,6 @@ abstract class AlbumArtist implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setAlbumId($this->getAlbumId());
-        $copyObj->setName($this->getName());
         $copyObj->setArtistId($this->getArtistId());
         $copyObj->setOrder($this->getOrder());
         if ($makeNew) {
@@ -1352,7 +1292,6 @@ abstract class AlbumArtist implements ActiveRecordInterface
         }
         $this->id = null;
         $this->album_id = null;
-        $this->name = null;
         $this->artist_id = null;
         $this->order = null;
         $this->alreadyInSave = false;

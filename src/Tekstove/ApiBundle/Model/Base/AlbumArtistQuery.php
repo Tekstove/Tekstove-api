@@ -22,13 +22,11 @@ use Tekstove\ApiBundle\Model\Map\AlbumArtistTableMap;
  *
  * @method     ChildAlbumArtistQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildAlbumArtistQuery orderByAlbumId($order = Criteria::ASC) Order by the album_id column
- * @method     ChildAlbumArtistQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildAlbumArtistQuery orderByArtistId($order = Criteria::ASC) Order by the artist_id column
  * @method     ChildAlbumArtistQuery orderByOrder($order = Criteria::ASC) Order by the order column
  *
  * @method     ChildAlbumArtistQuery groupById() Group by the id column
  * @method     ChildAlbumArtistQuery groupByAlbumId() Group by the album_id column
- * @method     ChildAlbumArtistQuery groupByName() Group by the name column
  * @method     ChildAlbumArtistQuery groupByArtistId() Group by the artist_id column
  * @method     ChildAlbumArtistQuery groupByOrder() Group by the order column
  *
@@ -67,7 +65,6 @@ use Tekstove\ApiBundle\Model\Map\AlbumArtistTableMap;
  *
  * @method     ChildAlbumArtist findOneById(int $id) Return the first ChildAlbumArtist filtered by the id column
  * @method     ChildAlbumArtist findOneByAlbumId(int $album_id) Return the first ChildAlbumArtist filtered by the album_id column
- * @method     ChildAlbumArtist findOneByName(string $name) Return the first ChildAlbumArtist filtered by the name column
  * @method     ChildAlbumArtist findOneByArtistId(int $artist_id) Return the first ChildAlbumArtist filtered by the artist_id column
  * @method     ChildAlbumArtist findOneByOrder(int $order) Return the first ChildAlbumArtist filtered by the order column *
 
@@ -76,14 +73,12 @@ use Tekstove\ApiBundle\Model\Map\AlbumArtistTableMap;
  *
  * @method     ChildAlbumArtist requireOneById(int $id) Return the first ChildAlbumArtist filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAlbumArtist requireOneByAlbumId(int $album_id) Return the first ChildAlbumArtist filtered by the album_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildAlbumArtist requireOneByName(string $name) Return the first ChildAlbumArtist filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAlbumArtist requireOneByArtistId(int $artist_id) Return the first ChildAlbumArtist filtered by the artist_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAlbumArtist requireOneByOrder(int $order) Return the first ChildAlbumArtist filtered by the order column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildAlbumArtist[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildAlbumArtist objects based on current ModelCriteria
  * @method     ChildAlbumArtist[]|ObjectCollection findById(int $id) Return ChildAlbumArtist objects filtered by the id column
  * @method     ChildAlbumArtist[]|ObjectCollection findByAlbumId(int $album_id) Return ChildAlbumArtist objects filtered by the album_id column
- * @method     ChildAlbumArtist[]|ObjectCollection findByName(string $name) Return ChildAlbumArtist objects filtered by the name column
  * @method     ChildAlbumArtist[]|ObjectCollection findByArtistId(int $artist_id) Return ChildAlbumArtist objects filtered by the artist_id column
  * @method     ChildAlbumArtist[]|ObjectCollection findByOrder(int $order) Return ChildAlbumArtist objects filtered by the order column
  * @method     ChildAlbumArtist[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -184,7 +179,7 @@ abstract class AlbumArtistQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `album_id`, `name`, `artist_id`, `order` FROM `album_artist` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `album_id`, `artist_id`, `order` FROM `album_artist` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -356,32 +351,6 @@ abstract class AlbumArtistQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(AlbumArtistTableMap::COL_ALBUM_ID, $albumId, $comparison);
-    }
-
-    /**
-     * Filter the query on the name column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByName('fooValue');   // WHERE name = 'fooValue'
-     * $query->filterByName('%fooValue%'); // WHERE name LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $name The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildAlbumArtistQuery The current query, for fluid interface
-     */
-    public function filterByName($name = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($name)) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(AlbumArtistTableMap::COL_NAME, $name, $comparison);
     }
 
     /**
@@ -580,7 +549,7 @@ abstract class AlbumArtistQuery extends ModelCriteria
      *
      * @return $this|ChildAlbumArtistQuery The current query, for fluid interface
      */
-    public function joinArtist($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinArtist($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
         $relationMap = $tableMap->getRelation('Artist');
@@ -615,7 +584,7 @@ abstract class AlbumArtistQuery extends ModelCriteria
      *
      * @return \Tekstove\ApiBundle\Model\ArtistQuery A secondary query class using the current class as primary query
      */
-    public function useArtistQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useArtistQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinArtist($relationAlias, $joinType)

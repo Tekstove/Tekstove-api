@@ -20,12 +20,58 @@ class Album extends BaseAlbum implements AutoAclSerializableInterface
 {
     use AclTrait;
     
+    /**
+     * @return AlbumLyric[]
+     */
     public function getOrderedAlbumLyrics()
     {
         $return = [];
+        $returnUnordered = [];
         foreach ($this->getAlbumLyrics() as $albumLyric) {
-            $return[] = $albumLyric;
+            $returnUnordered[] = [
+                'order' => $albumLyric->getOrder(),
+                'albumLyric' => $albumLyric,
+            ];
         }
+        
+        usort(
+            $returnUnordered,
+            function ($a, $b) {
+                return $a['order'] > $b['order'];
+            }
+        );
+        
+        foreach ($returnUnordered as $albumLyricData) {
+            $return[] = $albumLyricData['albumLyric'];
+        }
+        return $return;
+    }
+    
+    /**
+     * @return AlbumArtist[]
+     */
+    public function getOrderedArtists()
+    {
+        $return = [];
+        $returnUnOrdered = [];
+        foreach ($this->getAlbumArtists() as $albumArtist) {
+            $returnUnOrdered[] = [
+                'order' => $albumArtist->getOrder(),
+                'artist' => $albumArtist->getArtist()
+            ];
+        }
+        
+        usort(
+            $returnUnOrdered,
+            function ($a, $b) {
+                return $a['order'] > $b['order'];
+            }
+        );
+        
+        foreach ($returnUnOrdered as $albumArtistData) {
+            $return[] = $albumArtistData['artist'];
+        }
+        
         return $return;
     }
 }

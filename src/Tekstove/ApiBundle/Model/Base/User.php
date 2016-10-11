@@ -40,6 +40,10 @@ use Tekstove\ApiBundle\Model\Acl\PermissionGroupUser;
 use Tekstove\ApiBundle\Model\Acl\PermissionGroupUserQuery;
 use Tekstove\ApiBundle\Model\Acl\Base\PermissionGroupUser as BasePermissionGroupUser;
 use Tekstove\ApiBundle\Model\Acl\Map\PermissionGroupUserTableMap;
+use Tekstove\ApiBundle\Model\Forum\Topic;
+use Tekstove\ApiBundle\Model\Forum\TopicQuery;
+use Tekstove\ApiBundle\Model\Forum\Base\Topic as BaseTopic;
+use Tekstove\ApiBundle\Model\Forum\Map\TopicTableMap;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslationQuery;
 use Tekstove\ApiBundle\Model\Lyric\LyricVote;
@@ -187,6 +191,12 @@ abstract class User implements ActiveRecordInterface
     protected $collAlbumsPartial;
 
     /**
+     * @var        ObjectCollection|Topic[] Collection to store aggregation of Topic objects.
+     */
+    protected $collTopics;
+    protected $collTopicsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -246,6 +256,12 @@ abstract class User implements ActiveRecordInterface
      * @var ObjectCollection|ChildAlbum[]
      */
     protected $albumsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|Topic[]
+     */
+    protected $topicsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Tekstove\ApiBundle\Model\Base\User object.
@@ -852,6 +868,8 @@ abstract class User implements ActiveRecordInterface
 
             $this->collAlbums = null;
 
+            $this->collTopics = null;
+
         } // if (deep)
     }
 
@@ -1063,6 +1081,24 @@ abstract class User implements ActiveRecordInterface
 
             if ($this->collAlbums !== null) {
                 foreach ($this->collAlbums as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->topicsScheduledForDeletion !== null) {
+                if (!$this->topicsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->topicsScheduledForDeletion as $topic) {
+                        // need to save related object because we set the relation to null
+                        $topic->save($con);
+                    }
+                    $this->topicsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collTopics !== null) {
+                foreach ($this->collTopics as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1375,6 +1411,21 @@ abstract class User implements ActiveRecordInterface
 
                 $result[$key] = $this->collAlbums->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
+            if (null !== $this->collTopics) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'topics';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'forum_topics';
+                        break;
+                    default:
+                        $key = 'Topics';
+                }
+
+                $result[$key] = $this->collTopics->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
         }
 
         return $result;
@@ -1683,6 +1734,12 @@ abstract class User implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getTopics() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addTopic($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -1741,6 +1798,9 @@ abstract class User implements ActiveRecordInterface
         }
         if ('Album' == $relationName) {
             return $this->initAlbums();
+        }
+        if ('Topic' == $relationName) {
+            return $this->initTopics();
         }
     }
 
@@ -3173,6 +3233,231 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collTopics collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addTopics()
+     */
+    public function clearTopics()
+    {
+        $this->collTopics = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collTopics collection loaded partially.
+     */
+    public function resetPartialTopics($v = true)
+    {
+        $this->collTopicsPartial = $v;
+    }
+
+    /**
+     * Initializes the collTopics collection.
+     *
+     * By default this just sets the collTopics collection to an empty array (like clearcollTopics());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initTopics($overrideExisting = true)
+    {
+        if (null !== $this->collTopics && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = TopicTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collTopics = new $collectionClassName;
+        $this->collTopics->setModel('\Tekstove\ApiBundle\Model\Forum\Topic');
+    }
+
+    /**
+     * Gets an array of Topic objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|Topic[] List of Topic objects
+     * @throws PropelException
+     */
+    public function getTopics(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTopicsPartial && !$this->isNew();
+        if (null === $this->collTopics || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collTopics) {
+                // return empty collection
+                $this->initTopics();
+            } else {
+                $collTopics = TopicQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collTopicsPartial && count($collTopics)) {
+                        $this->initTopics(false);
+
+                        foreach ($collTopics as $obj) {
+                            if (false == $this->collTopics->contains($obj)) {
+                                $this->collTopics->append($obj);
+                            }
+                        }
+
+                        $this->collTopicsPartial = true;
+                    }
+
+                    return $collTopics;
+                }
+
+                if ($partial && $this->collTopics) {
+                    foreach ($this->collTopics as $obj) {
+                        if ($obj->isNew()) {
+                            $collTopics[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collTopics = $collTopics;
+                $this->collTopicsPartial = false;
+            }
+        }
+
+        return $this->collTopics;
+    }
+
+    /**
+     * Sets a collection of Topic objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $topics A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setTopics(Collection $topics, ConnectionInterface $con = null)
+    {
+        /** @var Topic[] $topicsToDelete */
+        $topicsToDelete = $this->getTopics(new Criteria(), $con)->diff($topics);
+
+
+        $this->topicsScheduledForDeletion = $topicsToDelete;
+
+        foreach ($topicsToDelete as $topicRemoved) {
+            $topicRemoved->setUser(null);
+        }
+
+        $this->collTopics = null;
+        foreach ($topics as $topic) {
+            $this->addTopic($topic);
+        }
+
+        $this->collTopics = $topics;
+        $this->collTopicsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related BaseTopic objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related BaseTopic objects.
+     * @throws PropelException
+     */
+    public function countTopics(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTopicsPartial && !$this->isNew();
+        if (null === $this->collTopics || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collTopics) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getTopics());
+            }
+
+            $query = TopicQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collTopics);
+    }
+
+    /**
+     * Method called to associate a Topic object to this object
+     * through the Topic foreign key attribute.
+     *
+     * @param  Topic $l Topic
+     * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
+     */
+    public function addTopic(Topic $l)
+    {
+        if ($this->collTopics === null) {
+            $this->initTopics();
+            $this->collTopicsPartial = true;
+        }
+
+        if (!$this->collTopics->contains($l)) {
+            $this->doAddTopic($l);
+
+            if ($this->topicsScheduledForDeletion and $this->topicsScheduledForDeletion->contains($l)) {
+                $this->topicsScheduledForDeletion->remove($this->topicsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Topic $topic The Topic object to add.
+     */
+    protected function doAddTopic(Topic $topic)
+    {
+        $this->collTopics[]= $topic;
+        $topic->setUser($this);
+    }
+
+    /**
+     * @param  Topic $topic The Topic object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeTopic(Topic $topic)
+    {
+        if ($this->getTopics()->contains($topic)) {
+            $pos = $this->collTopics->search($topic);
+            $this->collTopics->remove($pos);
+            if (null === $this->topicsScheduledForDeletion) {
+                $this->topicsScheduledForDeletion = clone $this->collTopics;
+                $this->topicsScheduledForDeletion->clear();
+            }
+            $this->topicsScheduledForDeletion[]= $topic;
+            $topic->setUser(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -3235,6 +3520,11 @@ abstract class User implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collTopics) {
+                foreach ($this->collTopics as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collPermissionGroupUsers = null;
@@ -3243,6 +3533,7 @@ abstract class User implements ActiveRecordInterface
         $this->collLyricVotes = null;
         $this->collArtists = null;
         $this->collAlbums = null;
+        $this->collTopics = null;
     }
 
     /**
@@ -3350,6 +3641,15 @@ abstract class User implements ActiveRecordInterface
             }
             if (null !== $this->collAlbums) {
                 foreach ($this->collAlbums as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
+            if (null !== $this->collTopics) {
+                foreach ($this->collTopics as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());

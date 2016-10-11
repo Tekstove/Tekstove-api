@@ -1,6 +1,6 @@
 <?php
 
-namespace Tekstove\ApiBundle\Model\Map;
+namespace Tekstove\ApiBundle\Model\Forum\Map;
 
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -11,12 +11,12 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\RelationMap;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Map\TableMapTrait;
-use Tekstove\ApiBundle\Model\User;
-use Tekstove\ApiBundle\Model\UserQuery;
+use Tekstove\ApiBundle\Model\Forum\Topic;
+use Tekstove\ApiBundle\Model\Forum\TopicQuery;
 
 
 /**
- * This class defines the structure of the 'user' table.
+ * This class defines the structure of the 'forum_topic' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Tekstove\ApiBundle\Model\UserQuery;
  * (i.e. if it's a text column type).
  *
  */
-class UserTableMap extends TableMap
+class TopicTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class UserTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'src.Tekstove.ApiBundle.Model.Map.UserTableMap';
+    const CLASS_NAME = 'Tekstove.ApiBundle.Model.Forum.Map.TopicTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class UserTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'user';
+    const TABLE_NAME = 'forum_topic';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Tekstove\\ApiBundle\\Model\\User';
+    const OM_CLASS = '\\Tekstove\\ApiBundle\\Model\\Forum\\Topic';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'src.Tekstove.ApiBundle.Model.User';
+    const CLASS_DEFAULT = 'Tekstove.ApiBundle.Model.Forum.Topic';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 8;
+    const NUM_COLUMNS = 3;
 
     /**
      * The number of lazy-loaded columns
@@ -69,47 +69,22 @@ class UserTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 8;
+    const NUM_HYDRATE_COLUMNS = 3;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'user.id';
+    const COL_ID = 'forum_topic.id';
 
     /**
-     * the column name for the username field
+     * the column name for the name field
      */
-    const COL_USERNAME = 'user.username';
+    const COL_NAME = 'forum_topic.name';
 
     /**
-     * the column name for the password field
+     * the column name for the user_id field
      */
-    const COL_PASSWORD = 'user.password';
-
-    /**
-     * the column name for the api_key field
-     */
-    const COL_API_KEY = 'user.api_key';
-
-    /**
-     * the column name for the mail field
-     */
-    const COL_MAIL = 'user.mail';
-
-    /**
-     * the column name for the avatar field
-     */
-    const COL_AVATAR = 'user.avatar';
-
-    /**
-     * the column name for the about field
-     */
-    const COL_ABOUT = 'user.about';
-
-    /**
-     * the column name for the autoplay field
-     */
-    const COL_AUTOPLAY = 'user.autoplay';
+    const COL_USER_ID = 'forum_topic.user_id';
 
     /**
      * The default string format for model objects of the related table
@@ -123,11 +98,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Username', 'Password', 'apiKey', 'Mail', 'Avatar', 'About', 'Autoplay', ),
-        self::TYPE_CAMELNAME     => array('id', 'username', 'password', 'apiKey', 'mail', 'avatar', 'about', 'autoplay', ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_USERNAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_API_KEY, UserTableMap::COL_MAIL, UserTableMap::COL_AVATAR, UserTableMap::COL_ABOUT, UserTableMap::COL_AUTOPLAY, ),
-        self::TYPE_FIELDNAME     => array('id', 'username', 'password', 'api_key', 'mail', 'avatar', 'about', 'autoplay', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'UserId', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'userId', ),
+        self::TYPE_COLNAME       => array(TopicTableMap::COL_ID, TopicTableMap::COL_NAME, TopicTableMap::COL_USER_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', 'user_id', ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -137,11 +112,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Password' => 2, 'apiKey' => 3, 'Mail' => 4, 'Avatar' => 5, 'About' => 6, 'Autoplay' => 7, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'apiKey' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_USERNAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_API_KEY => 3, UserTableMap::COL_MAIL => 4, UserTableMap::COL_AVATAR => 5, UserTableMap::COL_ABOUT => 6, UserTableMap::COL_AUTOPLAY => 7, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'api_key' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'UserId' => 2, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'userId' => 2, ),
+        self::TYPE_COLNAME       => array(TopicTableMap::COL_ID => 0, TopicTableMap::COL_NAME => 1, TopicTableMap::COL_USER_ID => 2, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'user_id' => 2, ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -154,22 +129,16 @@ class UserTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('user');
-        $this->setPhpName('User');
+        $this->setName('forum_topic');
+        $this->setPhpName('Topic');
         $this->setIdentifierQuoting(true);
-        $this->setClassName('\\Tekstove\\ApiBundle\\Model\\User');
-        $this->setPackage('src.Tekstove.ApiBundle.Model');
+        $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Forum\\Topic');
+        $this->setPackage('Tekstove.ApiBundle.Model.Forum');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('username', 'Username', 'VARCHAR', false, 100, null);
-        $this->getColumn('username')->setPrimaryString(true);
-        $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
-        $this->addColumn('api_key', 'apiKey', 'VARCHAR', true, 255, null);
-        $this->addColumn('mail', 'Mail', 'VARCHAR', true, 255, null);
-        $this->addColumn('avatar', 'Avatar', 'VARCHAR', false, 255, null);
-        $this->addColumn('about', 'About', 'VARCHAR', false, 255, null);
-        $this->addColumn('autoplay', 'Autoplay', 'SMALLINT', false, null, null);
+        $this->addColumn('name', 'Name', 'VARCHAR', false, 255, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', false, null, null);
     } // initialize()
 
     /**
@@ -177,69 +146,14 @@ class UserTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('PermissionGroupUser', '\\Tekstove\\ApiBundle\\Model\\Acl\\PermissionGroupUser', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('User', '\\Tekstove\\ApiBundle\\Model\\User', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':user_id',
     1 => ':id',
   ),
-), null, null, 'PermissionGroupUsers', false);
-        $this->addRelation('Lyric', '\\Tekstove\\ApiBundle\\Model\\Lyric', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':send_by',
-    1 => ':id',
-  ),
-), null, null, 'Lyrics', false);
-        $this->addRelation('LyricTranslation', '\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricTranslation', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':user_id',
-    1 => ':id',
-  ),
-), null, null, 'LyricTranslations', false);
-        $this->addRelation('LyricVote', '\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricVote', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':user_id',
-    1 => ':id',
-  ),
-), null, null, 'LyricVotes', false);
-        $this->addRelation('Artist', '\\Tekstove\\ApiBundle\\Model\\Artist', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':user_id',
-    1 => ':id',
-  ),
-), null, null, 'Artists', false);
-        $this->addRelation('Album', '\\Tekstove\\ApiBundle\\Model\\Album', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':user_id',
-    1 => ':id',
-  ),
-), null, null, 'Albums', false);
-        $this->addRelation('Topic', '\\Tekstove\\ApiBundle\\Model\\Forum\\Topic', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':user_id',
-    1 => ':id',
-  ),
-), null, null, 'Topics', false);
+), null, null, null, false);
     } // buildRelations()
-
-    /**
-     *
-     * Gets the list of behaviors registered for this table
-     *
-     * @return array Associative array (name => parameters) of behaviors
-     */
-    public function getBehaviors()
-    {
-        return array(
-            'validate' => array('requiredEmail' => array ('column' => 'mail','validator' => 'NotBlank',), 'validEmail' => array ('column' => 'mail','validator' => 'Email',), 'uniqueEmail' => array ('column' => 'mail','validator' => 'Unique',), 'requiredUsername' => array ('column' => 'username','validator' => 'NotBlank',), 'uniqueUsername' => array ('column' => 'username','validator' => 'Unique',), 'requiredPassword' => array ('column' => 'password','validator' => 'NotBlank',), 'requiredApiKey' => array ('column' => 'api_key','validator' => 'NotBlank',), ),
-        );
-    } // getBehaviors()
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -298,7 +212,7 @@ class UserTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? UserTableMap::CLASS_DEFAULT : UserTableMap::OM_CLASS;
+        return $withPrefix ? TopicTableMap::CLASS_DEFAULT : TopicTableMap::OM_CLASS;
     }
 
     /**
@@ -312,22 +226,22 @@ class UserTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (User object, last column rank)
+     * @return array           (Topic object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = UserTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = UserTableMap::getInstanceFromPool($key))) {
+        $key = TopicTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = TopicTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + UserTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + TopicTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = UserTableMap::OM_CLASS;
-            /** @var User $obj */
+            $cls = TopicTableMap::OM_CLASS;
+            /** @var Topic $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            UserTableMap::addInstanceToPool($obj, $key);
+            TopicTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -350,18 +264,18 @@ class UserTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = UserTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = UserTableMap::getInstanceFromPool($key))) {
+            $key = TopicTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = TopicTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var User $obj */
+                /** @var Topic $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                UserTableMap::addInstanceToPool($obj, $key);
+                TopicTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -382,23 +296,13 @@ class UserTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(UserTableMap::COL_ID);
-            $criteria->addSelectColumn(UserTableMap::COL_USERNAME);
-            $criteria->addSelectColumn(UserTableMap::COL_PASSWORD);
-            $criteria->addSelectColumn(UserTableMap::COL_API_KEY);
-            $criteria->addSelectColumn(UserTableMap::COL_MAIL);
-            $criteria->addSelectColumn(UserTableMap::COL_AVATAR);
-            $criteria->addSelectColumn(UserTableMap::COL_ABOUT);
-            $criteria->addSelectColumn(UserTableMap::COL_AUTOPLAY);
+            $criteria->addSelectColumn(TopicTableMap::COL_ID);
+            $criteria->addSelectColumn(TopicTableMap::COL_NAME);
+            $criteria->addSelectColumn(TopicTableMap::COL_USER_ID);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.username');
-            $criteria->addSelectColumn($alias . '.password');
-            $criteria->addSelectColumn($alias . '.api_key');
-            $criteria->addSelectColumn($alias . '.mail');
-            $criteria->addSelectColumn($alias . '.avatar');
-            $criteria->addSelectColumn($alias . '.about');
-            $criteria->addSelectColumn($alias . '.autoplay');
+            $criteria->addSelectColumn($alias . '.name');
+            $criteria->addSelectColumn($alias . '.user_id');
         }
     }
 
@@ -411,7 +315,7 @@ class UserTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(UserTableMap::DATABASE_NAME)->getTable(UserTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(TopicTableMap::DATABASE_NAME)->getTable(TopicTableMap::TABLE_NAME);
     }
 
     /**
@@ -419,16 +323,16 @@ class UserTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(UserTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(UserTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new UserTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(TopicTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(TopicTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new TopicTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a User or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Topic or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or User object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Topic object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -439,27 +343,27 @@ class UserTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(TopicTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Tekstove\ApiBundle\Model\User) { // it's a model object
+        } elseif ($values instanceof \Tekstove\ApiBundle\Model\Forum\Topic) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(UserTableMap::DATABASE_NAME);
-            $criteria->add(UserTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(TopicTableMap::DATABASE_NAME);
+            $criteria->add(TopicTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = UserQuery::create()->mergeWith($criteria);
+        $query = TopicQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            UserTableMap::clearInstancePool();
+            TopicTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                UserTableMap::removeInstanceFromPool($singleval);
+                TopicTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -467,20 +371,20 @@ class UserTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the user table.
+     * Deletes all rows from the forum_topic table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return UserQuery::create()->doDeleteAll($con);
+        return TopicQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a User or Criteria object.
+     * Performs an INSERT on the database, given a Topic or Criteria object.
      *
-     * @param mixed               $criteria Criteria or User object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Topic object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -489,22 +393,22 @@ class UserTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(TopicTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from User object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Topic object
         }
 
-        if ($criteria->containsKey(UserTableMap::COL_ID) && $criteria->keyContainsValue(UserTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.UserTableMap::COL_ID.')');
+        if ($criteria->containsKey(TopicTableMap::COL_ID) && $criteria->keyContainsValue(TopicTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.TopicTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = UserQuery::create()->mergeWith($criteria);
+        $query = TopicQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -513,7 +417,7 @@ class UserTableMap extends TableMap
         });
     }
 
-} // UserTableMap
+} // TopicTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-UserTableMap::buildTableMap();
+TopicTableMap::buildTableMap();

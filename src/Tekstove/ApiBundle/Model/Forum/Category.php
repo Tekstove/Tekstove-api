@@ -16,5 +16,12 @@ use Tekstove\ApiBundle\Model\Forum\Base\Category as BaseCategory;
  */
 class Category extends BaseCategory
 {
-
+    public function getLastTopic()
+    {
+        $categoryId = $this->getId();
+        $topicQuery = new TopicQuery();
+        $topicQuery->addAnd('forum_category_id', $categoryId, \Propel\Runtime\ActiveQuery\Criteria::EQUAL);
+        $topic = $topicQuery->findOne();
+        return $topic;
+    }
 }

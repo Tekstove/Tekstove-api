@@ -19,6 +19,7 @@ class CategoryController extends Controller
     {
         $this->applyGroups($request);
         $categories = new CategoryQuery();
+        $categories->setLimit(999);
         
         $user = $this->getUser();
         /* @var $user \Tekstove\ApiBundle\Model\User */

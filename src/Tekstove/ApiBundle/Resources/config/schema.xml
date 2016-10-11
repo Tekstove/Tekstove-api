@@ -207,4 +207,14 @@
         <column name="order" type="integer" />
         <column name="hidden" type="integer" />
     </table>
+    
+    <table name="forum_topic" namespace="\Tekstove\ApiBundle\Model\Forum" phpName="Topic">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
+        <column name="name" type="varchar" />
+        <column name="user_id" type="integer" />
+        
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+    </table>
 </database>

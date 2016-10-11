@@ -21,6 +21,7 @@ class Category extends BaseCategory
         $categoryId = $this->getId();
         $topicQuery = new TopicQuery();
         $topicQuery->addAnd('forum_category_id', $categoryId, \Propel\Runtime\ActiveQuery\Criteria::EQUAL);
+        $topicQuery->orderBy('id', \Propel\Runtime\ActiveQuery\Criteria::DESC);
         $topic = $topicQuery->findOne();
         return $topic;
     }

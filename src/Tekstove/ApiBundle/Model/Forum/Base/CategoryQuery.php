@@ -7,6 +7,7 @@ use \PDO;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
+use Propel\Runtime\ActiveQuery\ModelJoin;
 use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
@@ -36,6 +37,18 @@ use Tekstove\ApiBundle\Model\Forum\Map\CategoryTableMap;
  * @method     ChildCategoryQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
  * @method     ChildCategoryQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildCategoryQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
+ * @method     ChildCategoryQuery leftJoinTopic($relationAlias = null) Adds a LEFT JOIN clause to the query using the Topic relation
+ * @method     ChildCategoryQuery rightJoinTopic($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Topic relation
+ * @method     ChildCategoryQuery innerJoinTopic($relationAlias = null) Adds a INNER JOIN clause to the query using the Topic relation
+ *
+ * @method     ChildCategoryQuery joinWithTopic($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Topic relation
+ *
+ * @method     ChildCategoryQuery leftJoinWithTopic() Adds a LEFT JOIN clause and with to the query using the Topic relation
+ * @method     ChildCategoryQuery rightJoinWithTopic() Adds a RIGHT JOIN clause and with to the query using the Topic relation
+ * @method     ChildCategoryQuery innerJoinWithTopic() Adds a INNER JOIN clause and with to the query using the Topic relation
+ *
+ * @method     \Tekstove\ApiBundle\Model\Forum\TopicQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildCategory findOne(ConnectionInterface $con = null) Return the first ChildCategory matching the query
  * @method     ChildCategory findOneOrCreate(ConnectionInterface $con = null) Return the first ChildCategory matching the query, or a new ChildCategory object populated from the query conditions when no match is found
@@ -392,6 +405,79 @@ abstract class CategoryQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(CategoryTableMap::COL_HIDDEN, $hidden, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\Forum\Topic object
+     *
+     * @param \Tekstove\ApiBundle\Model\Forum\Topic|ObjectCollection $topic the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCategoryQuery The current query, for fluid interface
+     */
+    public function filterByTopic($topic, $comparison = null)
+    {
+        if ($topic instanceof \Tekstove\ApiBundle\Model\Forum\Topic) {
+            return $this
+                ->addUsingAlias(CategoryTableMap::COL_ID, $topic->getForumCategoryId(), $comparison);
+        } elseif ($topic instanceof ObjectCollection) {
+            return $this
+                ->useTopicQuery()
+                ->filterByPrimaryKeys($topic->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByTopic() only accepts arguments of type \Tekstove\ApiBundle\Model\Forum\Topic or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Topic relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     */
+    public function joinTopic($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Topic');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Topic');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Topic relation Topic object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\Forum\TopicQuery A secondary query class using the current class as primary query
+     */
+    public function useTopicQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinTopic($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Topic', '\Tekstove\ApiBundle\Model\Forum\TopicQuery');
     }
 
     /**

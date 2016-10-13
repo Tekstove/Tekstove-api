@@ -152,6 +152,13 @@ class CategoryTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('Topic', '\\Tekstove\\ApiBundle\\Model\\Forum\\Topic', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':forum_category_id',
+    1 => ':id',
+  ),
+), null, null, 'Topics', false);
     } // buildRelations()
 
     /**

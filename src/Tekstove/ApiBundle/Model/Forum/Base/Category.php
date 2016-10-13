@@ -7,14 +7,19 @@ use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Tekstove\ApiBundle\Model\Forum\Category as ChildCategory;
 use Tekstove\ApiBundle\Model\Forum\CategoryQuery as ChildCategoryQuery;
+use Tekstove\ApiBundle\Model\Forum\Topic as ChildTopic;
+use Tekstove\ApiBundle\Model\Forum\TopicQuery as ChildTopicQuery;
 use Tekstove\ApiBundle\Model\Forum\Map\CategoryTableMap;
+use Tekstove\ApiBundle\Model\Forum\Map\TopicTableMap;
 
 /**
  * Base class that represents a row from the 'forum_category' table.
@@ -86,12 +91,24 @@ abstract class Category implements ActiveRecordInterface
     protected $hidden;
 
     /**
+     * @var        ObjectCollection|ChildTopic[] Collection to store aggregation of ChildTopic objects.
+     */
+    protected $collTopics;
+    protected $collTopicsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildTopic[]
+     */
+    protected $topicsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Tekstove\ApiBundle\Model\Forum\Base\Category object.
@@ -574,10 +591,11 @@ abstract class Category implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
         if (isset($alreadyDumpedObjects['Category'][$this->hashCode()])) {
@@ -596,6 +614,23 @@ abstract class Category implements ActiveRecordInterface
             $result[$key] = $virtualColumn;
         }
 
+        if ($includeForeignObjects) {
+            if (null !== $this->collTopics) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'topics';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'forum_topics';
+                        break;
+                    default:
+                        $key = 'Topics';
+                }
+
+                $result[$key] = $this->collTopics->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+        }
 
         return $result;
     }
@@ -710,6 +745,20 @@ abstract class Category implements ActiveRecordInterface
         $copyObj->setName($this->getName());
         $copyObj->setOrder($this->getOrder());
         $copyObj->setHidden($this->getHidden());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getTopics() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addTopic($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -736,6 +785,272 @@ abstract class Category implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('Topic' == $relationName) {
+            return $this->initTopics();
+        }
+    }
+
+    /**
+     * Clears out the collTopics collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addTopics()
+     */
+    public function clearTopics()
+    {
+        $this->collTopics = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collTopics collection loaded partially.
+     */
+    public function resetPartialTopics($v = true)
+    {
+        $this->collTopicsPartial = $v;
+    }
+
+    /**
+     * Initializes the collTopics collection.
+     *
+     * By default this just sets the collTopics collection to an empty array (like clearcollTopics());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initTopics($overrideExisting = true)
+    {
+        if (null !== $this->collTopics && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = TopicTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collTopics = new $collectionClassName;
+        $this->collTopics->setModel('\Tekstove\ApiBundle\Model\Forum\Topic');
+    }
+
+    /**
+     * Gets an array of ChildTopic objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildCategory is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildTopic[] List of ChildTopic objects
+     * @throws PropelException
+     */
+    public function getTopics(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTopicsPartial && !$this->isNew();
+        if (null === $this->collTopics || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collTopics) {
+                // return empty collection
+                $this->initTopics();
+            } else {
+                $collTopics = ChildTopicQuery::create(null, $criteria)
+                    ->filterByCategory($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collTopicsPartial && count($collTopics)) {
+                        $this->initTopics(false);
+
+                        foreach ($collTopics as $obj) {
+                            if (false == $this->collTopics->contains($obj)) {
+                                $this->collTopics->append($obj);
+                            }
+                        }
+
+                        $this->collTopicsPartial = true;
+                    }
+
+                    return $collTopics;
+                }
+
+                if ($partial && $this->collTopics) {
+                    foreach ($this->collTopics as $obj) {
+                        if ($obj->isNew()) {
+                            $collTopics[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collTopics = $collTopics;
+                $this->collTopicsPartial = false;
+            }
+        }
+
+        return $this->collTopics;
+    }
+
+    /**
+     * Sets a collection of ChildTopic objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $topics A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildCategory The current object (for fluent API support)
+     */
+    public function setTopics(Collection $topics, ConnectionInterface $con = null)
+    {
+        /** @var ChildTopic[] $topicsToDelete */
+        $topicsToDelete = $this->getTopics(new Criteria(), $con)->diff($topics);
+
+
+        $this->topicsScheduledForDeletion = $topicsToDelete;
+
+        foreach ($topicsToDelete as $topicRemoved) {
+            $topicRemoved->setCategory(null);
+        }
+
+        $this->collTopics = null;
+        foreach ($topics as $topic) {
+            $this->addTopic($topic);
+        }
+
+        $this->collTopics = $topics;
+        $this->collTopicsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Topic objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Topic objects.
+     * @throws PropelException
+     */
+    public function countTopics(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTopicsPartial && !$this->isNew();
+        if (null === $this->collTopics || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collTopics) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getTopics());
+            }
+
+            $query = ChildTopicQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByCategory($this)
+                ->count($con);
+        }
+
+        return count($this->collTopics);
+    }
+
+    /**
+     * Method called to associate a ChildTopic object to this object
+     * through the ChildTopic foreign key attribute.
+     *
+     * @param  ChildTopic $l ChildTopic
+     * @return $this|\Tekstove\ApiBundle\Model\Forum\Category The current object (for fluent API support)
+     */
+    public function addTopic(ChildTopic $l)
+    {
+        if ($this->collTopics === null) {
+            $this->initTopics();
+            $this->collTopicsPartial = true;
+        }
+
+        if (!$this->collTopics->contains($l)) {
+            $this->doAddTopic($l);
+
+            if ($this->topicsScheduledForDeletion and $this->topicsScheduledForDeletion->contains($l)) {
+                $this->topicsScheduledForDeletion->remove($this->topicsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildTopic $topic The ChildTopic object to add.
+     */
+    protected function doAddTopic(ChildTopic $topic)
+    {
+        $this->collTopics[]= $topic;
+        $topic->setCategory($this);
+    }
+
+    /**
+     * @param  ChildTopic $topic The ChildTopic object to remove.
+     * @return $this|ChildCategory The current object (for fluent API support)
+     */
+    public function removeTopic(ChildTopic $topic)
+    {
+        if ($this->getTopics()->contains($topic)) {
+            $pos = $this->collTopics->search($topic);
+            $this->collTopics->remove($pos);
+            if (null === $this->topicsScheduledForDeletion) {
+                $this->topicsScheduledForDeletion = clone $this->collTopics;
+                $this->topicsScheduledForDeletion->clear();
+            }
+            $this->topicsScheduledForDeletion[]= clone $topic;
+            $topic->setCategory(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Category is new, it will return
+     * an empty collection; or if this Category has previously
+     * been saved, it will retrieve related Topics from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Category.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildTopic[] List of ChildTopic objects
+     */
+    public function getTopicsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildTopicQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getTopics($query, $con);
     }
 
     /**
@@ -767,8 +1082,14 @@ abstract class Category implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collTopics) {
+                foreach ($this->collTopics as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
+        $this->collTopics = null;
     }
 
     /**

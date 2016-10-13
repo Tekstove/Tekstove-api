@@ -28,4 +28,22 @@ class CategoryController extends Controller
         }
         return $this->handleData($request, $categories);
     }
+    
+    public function getAction(Request $request, $id)
+    {
+        $this->applyGroups($request);
+        $categories = new CategoryQuery();
+        
+        $categories->filterById($id, Criteria::EQUAL);
+        
+        $user = $this->getUser();
+        /* @var $user \Tekstove\ApiBundle\Model\User */
+        if (!$user || !$user->getPermission(Permission::FORUM_VIEW_SECRET)) {
+            $categories->addAnd('hidden', 0, Criteria::EQUAL);
+        }
+        return $this->handleData(
+            $request,
+            $categories->findOne()
+        );
+    }
 }

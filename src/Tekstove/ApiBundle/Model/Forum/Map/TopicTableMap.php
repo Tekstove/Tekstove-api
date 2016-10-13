@@ -59,7 +59,7 @@ class TopicTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 3;
+    const NUM_COLUMNS = 4;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class TopicTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 3;
+    const NUM_HYDRATE_COLUMNS = 4;
 
     /**
      * the column name for the id field
@@ -87,6 +87,11 @@ class TopicTableMap extends TableMap
     const COL_USER_ID = 'forum_topic.user_id';
 
     /**
+     * the column name for the forum_category_id field
+     */
+    const COL_FORUM_CATEGORY_ID = 'forum_topic.forum_category_id';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -98,11 +103,11 @@ class TopicTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'UserId', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'userId', ),
-        self::TYPE_COLNAME       => array(TopicTableMap::COL_ID, TopicTableMap::COL_NAME, TopicTableMap::COL_USER_ID, ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'user_id', ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'UserId', 'ForumCategoryId', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'userId', 'forumCategoryId', ),
+        self::TYPE_COLNAME       => array(TopicTableMap::COL_ID, TopicTableMap::COL_NAME, TopicTableMap::COL_USER_ID, TopicTableMap::COL_FORUM_CATEGORY_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', 'user_id', 'forum_category_id', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -112,11 +117,11 @@ class TopicTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'UserId' => 2, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'userId' => 2, ),
-        self::TYPE_COLNAME       => array(TopicTableMap::COL_ID => 0, TopicTableMap::COL_NAME => 1, TopicTableMap::COL_USER_ID => 2, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'user_id' => 2, ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'UserId' => 2, 'ForumCategoryId' => 3, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'userId' => 2, 'forumCategoryId' => 3, ),
+        self::TYPE_COLNAME       => array(TopicTableMap::COL_ID => 0, TopicTableMap::COL_NAME => 1, TopicTableMap::COL_USER_ID => 2, TopicTableMap::COL_FORUM_CATEGORY_ID => 3, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'user_id' => 2, 'forum_category_id' => 3, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -139,6 +144,7 @@ class TopicTableMap extends TableMap
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', false, 255, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', false, null, null);
+        $this->addForeignKey('forum_category_id', 'ForumCategoryId', 'INTEGER', 'forum_category', 'id', true, null, null);
     } // initialize()
 
     /**
@@ -150,6 +156,13 @@ class TopicTableMap extends TableMap
   0 =>
   array (
     0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
+        $this->addRelation('Category', '\\Tekstove\\ApiBundle\\Model\\Forum\\Category', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':forum_category_id',
     1 => ':id',
   ),
 ), null, null, null, false);
@@ -299,10 +312,12 @@ class TopicTableMap extends TableMap
             $criteria->addSelectColumn(TopicTableMap::COL_ID);
             $criteria->addSelectColumn(TopicTableMap::COL_NAME);
             $criteria->addSelectColumn(TopicTableMap::COL_USER_ID);
+            $criteria->addSelectColumn(TopicTableMap::COL_FORUM_CATEGORY_ID);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.name');
             $criteria->addSelectColumn($alias . '.user_id');
+            $criteria->addSelectColumn($alias . '.forum_category_id');
         }
     }
 

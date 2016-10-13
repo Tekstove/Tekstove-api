@@ -92,3 +92,12 @@ tekstove_api_forum_category_index:
     path: "/forum/category"
     defaults: { _controller: TekstoveApiBundle:Forum\Category:index }
     methods: [GET]
+    
+tekstove_api_forum_category_get:
+    path: "/forum/category/{id}"
+    defaults: { _controller: TekstoveApiBundle:Forum\Category:get }
+    methods: [GET]
+
+tekstove_api_forum_topic_index:
+    path: "/forum/topic"
+    defaults: { _controller: TekstoveApiBundle:Forum\Topic:index }

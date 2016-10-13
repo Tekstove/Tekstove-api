@@ -17,6 +17,8 @@ use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 use Tekstove\ApiBundle\Model\User;
 use Tekstove\ApiBundle\Model\UserQuery;
+use Tekstove\ApiBundle\Model\Forum\Category as ChildCategory;
+use Tekstove\ApiBundle\Model\Forum\CategoryQuery as ChildCategoryQuery;
 use Tekstove\ApiBundle\Model\Forum\TopicQuery as ChildTopicQuery;
 use Tekstove\ApiBundle\Model\Forum\Map\TopicTableMap;
 
@@ -83,9 +85,21 @@ abstract class Topic implements ActiveRecordInterface
     protected $user_id;
 
     /**
+     * The value for the forum_category_id field.
+     *
+     * @var        int
+     */
+    protected $forum_category_id;
+
+    /**
      * @var        User
      */
     protected $aUser;
+
+    /**
+     * @var        ChildCategory
+     */
+    protected $aCategory;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -351,6 +365,16 @@ abstract class Topic implements ActiveRecordInterface
     }
 
     /**
+     * Get the [forum_category_id] column value.
+     *
+     * @return int
+     */
+    public function getForumCategoryId()
+    {
+        return $this->forum_category_id;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -415,6 +439,30 @@ abstract class Topic implements ActiveRecordInterface
     } // setUserId()
 
     /**
+     * Set the value of [forum_category_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\Forum\Topic The current object (for fluent API support)
+     */
+    public function setForumCategoryId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->forum_category_id !== $v) {
+            $this->forum_category_id = $v;
+            $this->modifiedColumns[TopicTableMap::COL_FORUM_CATEGORY_ID] = true;
+        }
+
+        if ($this->aCategory !== null && $this->aCategory->getId() !== $v) {
+            $this->aCategory = null;
+        }
+
+        return $this;
+    } // setForumCategoryId()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -458,6 +506,9 @@ abstract class Topic implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TopicTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TopicTableMap::translateFieldName('ForumCategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->forum_category_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -466,7 +517,7 @@ abstract class Topic implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = TopicTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = TopicTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Forum\\Topic'), 0, $e);
@@ -490,6 +541,9 @@ abstract class Topic implements ActiveRecordInterface
     {
         if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
             $this->aUser = null;
+        }
+        if ($this->aCategory !== null && $this->forum_category_id !== $this->aCategory->getId()) {
+            $this->aCategory = null;
         }
     } // ensureConsistency
 
@@ -531,6 +585,7 @@ abstract class Topic implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aUser = null;
+            $this->aCategory = null;
         } // if (deep)
     }
 
@@ -642,6 +697,13 @@ abstract class Topic implements ActiveRecordInterface
                 $this->setUser($this->aUser);
             }
 
+            if ($this->aCategory !== null) {
+                if ($this->aCategory->isModified() || $this->aCategory->isNew()) {
+                    $affectedRows += $this->aCategory->save($con);
+                }
+                $this->setCategory($this->aCategory);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -688,6 +750,9 @@ abstract class Topic implements ActiveRecordInterface
         if ($this->isColumnModified(TopicTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = '`user_id`';
         }
+        if ($this->isColumnModified(TopicTableMap::COL_FORUM_CATEGORY_ID)) {
+            $modifiedColumns[':p' . $index++]  = '`forum_category_id`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `forum_topic` (%s) VALUES (%s)',
@@ -707,6 +772,9 @@ abstract class Topic implements ActiveRecordInterface
                         break;
                     case '`user_id`':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                        break;
+                    case '`forum_category_id`':
+                        $stmt->bindValue($identifier, $this->forum_category_id, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -779,6 +847,9 @@ abstract class Topic implements ActiveRecordInterface
             case 2:
                 return $this->getUserId();
                 break;
+            case 3:
+                return $this->getForumCategoryId();
+                break;
             default:
                 return null;
                 break;
@@ -812,6 +883,7 @@ abstract class Topic implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
             $keys[2] => $this->getUserId(),
+            $keys[3] => $this->getForumCategoryId(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -833,6 +905,21 @@ abstract class Topic implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aCategory) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'category';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'forum_category';
+                        break;
+                    default:
+                        $key = 'Category';
+                }
+
+                $result[$key] = $this->aCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -877,6 +964,9 @@ abstract class Topic implements ActiveRecordInterface
             case 2:
                 $this->setUserId($value);
                 break;
+            case 3:
+                $this->setForumCategoryId($value);
+                break;
         } // switch()
 
         return $this;
@@ -911,6 +1001,9 @@ abstract class Topic implements ActiveRecordInterface
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setUserId($arr[$keys[2]]);
+        }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setForumCategoryId($arr[$keys[3]]);
         }
     }
 
@@ -961,6 +1054,9 @@ abstract class Topic implements ActiveRecordInterface
         }
         if ($this->isColumnModified(TopicTableMap::COL_USER_ID)) {
             $criteria->add(TopicTableMap::COL_USER_ID, $this->user_id);
+        }
+        if ($this->isColumnModified(TopicTableMap::COL_FORUM_CATEGORY_ID)) {
+            $criteria->add(TopicTableMap::COL_FORUM_CATEGORY_ID, $this->forum_category_id);
         }
 
         return $criteria;
@@ -1050,6 +1146,7 @@ abstract class Topic implements ActiveRecordInterface
     {
         $copyObj->setName($this->getName());
         $copyObj->setUserId($this->getUserId());
+        $copyObj->setForumCategoryId($this->getForumCategoryId());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1130,6 +1227,57 @@ abstract class Topic implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildCategory object.
+     *
+     * @param  ChildCategory $v
+     * @return $this|\Tekstove\ApiBundle\Model\Forum\Topic The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setCategory(ChildCategory $v = null)
+    {
+        if ($v === null) {
+            $this->setForumCategoryId(NULL);
+        } else {
+            $this->setForumCategoryId($v->getId());
+        }
+
+        $this->aCategory = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        if ($v !== null) {
+            $v->addTopic($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCategory object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCategory The associated ChildCategory object.
+     * @throws PropelException
+     */
+    public function getCategory(ConnectionInterface $con = null)
+    {
+        if ($this->aCategory === null && ($this->forum_category_id !== null)) {
+            $this->aCategory = ChildCategoryQuery::create()->findPk($this->forum_category_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aCategory->addTopics($this);
+             */
+        }
+
+        return $this->aCategory;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -1139,9 +1287,13 @@ abstract class Topic implements ActiveRecordInterface
         if (null !== $this->aUser) {
             $this->aUser->removeTopic($this);
         }
+        if (null !== $this->aCategory) {
+            $this->aCategory->removeTopic($this);
+        }
         $this->id = null;
         $this->name = null;
         $this->user_id = null;
+        $this->forum_category_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1163,6 +1315,7 @@ abstract class Topic implements ActiveRecordInterface
         } // if ($deep)
 
         $this->aUser = null;
+        $this->aCategory = null;
     }
 
     /**

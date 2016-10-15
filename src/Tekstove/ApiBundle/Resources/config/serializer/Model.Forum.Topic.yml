@@ -12,3 +12,6 @@
         getUser:
             groups: [Details]
             serialized_name: user
+        getCategory:
+            groups: [Details]
+            serialized_name: category

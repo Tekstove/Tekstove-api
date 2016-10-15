@@ -25,6 +25,4 @@ class Category extends BaseCategory
         $topic = $topicQuery->findOne();
         return $topic;
     }
-    
-
 }

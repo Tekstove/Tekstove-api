@@ -20,9 +20,6 @@ class PostController extends Controller
         $this->applyGroups($request);
         $posts = new PostQuery();
         $posts->orderBy('id', Criteria::ASC);
-
-        $posts->setLimit(2);
-        
         // @TODO filter hidden categories
         
         return $this->handleData($request, $posts);

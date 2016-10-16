@@ -1,0 +1,14 @@
+"Tekstove\\ApiBundle\\Model\\Forum\\Post":
+    exclusion_policy: none
+    exclude: false
+    read_only: true
+    virtual_properties:
+        getId:
+            groups: [Details, List]
+            serialized_name: id
+        getText:
+            groups: [Details, List]
+            serialized_name: text
+        getUser:
+            groups: [Details]
+            serialized_name: user

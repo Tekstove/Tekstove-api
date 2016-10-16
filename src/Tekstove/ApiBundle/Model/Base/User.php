@@ -40,9 +40,13 @@ use Tekstove\ApiBundle\Model\Acl\PermissionGroupUser;
 use Tekstove\ApiBundle\Model\Acl\PermissionGroupUserQuery;
 use Tekstove\ApiBundle\Model\Acl\Base\PermissionGroupUser as BasePermissionGroupUser;
 use Tekstove\ApiBundle\Model\Acl\Map\PermissionGroupUserTableMap;
+use Tekstove\ApiBundle\Model\Forum\Post;
+use Tekstove\ApiBundle\Model\Forum\PostQuery;
 use Tekstove\ApiBundle\Model\Forum\Topic;
 use Tekstove\ApiBundle\Model\Forum\TopicQuery;
+use Tekstove\ApiBundle\Model\Forum\Base\Post as BasePost;
 use Tekstove\ApiBundle\Model\Forum\Base\Topic as BaseTopic;
+use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
 use Tekstove\ApiBundle\Model\Forum\Map\TopicTableMap;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslationQuery;
@@ -197,6 +201,12 @@ abstract class User implements ActiveRecordInterface
     protected $collTopicsPartial;
 
     /**
+     * @var        ObjectCollection|Post[] Collection to store aggregation of Post objects.
+     */
+    protected $collPosts;
+    protected $collPostsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -262,6 +272,12 @@ abstract class User implements ActiveRecordInterface
      * @var ObjectCollection|Topic[]
      */
     protected $topicsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|Post[]
+     */
+    protected $postsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Tekstove\ApiBundle\Model\Base\User object.
@@ -870,6 +886,8 @@ abstract class User implements ActiveRecordInterface
 
             $this->collTopics = null;
 
+            $this->collPosts = null;
+
         } // if (deep)
     }
 
@@ -1099,6 +1117,24 @@ abstract class User implements ActiveRecordInterface
 
             if ($this->collTopics !== null) {
                 foreach ($this->collTopics as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->postsScheduledForDeletion !== null) {
+                if (!$this->postsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->postsScheduledForDeletion as $post) {
+                        // need to save related object because we set the relation to null
+                        $post->save($con);
+                    }
+                    $this->postsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPosts !== null) {
+                foreach ($this->collPosts as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1426,6 +1462,21 @@ abstract class User implements ActiveRecordInterface
 
                 $result[$key] = $this->collTopics->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
+            if (null !== $this->collPosts) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'posts';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'forum_posts';
+                        break;
+                    default:
+                        $key = 'Posts';
+                }
+
+                $result[$key] = $this->collPosts->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
         }
 
         return $result;
@@ -1740,6 +1791,12 @@ abstract class User implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getPosts() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPost($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -1801,6 +1858,9 @@ abstract class User implements ActiveRecordInterface
         }
         if ('Topic' == $relationName) {
             return $this->initTopics();
+        }
+        if ('Post' == $relationName) {
+            return $this->initPosts();
         }
     }
 
@@ -3483,6 +3543,231 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collPosts collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPosts()
+     */
+    public function clearPosts()
+    {
+        $this->collPosts = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPosts collection loaded partially.
+     */
+    public function resetPartialPosts($v = true)
+    {
+        $this->collPostsPartial = $v;
+    }
+
+    /**
+     * Initializes the collPosts collection.
+     *
+     * By default this just sets the collPosts collection to an empty array (like clearcollPosts());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPosts($overrideExisting = true)
+    {
+        if (null !== $this->collPosts && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = PostTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collPosts = new $collectionClassName;
+        $this->collPosts->setModel('\Tekstove\ApiBundle\Model\Forum\Post');
+    }
+
+    /**
+     * Gets an array of Post objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|Post[] List of Post objects
+     * @throws PropelException
+     */
+    public function getPosts(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPostsPartial && !$this->isNew();
+        if (null === $this->collPosts || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPosts) {
+                // return empty collection
+                $this->initPosts();
+            } else {
+                $collPosts = PostQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPostsPartial && count($collPosts)) {
+                        $this->initPosts(false);
+
+                        foreach ($collPosts as $obj) {
+                            if (false == $this->collPosts->contains($obj)) {
+                                $this->collPosts->append($obj);
+                            }
+                        }
+
+                        $this->collPostsPartial = true;
+                    }
+
+                    return $collPosts;
+                }
+
+                if ($partial && $this->collPosts) {
+                    foreach ($this->collPosts as $obj) {
+                        if ($obj->isNew()) {
+                            $collPosts[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPosts = $collPosts;
+                $this->collPostsPartial = false;
+            }
+        }
+
+        return $this->collPosts;
+    }
+
+    /**
+     * Sets a collection of Post objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $posts A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setPosts(Collection $posts, ConnectionInterface $con = null)
+    {
+        /** @var Post[] $postsToDelete */
+        $postsToDelete = $this->getPosts(new Criteria(), $con)->diff($posts);
+
+
+        $this->postsScheduledForDeletion = $postsToDelete;
+
+        foreach ($postsToDelete as $postRemoved) {
+            $postRemoved->setUser(null);
+        }
+
+        $this->collPosts = null;
+        foreach ($posts as $post) {
+            $this->addPost($post);
+        }
+
+        $this->collPosts = $posts;
+        $this->collPostsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related BasePost objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related BasePost objects.
+     * @throws PropelException
+     */
+    public function countPosts(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPostsPartial && !$this->isNew();
+        if (null === $this->collPosts || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPosts) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPosts());
+            }
+
+            $query = PostQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collPosts);
+    }
+
+    /**
+     * Method called to associate a Post object to this object
+     * through the Post foreign key attribute.
+     *
+     * @param  Post $l Post
+     * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
+     */
+    public function addPost(Post $l)
+    {
+        if ($this->collPosts === null) {
+            $this->initPosts();
+            $this->collPostsPartial = true;
+        }
+
+        if (!$this->collPosts->contains($l)) {
+            $this->doAddPost($l);
+
+            if ($this->postsScheduledForDeletion and $this->postsScheduledForDeletion->contains($l)) {
+                $this->postsScheduledForDeletion->remove($this->postsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Post $post The Post object to add.
+     */
+    protected function doAddPost(Post $post)
+    {
+        $this->collPosts[]= $post;
+        $post->setUser($this);
+    }
+
+    /**
+     * @param  Post $post The Post object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removePost(Post $post)
+    {
+        if ($this->getPosts()->contains($post)) {
+            $pos = $this->collPosts->search($post);
+            $this->collPosts->remove($pos);
+            if (null === $this->postsScheduledForDeletion) {
+                $this->postsScheduledForDeletion = clone $this->collPosts;
+                $this->postsScheduledForDeletion->clear();
+            }
+            $this->postsScheduledForDeletion[]= $post;
+            $post->setUser(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -3550,6 +3835,11 @@ abstract class User implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collPosts) {
+                foreach ($this->collPosts as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collPermissionGroupUsers = null;
@@ -3559,6 +3849,7 @@ abstract class User implements ActiveRecordInterface
         $this->collArtists = null;
         $this->collAlbums = null;
         $this->collTopics = null;
+        $this->collPosts = null;
     }
 
     /**
@@ -3675,6 +3966,15 @@ abstract class User implements ActiveRecordInterface
             }
             if (null !== $this->collTopics) {
                 foreach ($this->collTopics as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
+            if (null !== $this->collPosts) {
+                foreach ($this->collPosts as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());

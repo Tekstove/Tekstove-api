@@ -101,7 +101,15 @@ tekstove_api_forum_category_get:
 tekstove_api_forum_topic_index:
     path: "/forum/topic"
     defaults: { _controller: TekstoveApiBundle:Forum\Topic:index }
+    methods: [GET]
+
+tekstove_api_forum_post_index:
+    path: "/forum/post"
+    defaults: { _controller: TekstoveApiBundle:Forum\Post:index }
+    methods: [GET]
 
 tekstove_api_forum_topic_get:
     path: "/forum/topic/{id}"
     defaults: { _controller: TekstoveApiBundle:Forum\Topic:get }
+    methods: [GET]
+

@@ -5,6 +5,7 @@ namespace Tekstove\ApiBundle\Security\Authorization\Voter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\Acl\Permission;
 
 use Tekstove\ApiBundle\Model\User;
 
@@ -37,9 +38,19 @@ class LyricVoter extends Voter
         if (!$user instanceof User) {
             return null;
         }
+        
         switch ($attribute) {
             case 'edit':
                 if ($user->getId() == $lyric->getsendBy()) {
+                    return true;
+                }
+                
+                // @TODO find better permission check. E.G.: lyric.*
+                if ($user->getPermission(Permission::LYRIC_EDIT_DOWNLOAD)) {
+                    return true;
+                }
+                
+                if ($user->getPermission(Permission::LYRIC_EDIT_VIDEO)) {
                     return true;
                 }
         }

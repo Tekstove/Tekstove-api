@@ -25,11 +25,13 @@ use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
  * @method     ChildPostQuery orderByText($order = Criteria::ASC) Order by the text column
  * @method     ChildPostQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildPostQuery orderByForumTopicId($order = Criteria::ASC) Order by the forum_topic_id column
+ * @method     ChildPostQuery orderByDate($order = Criteria::ASC) Order by the date column
  *
  * @method     ChildPostQuery groupById() Group by the id column
  * @method     ChildPostQuery groupByText() Group by the text column
  * @method     ChildPostQuery groupByUserId() Group by the user_id column
  * @method     ChildPostQuery groupByForumTopicId() Group by the forum_topic_id column
+ * @method     ChildPostQuery groupByDate() Group by the date column
  *
  * @method     ChildPostQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildPostQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -49,7 +51,17 @@ use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
  * @method     ChildPostQuery rightJoinWithUser() Adds a RIGHT JOIN clause and with to the query using the User relation
  * @method     ChildPostQuery innerJoinWithUser() Adds a INNER JOIN clause and with to the query using the User relation
  *
- * @method     \Tekstove\ApiBundle\Model\UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildPostQuery leftJoinTopic($relationAlias = null) Adds a LEFT JOIN clause to the query using the Topic relation
+ * @method     ChildPostQuery rightJoinTopic($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Topic relation
+ * @method     ChildPostQuery innerJoinTopic($relationAlias = null) Adds a INNER JOIN clause to the query using the Topic relation
+ *
+ * @method     ChildPostQuery joinWithTopic($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Topic relation
+ *
+ * @method     ChildPostQuery leftJoinWithTopic() Adds a LEFT JOIN clause and with to the query using the Topic relation
+ * @method     ChildPostQuery rightJoinWithTopic() Adds a RIGHT JOIN clause and with to the query using the Topic relation
+ * @method     ChildPostQuery innerJoinWithTopic() Adds a INNER JOIN clause and with to the query using the Topic relation
+ *
+ * @method     \Tekstove\ApiBundle\Model\UserQuery|\Tekstove\ApiBundle\Model\Forum\TopicQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildPost findOne(ConnectionInterface $con = null) Return the first ChildPost matching the query
  * @method     ChildPost findOneOrCreate(ConnectionInterface $con = null) Return the first ChildPost matching the query, or a new ChildPost object populated from the query conditions when no match is found
@@ -57,7 +69,8 @@ use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
  * @method     ChildPost findOneById(int $id) Return the first ChildPost filtered by the id column
  * @method     ChildPost findOneByText(string $text) Return the first ChildPost filtered by the text column
  * @method     ChildPost findOneByUserId(int $user_id) Return the first ChildPost filtered by the user_id column
- * @method     ChildPost findOneByForumTopicId(int $forum_topic_id) Return the first ChildPost filtered by the forum_topic_id column *
+ * @method     ChildPost findOneByForumTopicId(int $forum_topic_id) Return the first ChildPost filtered by the forum_topic_id column
+ * @method     ChildPost findOneByDate(string $date) Return the first ChildPost filtered by the date column *
 
  * @method     ChildPost requirePk($key, ConnectionInterface $con = null) Return the ChildPost by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPost requireOne(ConnectionInterface $con = null) Return the first ChildPost matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -66,12 +79,14 @@ use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
  * @method     ChildPost requireOneByText(string $text) Return the first ChildPost filtered by the text column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPost requireOneByUserId(int $user_id) Return the first ChildPost filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPost requireOneByForumTopicId(int $forum_topic_id) Return the first ChildPost filtered by the forum_topic_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPost requireOneByDate(string $date) Return the first ChildPost filtered by the date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildPost[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPost objects based on current ModelCriteria
  * @method     ChildPost[]|ObjectCollection findById(int $id) Return ChildPost objects filtered by the id column
  * @method     ChildPost[]|ObjectCollection findByText(string $text) Return ChildPost objects filtered by the text column
  * @method     ChildPost[]|ObjectCollection findByUserId(int $user_id) Return ChildPost objects filtered by the user_id column
  * @method     ChildPost[]|ObjectCollection findByForumTopicId(int $forum_topic_id) Return ChildPost objects filtered by the forum_topic_id column
+ * @method     ChildPost[]|ObjectCollection findByDate(string $date) Return ChildPost objects filtered by the date column
  * @method     ChildPost[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -170,7 +185,7 @@ abstract class PostQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `text`, `user_id`, `forum_topic_id` FROM `forum_post` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `text`, `user_id`, `forum_topic_id`, `date` FROM `forum_post` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -379,6 +394,8 @@ abstract class PostQuery extends ModelCriteria
      * $query->filterByForumTopicId(array('min' => 12)); // WHERE forum_topic_id > 12
      * </code>
      *
+     * @see       filterByTopic()
+     *
      * @param     mixed $forumTopicId The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
@@ -408,6 +425,49 @@ abstract class PostQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(PostTableMap::COL_FORUM_TOPIC_ID, $forumTopicId, $comparison);
+    }
+
+    /**
+     * Filter the query on the date column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByDate('2011-03-14'); // WHERE date = '2011-03-14'
+     * $query->filterByDate('now'); // WHERE date = '2011-03-14'
+     * $query->filterByDate(array('max' => 'yesterday')); // WHERE date > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $date The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPostQuery The current query, for fluid interface
+     */
+    public function filterByDate($date = null, $comparison = null)
+    {
+        if (is_array($date)) {
+            $useMinMax = false;
+            if (isset($date['min'])) {
+                $this->addUsingAlias(PostTableMap::COL_DATE, $date['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($date['max'])) {
+                $this->addUsingAlias(PostTableMap::COL_DATE, $date['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PostTableMap::COL_DATE, $date, $comparison);
     }
 
     /**
@@ -485,6 +545,83 @@ abstract class PostQuery extends ModelCriteria
         return $this
             ->joinUser($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'User', '\Tekstove\ApiBundle\Model\UserQuery');
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\Forum\Topic object
+     *
+     * @param \Tekstove\ApiBundle\Model\Forum\Topic|ObjectCollection $topic The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildPostQuery The current query, for fluid interface
+     */
+    public function filterByTopic($topic, $comparison = null)
+    {
+        if ($topic instanceof \Tekstove\ApiBundle\Model\Forum\Topic) {
+            return $this
+                ->addUsingAlias(PostTableMap::COL_FORUM_TOPIC_ID, $topic->getId(), $comparison);
+        } elseif ($topic instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(PostTableMap::COL_FORUM_TOPIC_ID, $topic->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByTopic() only accepts arguments of type \Tekstove\ApiBundle\Model\Forum\Topic or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Topic relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildPostQuery The current query, for fluid interface
+     */
+    public function joinTopic($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Topic');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Topic');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Topic relation Topic object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\Forum\TopicQuery A secondary query class using the current class as primary query
+     */
+    public function useTopicQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinTopic($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Topic', '\Tekstove\ApiBundle\Model\Forum\TopicQuery');
     }
 
     /**

@@ -16,5 +16,12 @@ use Tekstove\ApiBundle\Model\Forum\Base\Topic as BaseTopic;
  */
 class Topic extends BaseTopic
 {
-
+    public function getLatestPost()
+    {
+        $postQuery = new PostQuery();
+        $postQuery->filterByTopic($this);
+        $postQuery->orderById();
+        $post = $postQuery->findOne();
+        return $post;
+    }
 }

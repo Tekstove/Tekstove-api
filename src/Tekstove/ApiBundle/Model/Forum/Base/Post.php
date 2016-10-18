@@ -2,6 +2,7 @@
 
 namespace Tekstove\ApiBundle\Model\Forum\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -15,9 +16,12 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 use Tekstove\ApiBundle\Model\User;
 use Tekstove\ApiBundle\Model\UserQuery;
 use Tekstove\ApiBundle\Model\Forum\PostQuery as ChildPostQuery;
+use Tekstove\ApiBundle\Model\Forum\Topic as ChildTopic;
+use Tekstove\ApiBundle\Model\Forum\TopicQuery as ChildTopicQuery;
 use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
 
 /**
@@ -90,9 +94,21 @@ abstract class Post implements ActiveRecordInterface
     protected $forum_topic_id;
 
     /**
+     * The value for the date field.
+     *
+     * @var        DateTime
+     */
+    protected $date;
+
+    /**
      * @var        User
      */
     protected $aUser;
+
+    /**
+     * @var        ChildTopic
+     */
+    protected $aTopic;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -368,6 +384,26 @@ abstract class Post implements ActiveRecordInterface
     }
 
     /**
+     * Get the [optionally formatted] temporal [date] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getDate($format = NULL)
+    {
+        if ($format === null) {
+            return $this->date;
+        } else {
+            return $this->date instanceof \DateTimeInterface ? $this->date->format($format) : null;
+        }
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -448,8 +484,32 @@ abstract class Post implements ActiveRecordInterface
             $this->modifiedColumns[PostTableMap::COL_FORUM_TOPIC_ID] = true;
         }
 
+        if ($this->aTopic !== null && $this->aTopic->getId() !== $v) {
+            $this->aTopic = null;
+        }
+
         return $this;
     } // setForumTopicId()
+
+    /**
+     * Sets the value of [date] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Tekstove\ApiBundle\Model\Forum\Post The current object (for fluent API support)
+     */
+    public function setDate($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->date !== null || $dt !== null) {
+            if ($this->date === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->date->format("Y-m-d H:i:s.u")) {
+                $this->date = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[PostTableMap::COL_DATE] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setDate()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -498,6 +558,12 @@ abstract class Post implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PostTableMap::translateFieldName('ForumTopicId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->forum_topic_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PostTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->date = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -506,7 +572,7 @@ abstract class Post implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 4; // 4 = PostTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = PostTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Forum\\Post'), 0, $e);
@@ -530,6 +596,9 @@ abstract class Post implements ActiveRecordInterface
     {
         if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
             $this->aUser = null;
+        }
+        if ($this->aTopic !== null && $this->forum_topic_id !== $this->aTopic->getId()) {
+            $this->aTopic = null;
         }
     } // ensureConsistency
 
@@ -571,6 +640,7 @@ abstract class Post implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aUser = null;
+            $this->aTopic = null;
         } // if (deep)
     }
 
@@ -682,6 +752,13 @@ abstract class Post implements ActiveRecordInterface
                 $this->setUser($this->aUser);
             }
 
+            if ($this->aTopic !== null) {
+                if ($this->aTopic->isModified() || $this->aTopic->isNew()) {
+                    $affectedRows += $this->aTopic->save($con);
+                }
+                $this->setTopic($this->aTopic);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -731,6 +808,9 @@ abstract class Post implements ActiveRecordInterface
         if ($this->isColumnModified(PostTableMap::COL_FORUM_TOPIC_ID)) {
             $modifiedColumns[':p' . $index++]  = '`forum_topic_id`';
         }
+        if ($this->isColumnModified(PostTableMap::COL_DATE)) {
+            $modifiedColumns[':p' . $index++]  = '`date`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `forum_post` (%s) VALUES (%s)',
@@ -753,6 +833,9 @@ abstract class Post implements ActiveRecordInterface
                         break;
                     case '`forum_topic_id`':
                         $stmt->bindValue($identifier, $this->forum_topic_id, PDO::PARAM_INT);
+                        break;
+                    case '`date`':
+                        $stmt->bindValue($identifier, $this->date ? $this->date->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -828,6 +911,9 @@ abstract class Post implements ActiveRecordInterface
             case 3:
                 return $this->getForumTopicId();
                 break;
+            case 4:
+                return $this->getDate();
+                break;
             default:
                 return null;
                 break;
@@ -862,7 +948,12 @@ abstract class Post implements ActiveRecordInterface
             $keys[1] => $this->getText(),
             $keys[2] => $this->getUserId(),
             $keys[3] => $this->getForumTopicId(),
+            $keys[4] => $this->getDate(),
         );
+        if ($result[$keys[4]] instanceof \DateTime) {
+            $result[$keys[4]] = $result[$keys[4]]->format('c');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -883,6 +974,21 @@ abstract class Post implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aTopic) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'topic';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'forum_topic';
+                        break;
+                    default:
+                        $key = 'Topic';
+                }
+
+                $result[$key] = $this->aTopic->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -930,6 +1036,9 @@ abstract class Post implements ActiveRecordInterface
             case 3:
                 $this->setForumTopicId($value);
                 break;
+            case 4:
+                $this->setDate($value);
+                break;
         } // switch()
 
         return $this;
@@ -967,6 +1076,9 @@ abstract class Post implements ActiveRecordInterface
         }
         if (array_key_exists($keys[3], $arr)) {
             $this->setForumTopicId($arr[$keys[3]]);
+        }
+        if (array_key_exists($keys[4], $arr)) {
+            $this->setDate($arr[$keys[4]]);
         }
     }
 
@@ -1020,6 +1132,9 @@ abstract class Post implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PostTableMap::COL_FORUM_TOPIC_ID)) {
             $criteria->add(PostTableMap::COL_FORUM_TOPIC_ID, $this->forum_topic_id);
+        }
+        if ($this->isColumnModified(PostTableMap::COL_DATE)) {
+            $criteria->add(PostTableMap::COL_DATE, $this->date);
         }
 
         return $criteria;
@@ -1110,6 +1225,7 @@ abstract class Post implements ActiveRecordInterface
         $copyObj->setText($this->getText());
         $copyObj->setUserId($this->getUserId());
         $copyObj->setForumTopicId($this->getForumTopicId());
+        $copyObj->setDate($this->getDate());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1190,6 +1306,57 @@ abstract class Post implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildTopic object.
+     *
+     * @param  ChildTopic $v
+     * @return $this|\Tekstove\ApiBundle\Model\Forum\Post The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setTopic(ChildTopic $v = null)
+    {
+        if ($v === null) {
+            $this->setForumTopicId(NULL);
+        } else {
+            $this->setForumTopicId($v->getId());
+        }
+
+        $this->aTopic = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildTopic object, it will not be re-added.
+        if ($v !== null) {
+            $v->addPost($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildTopic object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildTopic The associated ChildTopic object.
+     * @throws PropelException
+     */
+    public function getTopic(ConnectionInterface $con = null)
+    {
+        if ($this->aTopic === null && ($this->forum_topic_id !== null)) {
+            $this->aTopic = ChildTopicQuery::create()->findPk($this->forum_topic_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aTopic->addPosts($this);
+             */
+        }
+
+        return $this->aTopic;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -1199,10 +1366,14 @@ abstract class Post implements ActiveRecordInterface
         if (null !== $this->aUser) {
             $this->aUser->removePost($this);
         }
+        if (null !== $this->aTopic) {
+            $this->aTopic->removePost($this);
+        }
         $this->id = null;
         $this->text = null;
         $this->user_id = null;
         $this->forum_topic_id = null;
+        $this->date = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1224,6 +1395,7 @@ abstract class Post implements ActiveRecordInterface
         } // if ($deep)
 
         $this->aUser = null;
+        $this->aTopic = null;
     }
 
     /**

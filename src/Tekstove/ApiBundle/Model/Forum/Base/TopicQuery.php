@@ -59,7 +59,17 @@ use Tekstove\ApiBundle\Model\Forum\Map\TopicTableMap;
  * @method     ChildTopicQuery rightJoinWithCategory() Adds a RIGHT JOIN clause and with to the query using the Category relation
  * @method     ChildTopicQuery innerJoinWithCategory() Adds a INNER JOIN clause and with to the query using the Category relation
  *
- * @method     \Tekstove\ApiBundle\Model\UserQuery|\Tekstove\ApiBundle\Model\Forum\CategoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildTopicQuery leftJoinPost($relationAlias = null) Adds a LEFT JOIN clause to the query using the Post relation
+ * @method     ChildTopicQuery rightJoinPost($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Post relation
+ * @method     ChildTopicQuery innerJoinPost($relationAlias = null) Adds a INNER JOIN clause to the query using the Post relation
+ *
+ * @method     ChildTopicQuery joinWithPost($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Post relation
+ *
+ * @method     ChildTopicQuery leftJoinWithPost() Adds a LEFT JOIN clause and with to the query using the Post relation
+ * @method     ChildTopicQuery rightJoinWithPost() Adds a RIGHT JOIN clause and with to the query using the Post relation
+ * @method     ChildTopicQuery innerJoinWithPost() Adds a INNER JOIN clause and with to the query using the Post relation
+ *
+ * @method     \Tekstove\ApiBundle\Model\UserQuery|\Tekstove\ApiBundle\Model\Forum\CategoryQuery|\Tekstove\ApiBundle\Model\Forum\PostQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildTopic findOne(ConnectionInterface $con = null) Return the first ChildTopic matching the query
  * @method     ChildTopic findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTopic matching the query, or a new ChildTopic object populated from the query conditions when no match is found
@@ -574,6 +584,79 @@ abstract class TopicQuery extends ModelCriteria
         return $this
             ->joinCategory($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Category', '\Tekstove\ApiBundle\Model\Forum\CategoryQuery');
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\Forum\Post object
+     *
+     * @param \Tekstove\ApiBundle\Model\Forum\Post|ObjectCollection $post the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildTopicQuery The current query, for fluid interface
+     */
+    public function filterByPost($post, $comparison = null)
+    {
+        if ($post instanceof \Tekstove\ApiBundle\Model\Forum\Post) {
+            return $this
+                ->addUsingAlias(TopicTableMap::COL_ID, $post->getForumTopicId(), $comparison);
+        } elseif ($post instanceof ObjectCollection) {
+            return $this
+                ->usePostQuery()
+                ->filterByPrimaryKeys($post->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPost() only accepts arguments of type \Tekstove\ApiBundle\Model\Forum\Post or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Post relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildTopicQuery The current query, for fluid interface
+     */
+    public function joinPost($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Post');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Post');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Post relation Post object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\Forum\PostQuery A secondary query class using the current class as primary query
+     */
+    public function usePostQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinPost($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Post', '\Tekstove\ApiBundle\Model\Forum\PostQuery');
     }
 
     /**

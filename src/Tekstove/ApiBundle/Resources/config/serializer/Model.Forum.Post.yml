@@ -9,6 +9,9 @@
         getText:
             groups: [Details, List]
             serialized_name: text
+        getDateTatetime:
+            groups: [Details, List]
+            serialized_name: datetime
         getUser:
-            groups: [Details]
+            groups: [Details, Forum_Post_User]
             serialized_name: user

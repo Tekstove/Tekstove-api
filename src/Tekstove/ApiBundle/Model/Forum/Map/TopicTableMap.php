@@ -166,6 +166,13 @@ class TopicTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, null, false);
+        $this->addRelation('Post', '\\Tekstove\\ApiBundle\\Model\\Forum\\Post', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':forum_topic_id',
+    1 => ':id',
+  ),
+), null, null, 'Posts', false);
     } // buildRelations()
 
     /**

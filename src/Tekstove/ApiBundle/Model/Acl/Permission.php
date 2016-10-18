@@ -16,7 +16,8 @@ use Tekstove\ApiBundle\Model\Acl\Base\Permission as BasePermission;
  */
 class Permission extends BasePermission
 {
-    const LYRIC_EDIT_DOWNLOAD = 'lyric_download';
+    const LYRIC_EDIT_DOWNLOAD = 'lyric.edit.download';
+    const LYRIC_EDIT_VIDEO = 'lyric.edit.video';
     
-    const FORUM_VIEW_SECRET = 'forum_view_secret';
+    const FORUM_VIEW_SECRET = 'forum.secret.view';
 }

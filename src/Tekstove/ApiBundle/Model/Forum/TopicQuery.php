@@ -16,5 +16,5 @@ use Tekstove\ApiBundle\Model\Forum\Base\TopicQuery as BaseTopicQuery;
  */
 class TopicQuery extends BaseTopicQuery
 {
-
+    
 }

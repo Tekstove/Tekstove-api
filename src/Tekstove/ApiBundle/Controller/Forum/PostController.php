@@ -19,8 +19,18 @@ class PostController extends Controller
     {
         $this->applyGroups($request);
         $posts = new PostQuery();
+        
+        $user = $this->getUser();
+        /* @var $user \Tekstove\ApiBundle\Model\User */
+        if (!$user || !$user->getPermission(Permission::FORUM_VIEW_SECRET)) {
+            $posts->useTopicQuery()
+                  ->joinCategory()
+                        ->addAnd('hidden', '0')
+                  ->endUse()
+            ;
+        }
+        
         $posts->orderBy('id', Criteria::ASC);
-        // @TODO filter hidden categories
         
         return $this->handleData($request, $posts);
     }

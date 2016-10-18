@@ -15,3 +15,6 @@
         getCategory:
             groups: [Details]
             serialized_name: category
+        getLatestPost:
+            groups: [LatestPost]
+            serialized_name: latestPost

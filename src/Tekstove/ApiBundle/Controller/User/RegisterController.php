@@ -60,8 +60,9 @@ class RegisterController extends TekstoveAbstractController
             );
             
             $user->setapiKey(sha1(str_shuffle(uniqid())));
-            
             $repo->save($user);
+            $this->getContext()->setGroups(['Details']);
+            return $this->handleData($request, $user);
         } catch (UserHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);

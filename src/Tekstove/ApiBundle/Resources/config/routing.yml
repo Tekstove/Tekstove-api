@@ -19,7 +19,7 @@ tekstove_api_user_get:
     methods: [GET]
 
 tekstove_api_user_login_post:
-    path: "/users/login/{username}"
+    path: "/users/login"
     defaults: { _controller: TekstoveApiBundle:User/Login:post }
     methods: [POST]
 

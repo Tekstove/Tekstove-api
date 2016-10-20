@@ -2,4 +2,22 @@
     exclusion_policy: none
     exclude: false
     read_only: false
-    properties:
+    virtual_properties:
+        getId:
+            groups: [List, Details]
+            serialized_name: id
+        getApiKey:
+           groups: [Credentials]
+           serialized_name: apiKey
+        getMail:
+            groups: [Credentials]
+            serialized_name: mail
+        getAvatar:
+            groups: [List, Details]
+            serialized_name: avatar
+        getUsername:
+            groups: [List, Credentials, Details]
+            serialized_name: username
+        getAbout:
+            groups: [Details]
+            serialized_name: about

@@ -75,6 +75,13 @@ class TekstoveAbstractController extends FOSRestController
         if (empty($groups)) {
             throw new \Exception("Groups can't be empty");
         }
+        
+        foreach ($groups as $group) {
+            if ($group === 'Credentials') {
+                throw new \Exception('Credentials group can\'t be set!');
+            }
+        }
+        
         $this->getContext()
                 ->setGroups($groups);
     }

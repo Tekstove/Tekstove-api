@@ -60,6 +60,10 @@ use Tekstove\ApiBundle\Model\Map\AlbumTableMap;
 use Tekstove\ApiBundle\Model\Map\ArtistTableMap;
 use Tekstove\ApiBundle\Model\Map\LyricTableMap;
 use Tekstove\ApiBundle\Model\Map\UserTableMap;
+use Tekstove\ApiBundle\Model\User\Pm;
+use Tekstove\ApiBundle\Model\User\PmQuery;
+use Tekstove\ApiBundle\Model\User\Base\Pm as BasePm;
+use Tekstove\ApiBundle\Model\User\Map\PmTableMap;
 
 /**
  * Base class that represents a row from the 'user' table.
@@ -159,6 +163,18 @@ abstract class User implements ActiveRecordInterface
     protected $autoplay;
 
     /**
+     * @var        ObjectCollection|Pm[] Collection to store aggregation of Pm objects.
+     */
+    protected $collPmsRelatedByUserTo;
+    protected $collPmsRelatedByUserToPartial;
+
+    /**
+     * @var        ObjectCollection|Pm[] Collection to store aggregation of Pm objects.
+     */
+    protected $collPmsRelatedByUserFrom;
+    protected $collPmsRelatedByUserFromPartial;
+
+    /**
      * @var        ObjectCollection|PermissionGroupUser[] Collection to store aggregation of PermissionGroupUser objects.
      */
     protected $collPermissionGroupUsers;
@@ -230,6 +246,18 @@ abstract class User implements ActiveRecordInterface
      * @var     ConstraintViolationList
      */
     protected $validationFailures;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|Pm[]
+     */
+    protected $pmsRelatedByUserToScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|Pm[]
+     */
+    protected $pmsRelatedByUserFromScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -872,6 +900,10 @@ abstract class User implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->collPmsRelatedByUserTo = null;
+
+            $this->collPmsRelatedByUserFrom = null;
+
             $this->collPermissionGroupUsers = null;
 
             $this->collLyrics = null;
@@ -996,6 +1028,40 @@ abstract class User implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->pmsRelatedByUserToScheduledForDeletion !== null) {
+                if (!$this->pmsRelatedByUserToScheduledForDeletion->isEmpty()) {
+                    \Tekstove\ApiBundle\Model\User\PmQuery::create()
+                        ->filterByPrimaryKeys($this->pmsRelatedByUserToScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->pmsRelatedByUserToScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPmsRelatedByUserTo !== null) {
+                foreach ($this->collPmsRelatedByUserTo as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->pmsRelatedByUserFromScheduledForDeletion !== null) {
+                if (!$this->pmsRelatedByUserFromScheduledForDeletion->isEmpty()) {
+                    \Tekstove\ApiBundle\Model\User\PmQuery::create()
+                        ->filterByPrimaryKeys($this->pmsRelatedByUserFromScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->pmsRelatedByUserFromScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPmsRelatedByUserFrom !== null) {
+                foreach ($this->collPmsRelatedByUserFrom as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->permissionGroupUsersScheduledForDeletion !== null) {
@@ -1357,6 +1423,36 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->collPmsRelatedByUserTo) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'pms';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'pms';
+                        break;
+                    default:
+                        $key = 'Pms';
+                }
+
+                $result[$key] = $this->collPmsRelatedByUserTo->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collPmsRelatedByUserFrom) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'pms';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'pms';
+                        break;
+                    default:
+                        $key = 'Pms';
+                }
+
+                $result[$key] = $this->collPmsRelatedByUserFrom->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
             if (null !== $this->collPermissionGroupUsers) {
 
                 switch ($keyType) {
@@ -1749,6 +1845,18 @@ abstract class User implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getPmsRelatedByUserTo() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPmRelatedByUserTo($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getPmsRelatedByUserFrom() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPmRelatedByUserFrom($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getPermissionGroupUsers() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addPermissionGroupUser($relObj->copy($deepCopy));
@@ -1838,6 +1946,12 @@ abstract class User implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('PmRelatedByUserTo' == $relationName) {
+            return $this->initPmsRelatedByUserTo();
+        }
+        if ('PmRelatedByUserFrom' == $relationName) {
+            return $this->initPmsRelatedByUserFrom();
+        }
         if ('PermissionGroupUser' == $relationName) {
             return $this->initPermissionGroupUsers();
         }
@@ -1862,6 +1976,456 @@ abstract class User implements ActiveRecordInterface
         if ('Post' == $relationName) {
             return $this->initPosts();
         }
+    }
+
+    /**
+     * Clears out the collPmsRelatedByUserTo collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPmsRelatedByUserTo()
+     */
+    public function clearPmsRelatedByUserTo()
+    {
+        $this->collPmsRelatedByUserTo = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPmsRelatedByUserTo collection loaded partially.
+     */
+    public function resetPartialPmsRelatedByUserTo($v = true)
+    {
+        $this->collPmsRelatedByUserToPartial = $v;
+    }
+
+    /**
+     * Initializes the collPmsRelatedByUserTo collection.
+     *
+     * By default this just sets the collPmsRelatedByUserTo collection to an empty array (like clearcollPmsRelatedByUserTo());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPmsRelatedByUserTo($overrideExisting = true)
+    {
+        if (null !== $this->collPmsRelatedByUserTo && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = PmTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collPmsRelatedByUserTo = new $collectionClassName;
+        $this->collPmsRelatedByUserTo->setModel('\Tekstove\ApiBundle\Model\User\Pm');
+    }
+
+    /**
+     * Gets an array of Pm objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|Pm[] List of Pm objects
+     * @throws PropelException
+     */
+    public function getPmsRelatedByUserTo(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPmsRelatedByUserToPartial && !$this->isNew();
+        if (null === $this->collPmsRelatedByUserTo || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPmsRelatedByUserTo) {
+                // return empty collection
+                $this->initPmsRelatedByUserTo();
+            } else {
+                $collPmsRelatedByUserTo = PmQuery::create(null, $criteria)
+                    ->filterByUserRelatedByUserTo($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPmsRelatedByUserToPartial && count($collPmsRelatedByUserTo)) {
+                        $this->initPmsRelatedByUserTo(false);
+
+                        foreach ($collPmsRelatedByUserTo as $obj) {
+                            if (false == $this->collPmsRelatedByUserTo->contains($obj)) {
+                                $this->collPmsRelatedByUserTo->append($obj);
+                            }
+                        }
+
+                        $this->collPmsRelatedByUserToPartial = true;
+                    }
+
+                    return $collPmsRelatedByUserTo;
+                }
+
+                if ($partial && $this->collPmsRelatedByUserTo) {
+                    foreach ($this->collPmsRelatedByUserTo as $obj) {
+                        if ($obj->isNew()) {
+                            $collPmsRelatedByUserTo[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPmsRelatedByUserTo = $collPmsRelatedByUserTo;
+                $this->collPmsRelatedByUserToPartial = false;
+            }
+        }
+
+        return $this->collPmsRelatedByUserTo;
+    }
+
+    /**
+     * Sets a collection of Pm objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $pmsRelatedByUserTo A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setPmsRelatedByUserTo(Collection $pmsRelatedByUserTo, ConnectionInterface $con = null)
+    {
+        /** @var Pm[] $pmsRelatedByUserToToDelete */
+        $pmsRelatedByUserToToDelete = $this->getPmsRelatedByUserTo(new Criteria(), $con)->diff($pmsRelatedByUserTo);
+
+
+        $this->pmsRelatedByUserToScheduledForDeletion = $pmsRelatedByUserToToDelete;
+
+        foreach ($pmsRelatedByUserToToDelete as $pmRelatedByUserToRemoved) {
+            $pmRelatedByUserToRemoved->setUserRelatedByUserTo(null);
+        }
+
+        $this->collPmsRelatedByUserTo = null;
+        foreach ($pmsRelatedByUserTo as $pmRelatedByUserTo) {
+            $this->addPmRelatedByUserTo($pmRelatedByUserTo);
+        }
+
+        $this->collPmsRelatedByUserTo = $pmsRelatedByUserTo;
+        $this->collPmsRelatedByUserToPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related BasePm objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related BasePm objects.
+     * @throws PropelException
+     */
+    public function countPmsRelatedByUserTo(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPmsRelatedByUserToPartial && !$this->isNew();
+        if (null === $this->collPmsRelatedByUserTo || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPmsRelatedByUserTo) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPmsRelatedByUserTo());
+            }
+
+            $query = PmQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUserRelatedByUserTo($this)
+                ->count($con);
+        }
+
+        return count($this->collPmsRelatedByUserTo);
+    }
+
+    /**
+     * Method called to associate a Pm object to this object
+     * through the Pm foreign key attribute.
+     *
+     * @param  Pm $l Pm
+     * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
+     */
+    public function addPmRelatedByUserTo(Pm $l)
+    {
+        if ($this->collPmsRelatedByUserTo === null) {
+            $this->initPmsRelatedByUserTo();
+            $this->collPmsRelatedByUserToPartial = true;
+        }
+
+        if (!$this->collPmsRelatedByUserTo->contains($l)) {
+            $this->doAddPmRelatedByUserTo($l);
+
+            if ($this->pmsRelatedByUserToScheduledForDeletion and $this->pmsRelatedByUserToScheduledForDeletion->contains($l)) {
+                $this->pmsRelatedByUserToScheduledForDeletion->remove($this->pmsRelatedByUserToScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Pm $pmRelatedByUserTo The Pm object to add.
+     */
+    protected function doAddPmRelatedByUserTo(Pm $pmRelatedByUserTo)
+    {
+        $this->collPmsRelatedByUserTo[]= $pmRelatedByUserTo;
+        $pmRelatedByUserTo->setUserRelatedByUserTo($this);
+    }
+
+    /**
+     * @param  Pm $pmRelatedByUserTo The Pm object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removePmRelatedByUserTo(Pm $pmRelatedByUserTo)
+    {
+        if ($this->getPmsRelatedByUserTo()->contains($pmRelatedByUserTo)) {
+            $pos = $this->collPmsRelatedByUserTo->search($pmRelatedByUserTo);
+            $this->collPmsRelatedByUserTo->remove($pos);
+            if (null === $this->pmsRelatedByUserToScheduledForDeletion) {
+                $this->pmsRelatedByUserToScheduledForDeletion = clone $this->collPmsRelatedByUserTo;
+                $this->pmsRelatedByUserToScheduledForDeletion->clear();
+            }
+            $this->pmsRelatedByUserToScheduledForDeletion[]= clone $pmRelatedByUserTo;
+            $pmRelatedByUserTo->setUserRelatedByUserTo(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collPmsRelatedByUserFrom collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPmsRelatedByUserFrom()
+     */
+    public function clearPmsRelatedByUserFrom()
+    {
+        $this->collPmsRelatedByUserFrom = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPmsRelatedByUserFrom collection loaded partially.
+     */
+    public function resetPartialPmsRelatedByUserFrom($v = true)
+    {
+        $this->collPmsRelatedByUserFromPartial = $v;
+    }
+
+    /**
+     * Initializes the collPmsRelatedByUserFrom collection.
+     *
+     * By default this just sets the collPmsRelatedByUserFrom collection to an empty array (like clearcollPmsRelatedByUserFrom());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPmsRelatedByUserFrom($overrideExisting = true)
+    {
+        if (null !== $this->collPmsRelatedByUserFrom && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = PmTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collPmsRelatedByUserFrom = new $collectionClassName;
+        $this->collPmsRelatedByUserFrom->setModel('\Tekstove\ApiBundle\Model\User\Pm');
+    }
+
+    /**
+     * Gets an array of Pm objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|Pm[] List of Pm objects
+     * @throws PropelException
+     */
+    public function getPmsRelatedByUserFrom(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPmsRelatedByUserFromPartial && !$this->isNew();
+        if (null === $this->collPmsRelatedByUserFrom || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPmsRelatedByUserFrom) {
+                // return empty collection
+                $this->initPmsRelatedByUserFrom();
+            } else {
+                $collPmsRelatedByUserFrom = PmQuery::create(null, $criteria)
+                    ->filterByUserRelatedByUserFrom($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPmsRelatedByUserFromPartial && count($collPmsRelatedByUserFrom)) {
+                        $this->initPmsRelatedByUserFrom(false);
+
+                        foreach ($collPmsRelatedByUserFrom as $obj) {
+                            if (false == $this->collPmsRelatedByUserFrom->contains($obj)) {
+                                $this->collPmsRelatedByUserFrom->append($obj);
+                            }
+                        }
+
+                        $this->collPmsRelatedByUserFromPartial = true;
+                    }
+
+                    return $collPmsRelatedByUserFrom;
+                }
+
+                if ($partial && $this->collPmsRelatedByUserFrom) {
+                    foreach ($this->collPmsRelatedByUserFrom as $obj) {
+                        if ($obj->isNew()) {
+                            $collPmsRelatedByUserFrom[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPmsRelatedByUserFrom = $collPmsRelatedByUserFrom;
+                $this->collPmsRelatedByUserFromPartial = false;
+            }
+        }
+
+        return $this->collPmsRelatedByUserFrom;
+    }
+
+    /**
+     * Sets a collection of Pm objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $pmsRelatedByUserFrom A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setPmsRelatedByUserFrom(Collection $pmsRelatedByUserFrom, ConnectionInterface $con = null)
+    {
+        /** @var Pm[] $pmsRelatedByUserFromToDelete */
+        $pmsRelatedByUserFromToDelete = $this->getPmsRelatedByUserFrom(new Criteria(), $con)->diff($pmsRelatedByUserFrom);
+
+
+        $this->pmsRelatedByUserFromScheduledForDeletion = $pmsRelatedByUserFromToDelete;
+
+        foreach ($pmsRelatedByUserFromToDelete as $pmRelatedByUserFromRemoved) {
+            $pmRelatedByUserFromRemoved->setUserRelatedByUserFrom(null);
+        }
+
+        $this->collPmsRelatedByUserFrom = null;
+        foreach ($pmsRelatedByUserFrom as $pmRelatedByUserFrom) {
+            $this->addPmRelatedByUserFrom($pmRelatedByUserFrom);
+        }
+
+        $this->collPmsRelatedByUserFrom = $pmsRelatedByUserFrom;
+        $this->collPmsRelatedByUserFromPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related BasePm objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related BasePm objects.
+     * @throws PropelException
+     */
+    public function countPmsRelatedByUserFrom(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPmsRelatedByUserFromPartial && !$this->isNew();
+        if (null === $this->collPmsRelatedByUserFrom || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPmsRelatedByUserFrom) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPmsRelatedByUserFrom());
+            }
+
+            $query = PmQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUserRelatedByUserFrom($this)
+                ->count($con);
+        }
+
+        return count($this->collPmsRelatedByUserFrom);
+    }
+
+    /**
+     * Method called to associate a Pm object to this object
+     * through the Pm foreign key attribute.
+     *
+     * @param  Pm $l Pm
+     * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
+     */
+    public function addPmRelatedByUserFrom(Pm $l)
+    {
+        if ($this->collPmsRelatedByUserFrom === null) {
+            $this->initPmsRelatedByUserFrom();
+            $this->collPmsRelatedByUserFromPartial = true;
+        }
+
+        if (!$this->collPmsRelatedByUserFrom->contains($l)) {
+            $this->doAddPmRelatedByUserFrom($l);
+
+            if ($this->pmsRelatedByUserFromScheduledForDeletion and $this->pmsRelatedByUserFromScheduledForDeletion->contains($l)) {
+                $this->pmsRelatedByUserFromScheduledForDeletion->remove($this->pmsRelatedByUserFromScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Pm $pmRelatedByUserFrom The Pm object to add.
+     */
+    protected function doAddPmRelatedByUserFrom(Pm $pmRelatedByUserFrom)
+    {
+        $this->collPmsRelatedByUserFrom[]= $pmRelatedByUserFrom;
+        $pmRelatedByUserFrom->setUserRelatedByUserFrom($this);
+    }
+
+    /**
+     * @param  Pm $pmRelatedByUserFrom The Pm object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removePmRelatedByUserFrom(Pm $pmRelatedByUserFrom)
+    {
+        if ($this->getPmsRelatedByUserFrom()->contains($pmRelatedByUserFrom)) {
+            $pos = $this->collPmsRelatedByUserFrom->search($pmRelatedByUserFrom);
+            $this->collPmsRelatedByUserFrom->remove($pos);
+            if (null === $this->pmsRelatedByUserFromScheduledForDeletion) {
+                $this->pmsRelatedByUserFromScheduledForDeletion = clone $this->collPmsRelatedByUserFrom;
+                $this->pmsRelatedByUserFromScheduledForDeletion->clear();
+            }
+            $this->pmsRelatedByUserFromScheduledForDeletion[]= clone $pmRelatedByUserFrom;
+            $pmRelatedByUserFrom->setUserRelatedByUserFrom(null);
+        }
+
+        return $this;
     }
 
     /**
@@ -3825,6 +4389,16 @@ abstract class User implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collPmsRelatedByUserTo) {
+                foreach ($this->collPmsRelatedByUserTo as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collPmsRelatedByUserFrom) {
+                foreach ($this->collPmsRelatedByUserFrom as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collPermissionGroupUsers) {
                 foreach ($this->collPermissionGroupUsers as $o) {
                     $o->clearAllReferences($deep);
@@ -3867,6 +4441,8 @@ abstract class User implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collPmsRelatedByUserTo = null;
+        $this->collPmsRelatedByUserFrom = null;
         $this->collPermissionGroupUsers = null;
         $this->collLyrics = null;
         $this->collLyricTranslations = null;
@@ -3935,6 +4511,24 @@ abstract class User implements ActiveRecordInterface
                 $failureMap->addAll($retval);
             }
 
+            if (null !== $this->collPmsRelatedByUserTo) {
+                foreach ($this->collPmsRelatedByUserTo as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
+            if (null !== $this->collPmsRelatedByUserFrom) {
+                foreach ($this->collPmsRelatedByUserFrom as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
             if (null !== $this->collPermissionGroupUsers) {
                 foreach ($this->collPermissionGroupUsers as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {

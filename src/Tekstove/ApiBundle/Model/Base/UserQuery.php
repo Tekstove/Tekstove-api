@@ -19,6 +19,7 @@ use Tekstove\ApiBundle\Model\Forum\Topic;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\LyricVote;
 use Tekstove\ApiBundle\Model\Map\UserTableMap;
+use Tekstove\ApiBundle\Model\User\Pm;
 
 /**
  * Base class that represents a query for the 'user' table.
@@ -50,6 +51,26 @@ use Tekstove\ApiBundle\Model\Map\UserTableMap;
  * @method     ChildUserQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
  * @method     ChildUserQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildUserQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
+ * @method     ChildUserQuery leftJoinPmRelatedByUserTo($relationAlias = null) Adds a LEFT JOIN clause to the query using the PmRelatedByUserTo relation
+ * @method     ChildUserQuery rightJoinPmRelatedByUserTo($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PmRelatedByUserTo relation
+ * @method     ChildUserQuery innerJoinPmRelatedByUserTo($relationAlias = null) Adds a INNER JOIN clause to the query using the PmRelatedByUserTo relation
+ *
+ * @method     ChildUserQuery joinWithPmRelatedByUserTo($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the PmRelatedByUserTo relation
+ *
+ * @method     ChildUserQuery leftJoinWithPmRelatedByUserTo() Adds a LEFT JOIN clause and with to the query using the PmRelatedByUserTo relation
+ * @method     ChildUserQuery rightJoinWithPmRelatedByUserTo() Adds a RIGHT JOIN clause and with to the query using the PmRelatedByUserTo relation
+ * @method     ChildUserQuery innerJoinWithPmRelatedByUserTo() Adds a INNER JOIN clause and with to the query using the PmRelatedByUserTo relation
+ *
+ * @method     ChildUserQuery leftJoinPmRelatedByUserFrom($relationAlias = null) Adds a LEFT JOIN clause to the query using the PmRelatedByUserFrom relation
+ * @method     ChildUserQuery rightJoinPmRelatedByUserFrom($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PmRelatedByUserFrom relation
+ * @method     ChildUserQuery innerJoinPmRelatedByUserFrom($relationAlias = null) Adds a INNER JOIN clause to the query using the PmRelatedByUserFrom relation
+ *
+ * @method     ChildUserQuery joinWithPmRelatedByUserFrom($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the PmRelatedByUserFrom relation
+ *
+ * @method     ChildUserQuery leftJoinWithPmRelatedByUserFrom() Adds a LEFT JOIN clause and with to the query using the PmRelatedByUserFrom relation
+ * @method     ChildUserQuery rightJoinWithPmRelatedByUserFrom() Adds a RIGHT JOIN clause and with to the query using the PmRelatedByUserFrom relation
+ * @method     ChildUserQuery innerJoinWithPmRelatedByUserFrom() Adds a INNER JOIN clause and with to the query using the PmRelatedByUserFrom relation
  *
  * @method     ChildUserQuery leftJoinPermissionGroupUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the PermissionGroupUser relation
  * @method     ChildUserQuery rightJoinPermissionGroupUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PermissionGroupUser relation
@@ -131,7 +152,7 @@ use Tekstove\ApiBundle\Model\Map\UserTableMap;
  * @method     ChildUserQuery rightJoinWithPost() Adds a RIGHT JOIN clause and with to the query using the Post relation
  * @method     ChildUserQuery innerJoinWithPost() Adds a INNER JOIN clause and with to the query using the Post relation
  *
- * @method     \Tekstove\ApiBundle\Model\Acl\PermissionGroupUserQuery|\Tekstove\ApiBundle\Model\LyricQuery|\Tekstove\ApiBundle\Model\Lyric\LyricTranslationQuery|\Tekstove\ApiBundle\Model\Lyric\LyricVoteQuery|\Tekstove\ApiBundle\Model\ArtistQuery|\Tekstove\ApiBundle\Model\AlbumQuery|\Tekstove\ApiBundle\Model\Forum\TopicQuery|\Tekstove\ApiBundle\Model\Forum\PostQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \Tekstove\ApiBundle\Model\User\PmQuery|\Tekstove\ApiBundle\Model\Acl\PermissionGroupUserQuery|\Tekstove\ApiBundle\Model\LyricQuery|\Tekstove\ApiBundle\Model\Lyric\LyricTranslationQuery|\Tekstove\ApiBundle\Model\Lyric\LyricVoteQuery|\Tekstove\ApiBundle\Model\ArtistQuery|\Tekstove\ApiBundle\Model\AlbumQuery|\Tekstove\ApiBundle\Model\Forum\TopicQuery|\Tekstove\ApiBundle\Model\Forum\PostQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildUser findOne(ConnectionInterface $con = null) Return the first ChildUser matching the query
  * @method     ChildUser findOneOrCreate(ConnectionInterface $con = null) Return the first ChildUser matching the query, or a new ChildUser object populated from the query conditions when no match is found
@@ -584,6 +605,152 @@ abstract class UserQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UserTableMap::COL_AUTOPLAY, $autoplay, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\User\Pm object
+     *
+     * @param \Tekstove\ApiBundle\Model\User\Pm|ObjectCollection $pm the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByPmRelatedByUserTo($pm, $comparison = null)
+    {
+        if ($pm instanceof \Tekstove\ApiBundle\Model\User\Pm) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $pm->getUserTo(), $comparison);
+        } elseif ($pm instanceof ObjectCollection) {
+            return $this
+                ->usePmRelatedByUserToQuery()
+                ->filterByPrimaryKeys($pm->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPmRelatedByUserTo() only accepts arguments of type \Tekstove\ApiBundle\Model\User\Pm or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the PmRelatedByUserTo relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinPmRelatedByUserTo($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('PmRelatedByUserTo');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'PmRelatedByUserTo');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the PmRelatedByUserTo relation Pm object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\User\PmQuery A secondary query class using the current class as primary query
+     */
+    public function usePmRelatedByUserToQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinPmRelatedByUserTo($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'PmRelatedByUserTo', '\Tekstove\ApiBundle\Model\User\PmQuery');
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\User\Pm object
+     *
+     * @param \Tekstove\ApiBundle\Model\User\Pm|ObjectCollection $pm the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByPmRelatedByUserFrom($pm, $comparison = null)
+    {
+        if ($pm instanceof \Tekstove\ApiBundle\Model\User\Pm) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $pm->getUserFrom(), $comparison);
+        } elseif ($pm instanceof ObjectCollection) {
+            return $this
+                ->usePmRelatedByUserFromQuery()
+                ->filterByPrimaryKeys($pm->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPmRelatedByUserFrom() only accepts arguments of type \Tekstove\ApiBundle\Model\User\Pm or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the PmRelatedByUserFrom relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinPmRelatedByUserFrom($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('PmRelatedByUserFrom');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'PmRelatedByUserFrom');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the PmRelatedByUserFrom relation Pm object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\User\PmQuery A secondary query class using the current class as primary query
+     */
+    public function usePmRelatedByUserFromQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinPmRelatedByUserFrom($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'PmRelatedByUserFrom', '\Tekstove\ApiBundle\Model\User\PmQuery');
     }
 
     /**

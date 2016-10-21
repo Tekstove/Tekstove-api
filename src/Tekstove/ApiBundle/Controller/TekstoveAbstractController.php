@@ -206,4 +206,12 @@ class TekstoveAbstractController extends FOSRestController
         
         $object->$setter($itemsToMap);
     }
+    
+    protected function userMustBeLogged()
+    {
+        $securityChecker = $this->get('security.authorization_checker');
+        if (!$securityChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+    }
 }

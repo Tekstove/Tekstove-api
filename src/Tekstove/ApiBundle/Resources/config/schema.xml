@@ -25,6 +25,23 @@
         </behavior>
     </table>
     
+    <table name="pm" namespace="\Tekstove\ApiBundle\Model\User">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="user_to" type="integer" required="true" />
+        <foreign-key foreignTable="user" name="userTo">
+            <reference local="user_to" foreign="id" />
+        </foreign-key>
+        
+        <column name="user_from" type="integer" required="true" />
+        <foreign-key foreignTable="user" name="userFrom">
+            <reference local="user_from" foreign="id" />
+        </foreign-key>
+        
+         <column name="text" type="varchar" required="true" />
+         <column name="title" type="varchar" required="true" />
+         <column name="read" type="BOOLEAN" required="true" />
+    </table>
+    
     <table name="permission" namespace="\Tekstove\ApiBundle\Model\Acl" readonly="true">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
         <column name="name" type="varchar" />

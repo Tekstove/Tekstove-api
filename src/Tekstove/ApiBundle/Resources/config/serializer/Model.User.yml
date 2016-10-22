@@ -12,6 +12,9 @@
         getMail:
             groups: [Credentials]
             serialized_name: mail
+        getUnreadPmCount:
+            groups: [Credentials]
+            serialized_name: unreadPmCount
         getAvatar:
             groups: [List, Details]
             serialized_name: avatar

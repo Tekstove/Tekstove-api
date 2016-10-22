@@ -26,7 +26,16 @@ class LoginController extends TekstoveAbstractController
         $userQuery = new UserQuery();
         $userQuery->filterByUsername($username, Criteria::EQUAL);
         $userQuery->filterByPassword($passwordHashed, Criteria::EQUAL);
+        $user = $userQuery->findOne();
         
-        return $this->handleData($request, $userQuery);
+        return $this->handleData($request, $user);
+    }
+    
+    public function getAction(Request $request)
+    {
+        $this->userMustBeLogged();
+        $user = $this->getUser();
+        
+        return $this->handleData($request, $user);
     }
 }

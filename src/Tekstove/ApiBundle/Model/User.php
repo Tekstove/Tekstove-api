@@ -9,6 +9,8 @@ use Tekstove\ApiBundle\Model\User\Exception\UserHumanReadableException;
 
 use Propel\Runtime\Connection\ConnectionInterface;
 
+use Tekstove\ApiBundle\Model\User\PmQuery;
+
 /**
  * Skeleton subclass for representing a row from the 'user' table.
  *
@@ -114,5 +116,17 @@ class User extends BaseUser
         }
         
         return $allowedFields;
+    }
+    
+    /**
+     * @return integer
+     */
+    public function getUnreadPmCount()
+    {
+        $pmQUery = new PmQuery();
+        $pmQUery->filterByUserRelatedByUserTo($this);
+        $pmQUery->filterByRead(0);
+        $unreadPmCount = $pmQUery->count();
+        return $unreadPmCount;
     }
 }

@@ -22,8 +22,13 @@ tekstove_api_user_get:
 
 tekstove_api_user_login_post:
     path: "/users/login"
-    defaults: { _controller: TekstoveApiBundle:User/Login:post }
+    defaults: { _controller: TekstoveApiBundle:User\Login:post }
     methods: [POST]
+    
+tekstove_api_user_login_get:
+    path: "/users/login"
+    defaults: { _controller: TekstoveApiBundle:User\Login:get }
+    methods: [GET]
 
 tekstove_api_user_credentials_list:
     path: "/users/credentials"

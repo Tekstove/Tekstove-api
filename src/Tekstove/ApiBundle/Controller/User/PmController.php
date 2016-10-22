@@ -23,14 +23,13 @@ class PmController extends Controller
         $pmQuery = new PmQuery();
         
         if ($request->get('direction') === 'from') {
-            $pmQuery->filterByUserFrom($user);
+            $pmQuery->filterByUserRelatedByUserFrom($user);
         } else {
-            $pmQuery->filterByUserTo($user);
+            $pmQuery->filterByUserRelatedByUserTo($user);
         }
         
         $pmQuery->orderById(Criteria::DESC);
         
         return $this->handleData($request, $pmQuery);
-        
     }
 }

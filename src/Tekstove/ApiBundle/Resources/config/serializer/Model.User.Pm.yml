@@ -1,0 +1,20 @@
+"Tekstove\\ApiBundle\\Model\\User\\Pm":
+    exclusion_policy: none
+    exclude: false
+    read_only: false
+    virtual_properties:
+        getId:
+            groups: [Details, List]
+            serialized_name: id
+        getTitle:
+            groups: [Details, List]
+            serialized_name: title
+        getText:
+            groups: [Details]
+            serialized_name: text
+        getUserRelatedByUserFrom:
+            groups: [Details, List]
+            serialized_name: userFrom
+        getUserRelatedByUserTo:
+            groups: [Details, List]
+            serialized_name: userTo

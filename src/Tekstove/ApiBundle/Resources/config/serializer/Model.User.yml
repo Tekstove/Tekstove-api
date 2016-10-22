@@ -1,7 +1,7 @@
 "Tekstove\\ApiBundle\\Model\\User":
     exclusion_policy: none
     exclude: false
-    read_only: false
+    read_only: true
     virtual_properties:
         getId:
             groups: [List, Details]

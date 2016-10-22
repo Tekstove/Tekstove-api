@@ -17,6 +17,8 @@ tekstove_api_user_get:
     path: "/users/{id}"
     defaults: { _controller: TekstoveApiBundle:User:get }
     methods: [GET]
+    requirements:
+        id:  \d+
 
 tekstove_api_user_login_post:
     path: "/users/login"

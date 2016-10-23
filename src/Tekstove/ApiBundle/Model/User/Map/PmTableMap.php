@@ -59,7 +59,7 @@ class PmTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class PmTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the id field
@@ -102,6 +102,11 @@ class PmTableMap extends TableMap
     const COL_READ = 'pm.read';
 
     /**
+     * the column name for the datetime field
+     */
+    const COL_DATETIME = 'pm.datetime';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -113,11 +118,11 @@ class PmTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'UserTo', 'UserFrom', 'Text', 'Title', 'Read', ),
-        self::TYPE_CAMELNAME     => array('id', 'userTo', 'userFrom', 'text', 'title', 'read', ),
-        self::TYPE_COLNAME       => array(PmTableMap::COL_ID, PmTableMap::COL_USER_TO, PmTableMap::COL_USER_FROM, PmTableMap::COL_TEXT, PmTableMap::COL_TITLE, PmTableMap::COL_READ, ),
-        self::TYPE_FIELDNAME     => array('id', 'user_to', 'user_from', 'text', 'title', 'read', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'UserTo', 'UserFrom', 'Text', 'Title', 'Read', 'Datetime', ),
+        self::TYPE_CAMELNAME     => array('id', 'userTo', 'userFrom', 'text', 'title', 'read', 'datetime', ),
+        self::TYPE_COLNAME       => array(PmTableMap::COL_ID, PmTableMap::COL_USER_TO, PmTableMap::COL_USER_FROM, PmTableMap::COL_TEXT, PmTableMap::COL_TITLE, PmTableMap::COL_READ, PmTableMap::COL_DATETIME, ),
+        self::TYPE_FIELDNAME     => array('id', 'user_to', 'user_from', 'text', 'title', 'read', 'datetime', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -127,11 +132,11 @@ class PmTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'UserTo' => 1, 'UserFrom' => 2, 'Text' => 3, 'Title' => 4, 'Read' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'userTo' => 1, 'userFrom' => 2, 'text' => 3, 'title' => 4, 'read' => 5, ),
-        self::TYPE_COLNAME       => array(PmTableMap::COL_ID => 0, PmTableMap::COL_USER_TO => 1, PmTableMap::COL_USER_FROM => 2, PmTableMap::COL_TEXT => 3, PmTableMap::COL_TITLE => 4, PmTableMap::COL_READ => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'user_to' => 1, 'user_from' => 2, 'text' => 3, 'title' => 4, 'read' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'UserTo' => 1, 'UserFrom' => 2, 'Text' => 3, 'Title' => 4, 'Read' => 5, 'Datetime' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'userTo' => 1, 'userFrom' => 2, 'text' => 3, 'title' => 4, 'read' => 5, 'datetime' => 6, ),
+        self::TYPE_COLNAME       => array(PmTableMap::COL_ID => 0, PmTableMap::COL_USER_TO => 1, PmTableMap::COL_USER_FROM => 2, PmTableMap::COL_TEXT => 3, PmTableMap::COL_TITLE => 4, PmTableMap::COL_READ => 5, PmTableMap::COL_DATETIME => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'user_to' => 1, 'user_from' => 2, 'text' => 3, 'title' => 4, 'read' => 5, 'datetime' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -157,6 +162,7 @@ class PmTableMap extends TableMap
         $this->addColumn('text', 'Text', 'VARCHAR', true, 255, null);
         $this->addColumn('title', 'Title', 'VARCHAR', true, 255, null);
         $this->addColumn('read', 'Read', 'BOOLEAN', true, 1, null);
+        $this->addColumn('datetime', 'Datetime', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -327,6 +333,7 @@ class PmTableMap extends TableMap
             $criteria->addSelectColumn(PmTableMap::COL_TEXT);
             $criteria->addSelectColumn(PmTableMap::COL_TITLE);
             $criteria->addSelectColumn(PmTableMap::COL_READ);
+            $criteria->addSelectColumn(PmTableMap::COL_DATETIME);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.user_to');
@@ -334,6 +341,7 @@ class PmTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.text');
             $criteria->addSelectColumn($alias . '.title');
             $criteria->addSelectColumn($alias . '.read');
+            $criteria->addSelectColumn($alias . '.datetime');
         }
     }
 

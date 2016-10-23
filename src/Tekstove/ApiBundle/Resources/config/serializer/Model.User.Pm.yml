@@ -9,6 +9,12 @@
         getTitle:
             groups: [Details, List]
             serialized_name: title
+        getRead:
+            groups: [Details, List]
+            serialized_name: read
+        getDateTimeTimestamp:
+            groups: [Details, List]
+            serialized_name: datetime
         getText:
             groups: [Details]
             serialized_name: text

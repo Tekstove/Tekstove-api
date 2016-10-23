@@ -9,7 +9,7 @@
         getText:
             groups: [Details, List]
             serialized_name: text
-        getDateTatetime:
+        getDateTimeTimestamp:
             groups: [Details, List]
             serialized_name: datetime
         getUser:

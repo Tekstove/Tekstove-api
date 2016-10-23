@@ -2,6 +2,7 @@
 
 namespace Tekstove\ApiBundle\Model\User\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -15,6 +16,7 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 use Tekstove\ApiBundle\Model\User;
 use Tekstove\ApiBundle\Model\UserQuery;
 use Tekstove\ApiBundle\Model\User\PmQuery as ChildPmQuery;
@@ -102,6 +104,13 @@ abstract class Pm implements ActiveRecordInterface
      * @var        boolean
      */
     protected $read;
+
+    /**
+     * The value for the datetime field.
+     *
+     * @var        DateTime
+     */
+    protected $datetime;
 
     /**
      * @var        User
@@ -417,6 +426,26 @@ abstract class Pm implements ActiveRecordInterface
     }
 
     /**
+     * Get the [optionally formatted] temporal [datetime] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getDatetime($format = NULL)
+    {
+        if ($format === null) {
+            return $this->datetime;
+        } else {
+            return $this->datetime instanceof \DateTimeInterface ? $this->datetime->format($format) : null;
+        }
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -553,6 +582,26 @@ abstract class Pm implements ActiveRecordInterface
     } // setRead()
 
     /**
+     * Sets the value of [datetime] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Tekstove\ApiBundle\Model\User\Pm The current object (for fluent API support)
+     */
+    public function setDatetime($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->datetime !== null || $dt !== null) {
+            if ($this->datetime === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->datetime->format("Y-m-d H:i:s.u")) {
+                $this->datetime = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[PmTableMap::COL_DATETIME] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setDatetime()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -605,6 +654,12 @@ abstract class Pm implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PmTableMap::translateFieldName('Read', TableMap::TYPE_PHPNAME, $indexType)];
             $this->read = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PmTableMap::translateFieldName('Datetime', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->datetime = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -613,7 +668,7 @@ abstract class Pm implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = PmTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = PmTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\User\\Pm'), 0, $e);
@@ -855,6 +910,9 @@ abstract class Pm implements ActiveRecordInterface
         if ($this->isColumnModified(PmTableMap::COL_READ)) {
             $modifiedColumns[':p' . $index++]  = '`read`';
         }
+        if ($this->isColumnModified(PmTableMap::COL_DATETIME)) {
+            $modifiedColumns[':p' . $index++]  = '`datetime`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `pm` (%s) VALUES (%s)',
@@ -883,6 +941,9 @@ abstract class Pm implements ActiveRecordInterface
                         break;
                     case '`read`':
                         $stmt->bindValue($identifier, (int) $this->read, PDO::PARAM_INT);
+                        break;
+                    case '`datetime`':
+                        $stmt->bindValue($identifier, $this->datetime ? $this->datetime->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -964,6 +1025,9 @@ abstract class Pm implements ActiveRecordInterface
             case 5:
                 return $this->getRead();
                 break;
+            case 6:
+                return $this->getDatetime();
+                break;
             default:
                 return null;
                 break;
@@ -1000,7 +1064,12 @@ abstract class Pm implements ActiveRecordInterface
             $keys[3] => $this->getText(),
             $keys[4] => $this->getTitle(),
             $keys[5] => $this->getRead(),
+            $keys[6] => $this->getDatetime(),
         );
+        if ($result[$keys[6]] instanceof \DateTime) {
+            $result[$keys[6]] = $result[$keys[6]]->format('c');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -1089,6 +1158,9 @@ abstract class Pm implements ActiveRecordInterface
             case 5:
                 $this->setRead($value);
                 break;
+            case 6:
+                $this->setDatetime($value);
+                break;
         } // switch()
 
         return $this;
@@ -1132,6 +1204,9 @@ abstract class Pm implements ActiveRecordInterface
         }
         if (array_key_exists($keys[5], $arr)) {
             $this->setRead($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setDatetime($arr[$keys[6]]);
         }
     }
 
@@ -1191,6 +1266,9 @@ abstract class Pm implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PmTableMap::COL_READ)) {
             $criteria->add(PmTableMap::COL_READ, $this->read);
+        }
+        if ($this->isColumnModified(PmTableMap::COL_DATETIME)) {
+            $criteria->add(PmTableMap::COL_DATETIME, $this->datetime);
         }
 
         return $criteria;
@@ -1283,6 +1361,7 @@ abstract class Pm implements ActiveRecordInterface
         $copyObj->setText($this->getText());
         $copyObj->setTitle($this->getTitle());
         $copyObj->setRead($this->getRead());
+        $copyObj->setDatetime($this->getDatetime());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1432,6 +1511,7 @@ abstract class Pm implements ActiveRecordInterface
         $this->text = null;
         $this->title = null;
         $this->read = null;
+        $this->datetime = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();

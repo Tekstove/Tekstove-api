@@ -28,6 +28,7 @@ class PmController extends Controller
             $pmQuery->filterByUserRelatedByUserTo($user);
         }
         
+        $pmQuery->orderByRead();
         $pmQuery->orderById(Criteria::DESC);
         
         return $this->handleData($request, $pmQuery);

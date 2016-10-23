@@ -27,6 +27,7 @@ use Tekstove\ApiBundle\Model\User\Map\PmTableMap;
  * @method     ChildPmQuery orderByText($order = Criteria::ASC) Order by the text column
  * @method     ChildPmQuery orderByTitle($order = Criteria::ASC) Order by the title column
  * @method     ChildPmQuery orderByRead($order = Criteria::ASC) Order by the read column
+ * @method     ChildPmQuery orderByDatetime($order = Criteria::ASC) Order by the datetime column
  *
  * @method     ChildPmQuery groupById() Group by the id column
  * @method     ChildPmQuery groupByUserTo() Group by the user_to column
@@ -34,6 +35,7 @@ use Tekstove\ApiBundle\Model\User\Map\PmTableMap;
  * @method     ChildPmQuery groupByText() Group by the text column
  * @method     ChildPmQuery groupByTitle() Group by the title column
  * @method     ChildPmQuery groupByRead() Group by the read column
+ * @method     ChildPmQuery groupByDatetime() Group by the datetime column
  *
  * @method     ChildPmQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildPmQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -73,7 +75,8 @@ use Tekstove\ApiBundle\Model\User\Map\PmTableMap;
  * @method     ChildPm findOneByUserFrom(int $user_from) Return the first ChildPm filtered by the user_from column
  * @method     ChildPm findOneByText(string $text) Return the first ChildPm filtered by the text column
  * @method     ChildPm findOneByTitle(string $title) Return the first ChildPm filtered by the title column
- * @method     ChildPm findOneByRead(boolean $read) Return the first ChildPm filtered by the read column *
+ * @method     ChildPm findOneByRead(boolean $read) Return the first ChildPm filtered by the read column
+ * @method     ChildPm findOneByDatetime(string $datetime) Return the first ChildPm filtered by the datetime column *
 
  * @method     ChildPm requirePk($key, ConnectionInterface $con = null) Return the ChildPm by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPm requireOne(ConnectionInterface $con = null) Return the first ChildPm matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -84,6 +87,7 @@ use Tekstove\ApiBundle\Model\User\Map\PmTableMap;
  * @method     ChildPm requireOneByText(string $text) Return the first ChildPm filtered by the text column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPm requireOneByTitle(string $title) Return the first ChildPm filtered by the title column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPm requireOneByRead(boolean $read) Return the first ChildPm filtered by the read column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPm requireOneByDatetime(string $datetime) Return the first ChildPm filtered by the datetime column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildPm[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPm objects based on current ModelCriteria
  * @method     ChildPm[]|ObjectCollection findById(int $id) Return ChildPm objects filtered by the id column
@@ -92,6 +96,7 @@ use Tekstove\ApiBundle\Model\User\Map\PmTableMap;
  * @method     ChildPm[]|ObjectCollection findByText(string $text) Return ChildPm objects filtered by the text column
  * @method     ChildPm[]|ObjectCollection findByTitle(string $title) Return ChildPm objects filtered by the title column
  * @method     ChildPm[]|ObjectCollection findByRead(boolean $read) Return ChildPm objects filtered by the read column
+ * @method     ChildPm[]|ObjectCollection findByDatetime(string $datetime) Return ChildPm objects filtered by the datetime column
  * @method     ChildPm[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -190,7 +195,7 @@ abstract class PmQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `user_to`, `user_from`, `text`, `title`, `read` FROM `pm` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `user_to`, `user_from`, `text`, `title`, `read`, `datetime` FROM `pm` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -482,6 +487,49 @@ abstract class PmQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(PmTableMap::COL_READ, $read, $comparison);
+    }
+
+    /**
+     * Filter the query on the datetime column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByDatetime('2011-03-14'); // WHERE datetime = '2011-03-14'
+     * $query->filterByDatetime('now'); // WHERE datetime = '2011-03-14'
+     * $query->filterByDatetime(array('max' => 'yesterday')); // WHERE datetime > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $datetime The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPmQuery The current query, for fluid interface
+     */
+    public function filterByDatetime($datetime = null, $comparison = null)
+    {
+        if (is_array($datetime)) {
+            $useMinMax = false;
+            if (isset($datetime['min'])) {
+                $this->addUsingAlias(PmTableMap::COL_DATETIME, $datetime['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($datetime['max'])) {
+                $this->addUsingAlias(PmTableMap::COL_DATETIME, $datetime['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PmTableMap::COL_DATETIME, $datetime, $comparison);
     }
 
     /**

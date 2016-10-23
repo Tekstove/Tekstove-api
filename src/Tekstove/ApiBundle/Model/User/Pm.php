@@ -16,5 +16,8 @@ use Tekstove\ApiBundle\Model\User\Base\Pm as BasePm;
  */
 class Pm extends BasePm
 {
-
+    public function getDateTimeTimestamp()
+    {
+        return $this->getDatetime('U');
+    }
 }

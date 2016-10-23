@@ -16,7 +16,7 @@ use Tekstove\ApiBundle\Model\Forum\Base\Post as BasePost;
  */
 class Post extends BasePost
 {
-    public function getDateTatetime()
+    public function getDateTimeTimestamp()
     {
         return $this->getDate('U');
     }

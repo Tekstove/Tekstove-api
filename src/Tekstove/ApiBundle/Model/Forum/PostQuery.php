@@ -23,12 +23,12 @@ class PostQuery extends BasePostQuery
     private $eventDispacher;
     private $validator;
     
-    function setValidator(ValidatorInterface $validator)
+    public function setValidator(ValidatorInterface $validator)
     {
         $this->validator = $validator;
     }
         
-    function setEventDispacher(EventDispatcherInterface $eventDispacher)
+    public function setEventDispacher(EventDispatcherInterface $eventDispacher)
     {
         $this->eventDispacher = $eventDispacher;
     }

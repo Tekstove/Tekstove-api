@@ -3,6 +3,7 @@
 namespace Tekstove\ApiBundle\Model\Forum;
 
 use Tekstove\ApiBundle\Model\Forum\Base\Topic as BaseTopic;
+use Propel\Runtime\ActiveQuery\Criteria;
 
 /**
  * Skeleton subclass for representing a row from the 'forum_topic' table.
@@ -20,7 +21,7 @@ class Topic extends BaseTopic
     {
         $postQuery = new PostQuery();
         $postQuery->filterByTopic($this);
-        $postQuery->orderById();
+        $postQuery->orderById(Criteria::DESC);
         $post = $postQuery->findOne();
         return $post;
     }

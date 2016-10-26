@@ -3,6 +3,8 @@
 namespace Tekstove\ApiBundle\Model\Forum;
 
 use Tekstove\ApiBundle\Model\Forum\Base\PostQuery as BasePostQuery;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'forum_post' table.
@@ -16,5 +18,25 @@ use Tekstove\ApiBundle\Model\Forum\Base\PostQuery as BasePostQuery;
  */
 class PostQuery extends BasePostQuery
 {
+    use \Tekstove\ApiBundle\Validator\ValidationableTrait;
+    
+    private $eventDispacher;
+    private $validator;
+    
+    function setValidator(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
+        
+    function setEventDispacher(EventDispatcherInterface $eventDispacher)
+    {
+        $this->eventDispacher = $eventDispacher;
+    }
 
+    public function save(Post $post)
+    {
+        $post->setValidator($this->validator);
+        $post->setEventDispacher($this->eventDispacher);
+        $post->save();
+    }
 }

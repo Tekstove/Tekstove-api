@@ -254,6 +254,11 @@
         <foreign-key foreignTable="forum_topic">
             <reference local="forum_topic_id" foreign="id" />
         </foreign-key>
+        
+        <behavior name="validate">
+            <parameter name="postTextRequired" value="{column: text, validator: NotBlank}" />
+            <parameter name="postTextMinLength" value="{column: text, validator: Length, options: {min: 5}}" />
+        </behavior>
     </table>
     
 </database>

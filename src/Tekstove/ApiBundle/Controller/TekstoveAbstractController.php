@@ -156,6 +156,16 @@ class TekstoveAbstractController extends FOSRestController
     
     protected function propelSetter($object, $values, $setter)
     {
+        // @TODO @FIXME
+        
+        if ($setter == 'setTopic') {
+            $topicQ = new \Tekstove\ApiBundle\Model\Forum\TopicQuery();
+            $topic = $topicQ->findOneById($values);
+            $object->setTopic($topic);
+            return true;
+        }
+        
+        
         if (!is_array($values)) {
             // @TODO use property accessor!
             $getter = preg_replace('/^set/', 'get', $setter);

@@ -1,5 +1,5 @@
 "Tekstove\\ApiBundle\\Model\\Forum\\Post":
-    exclusion_policy: none
+    exclusion_policy: all
     exclude: false
     read_only: true
     virtual_properties:
@@ -15,3 +15,6 @@
         getUser:
             groups: [Details, Forum_Post_User]
             serialized_name: user
+        getTopic:
+            groups: [Details, Forum_Post_Topic]
+            serialized_name: topic

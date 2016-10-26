@@ -1,5 +1,5 @@
 "Tekstove\\ApiBundle\\Model\\Base\\Artist":
-    exclusion_policy: none
+    exclusion_policy: all
     exclude: false
     read_only: true
     properties:

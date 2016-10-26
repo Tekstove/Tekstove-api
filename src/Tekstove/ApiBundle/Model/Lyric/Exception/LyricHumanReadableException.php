@@ -12,18 +12,5 @@ use Tekstove\ApiBundle\Exception\HumanReadableInterface;
 class LyricHumanReadableException extends LyricException implements HumanReadableInterface
 {
 
-    private $errors = [];
-
-    public function addError($key, $errorMsg)
-    {
-        $this->errors[] = [
-            'element' => $key,
-            'message' => $errorMsg,
-        ];
-    }
-    
-    public function getErrors()
-    {
-        return $this->errors;
-    }
+    use \Tekstove\ApiBundle\Exception\HumanReadableTrait;
 }

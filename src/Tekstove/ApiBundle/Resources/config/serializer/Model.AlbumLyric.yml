@@ -1,5 +1,5 @@
 "Tekstove\\ApiBundle\\Model\\AlbumLyric":
-    exclusion_policy: none
+    exclusion_policy: all
     exclude: false
     read_only: true
     virtual_properties:

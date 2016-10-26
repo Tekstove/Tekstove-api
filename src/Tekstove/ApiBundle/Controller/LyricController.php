@@ -64,7 +64,7 @@ class LyricController extends Controller
                         $lyricData[$camel] = null;
                     }
                     $value = $lyricData[$camel];
-                    // @TODO user service!
+                    // @TODO use service!
                     $this->propelSetter($lyric, $value, $setter);
                 }
             }

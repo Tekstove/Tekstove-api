@@ -16,6 +16,15 @@ use Tekstove\ApiBundle\Model\Base\LyricQuery as BaseLyricQuery;
  */
 class LyricQuery extends BaseLyricQuery
 {
+    use RepositoryTrait;
+    
+    public function save(Lyric $lyric)
+    {
+        $lyric->setEventDispacher($this->eventDispacher);
+        $lyric->setValidator($this->validator);
+        $lyric->save();
+    }
+    
     /**
      * @inheritDoc
      * Also allow filtering by artistId

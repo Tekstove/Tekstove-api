@@ -18,20 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class PostQuery extends BasePostQuery
 {
-    use \Tekstove\ApiBundle\Validator\ValidationableTrait;
-    
-    private $eventDispacher;
-    private $validator;
-    
-    public function setValidator(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
-    }
-        
-    public function setEventDispacher(EventDispatcherInterface $eventDispacher)
-    {
-        $this->eventDispacher = $eventDispacher;
-    }
+    use \Tekstove\ApiBundle\Model\RepositoryTrait;
 
     public function save(Post $post)
     {

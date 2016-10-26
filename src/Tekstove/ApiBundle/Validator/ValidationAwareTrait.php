@@ -5,11 +5,11 @@ namespace Tekstove\ApiBundle\Validator;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Description of Validationable
+ * ValidationAwareTrait
  *
  * @author po_taka <angel.koilov@gmail.com>
  */
-trait ValidationableTrait
+trait ValidationAwareTrait
 {
 
     private $validator;
@@ -17,5 +17,13 @@ trait ValidationableTrait
     public function setValidator(ValidatorInterface $validator)
     {
         $this->validator = $validator;
+    }
+    
+    public function getValidator()
+    {
+        if ($this->validator === null) {
+            throw new \RuntimeException("Validator not set");
+        }
+        return $this->validator;
     }
 }

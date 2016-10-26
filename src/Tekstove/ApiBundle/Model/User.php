@@ -23,7 +23,7 @@ use Tekstove\ApiBundle\Model\User\PmQuery;
  */
 class User extends BaseUser
 {
-    use \Tekstove\ApiBundle\Validator\ValidationableTrait;
+    use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
     
     public function preSave(ConnectionInterface $con = null)
     {

@@ -16,5 +16,11 @@ use Tekstove\ApiBundle\Model\Base\UserQuery as BaseUserQuery;
  */
 class UserQuery extends BaseUserQuery
 {
+    use \Tekstove\ApiBundle\Model\RepositoryTrait;
 
+    public function save(User $user)
+    {
+        $user->setValidator($this->validator);
+        $user->save();
+    }
 }

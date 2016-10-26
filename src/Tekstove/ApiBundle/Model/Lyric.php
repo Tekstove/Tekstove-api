@@ -25,7 +25,7 @@ use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
 class Lyric extends BaseLyric implements AutoAclSerializableInterface
 {
     use AclTrait;
-    use \Tekstove\ApiBundle\Validator\ValidationableTrait;
+    use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
     
     private $eventDispacher;
     

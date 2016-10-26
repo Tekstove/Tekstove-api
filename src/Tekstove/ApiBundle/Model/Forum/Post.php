@@ -20,7 +20,7 @@ use Tekstove\ApiBundle\EventDispatcher\Forum\Post\PostEvent;
  */
 class Post extends BasePost
 {
-    use \Tekstove\ApiBundle\Validator\ValidationableTrait;
+    use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
     
     private $eventDispacher;
     

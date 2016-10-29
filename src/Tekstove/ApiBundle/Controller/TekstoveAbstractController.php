@@ -39,6 +39,7 @@ class TekstoveAbstractController extends FOSRestController
     {
         $this->applyPaginationOptions($request);
         $data = $this->applyFilters($request, $data);
+        $data = $this->applyOrders($request, $data);
         $data = $this->propelQueryToPagination($request, $data);
         $data = $this->paginationToArray($data);
         
@@ -120,6 +121,32 @@ class TekstoveAbstractController extends FOSRestController
         return $data;
     }
     
+    public function applyOrders(Request $request, $data)
+    {
+        if (!$data instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {
+            return $data;
+        }
+        
+        $sortData = $request->get('order', []);
+        
+        if (!empty($sortData)) {
+            // delete default order
+            $data->clearOrderByColumns();
+        }
+        
+        foreach ($sortData as $order) {
+            $field = $order['field'];
+            $direction = $order['direction'];
+            // $field is not CameCase cuz magic method expect
+            // same name as property :(
+            $orderMethod = 'orderBy' . ($field);
+            $data->{$orderMethod}($direction);
+        }
+        
+        return $data;
+    }
+
+
     protected function propelQueryToPagination(Request $request, $query)
     {
         if (!$query instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {

@@ -3,13 +3,14 @@
 namespace Tekstove\ApiBundle\Model;
 
 use Tekstove\ApiBundle\Model\Base\User as BaseUser;
-use Tekstove\ApiBundle\Model\Lyric;
 use Tekstove\ApiBundle\Model\Acl\Permission;
 use Tekstove\ApiBundle\Model\User\Exception\UserHumanReadableException;
 
 use Propel\Runtime\Connection\ConnectionInterface;
 
+use Tekstove\ApiBundle\Model\User\Pm;
 use Tekstove\ApiBundle\Model\User\PmQuery;
+use Tekstove\ApiBundle\Model\Lyric;
 
 /**
  * Skeleton subclass for representing a row from the 'user' table.
@@ -116,6 +117,16 @@ class User extends BaseUser
         }
         
         return $allowedFields;
+    }
+    
+    public function getAllowedForumPmFields(Pm $pm)
+    {
+        $return = [];
+        if ($pm->getUserTo() === $this->getId()) {
+            $return['read'] = 'read';
+        }
+        
+        return $return;
     }
     
     /**

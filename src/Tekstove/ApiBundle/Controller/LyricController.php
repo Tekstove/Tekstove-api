@@ -24,6 +24,8 @@ class LyricController extends Controller
     
     public function getAction(Request $request, $id)
     {
+        $a = [];
+        echo $a['asdasd'];
         $this->applyGroups($request);
         $lyricQuery = new LyricQuery();
         $lyric = $lyricQuery->findOneById($id);

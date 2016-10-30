@@ -20,6 +20,20 @@ $apcLoader->register(true);
 
 //require_once __DIR__.'/../app/AppCache.php';
 
+// I know this is ugly...but...sry...
+function errorToException($errNumber, $errMsg, $errFile, $errLine) {
+    
+    $errorMsg = "Error#{$errNumber}. $errMsg in $errFile : $errLine";
+    
+    if (error_reporting() === 0) {
+        \error_log($errorMsg);
+        return true;
+    }
+     throw new \Exception($errMsg);
+}
+
+set_error_handler('errorToException');
+
 $kernel = new AppKernel('prod', false);
 $kernel->loadClassCache();
 //$kernel = new AppCache($kernel);

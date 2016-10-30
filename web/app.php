@@ -24,9 +24,9 @@ $apcLoader->register(true);
 function errorToException($errNumber, $errMsg, $errFile, $errLine) {
     
     $errorMsg = "Error#{$errNumber}. $errMsg in $errFile : $errLine";
+    \error_log($errorMsg);
     
     if (error_reporting() === 0) {
-        \error_log($errorMsg);
         return true;
     }
      throw new \Exception($errMsg);

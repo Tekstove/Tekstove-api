@@ -50,6 +50,11 @@ tekstove_api.user.pm.get:
     defaults: { _controller: TekstoveApiBundle:User\Pm:get }
     methods: [GET]
     
+tekstove_api.user.pm.patch:
+    path: "/users/pm/{id}"
+    defaults: { _controller:  TekstoveApiBundle:User\Pm:patch}
+    methods: [PATCH]
+    
 tekstove_api_lyric:
     path: "/lyrics"
     defaults: { _controller: TekstoveApiBundle:Lyric:index }

@@ -4,7 +4,9 @@ namespace Tekstove\ApiBundle\Controller\User;
 
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Tekstove\ApiBundle\Model\User\PmQuery;
-use Tekstove\ApiBundle\Model\User\Map\PmTableMap;
+use Tekstove\ApiBundle\Model\User\Pm\Exception\PmHumanReadableException;
+use Potaka\Helper\Casing\CaseHelper;
+
 use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -42,18 +44,7 @@ class PmController extends Controller
         
         $this->applyGroups($request);
         $pmQuery = new PmQuery();
-        $pmQuery->condition(
-            'userFromMatch',
-            PmTableMap::COL_USER_FROM . ' = ?',
-            $user->getId()
-        )
-        ->condition(
-            'userToMatch',
-            PmTableMap::COL_USER_TO . ' = ?',
-            $user->getId()
-        )
-        ->combine(['userFromMatch', 'userToMatch'], 'OR', 'userToOrFrom')
-        ->where(['userToOrFrom']);
+        $pmQuery->filterByUserSenderOrReceiver($user);
         
         $pm = $pmQuery->requireOneById($id);
         return $this->handleData($request, $pm);
@@ -61,29 +52,18 @@ class PmController extends Controller
     
     public function patchAction(Request $request, $id)
     {
-        throw new \Exception('WIP');
         $this->userMustBeLogged();
         $user = $this->getUser();
         
         $this->getContext()
                 ->setGroups(['List']);
         
-        $repo = $this->get('tekstove.lyric.@OTDO.om'); // @TODO
+        $repo = $this->get('tekstove.user.pm.repository');
         /* @var $repo PmQuery */
-        $repo->addOr(
-            $repo->filterByUserRelatedByUserFrom($user),
-            $repo->filterByUserRelatedByUserTo($user)
-        );
+        $repo->filterByUserRelatedByUserTo($user);
         $post = $repo->findOneById($id);
         
         try {
-            if ($this->getUser()) {
-                $user = $this->getUser();
-                /* @var $user \Tekstove\ApiBundle\Model\User */
-            } else {
-                $user = new User();
-            }
-
             $allowedFields = $user->getAllowedForumPmFields($post);
             
             $caseHelper = new CaseHelper();
@@ -112,7 +92,7 @@ class PmController extends Controller
             }
             $repo->save($post);
             return $this->handleData($request, $post);
-        } catch (IshouldCreateSomeExcpeionHere $e) { // @TODO
+        } catch (PmHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
             return $view;

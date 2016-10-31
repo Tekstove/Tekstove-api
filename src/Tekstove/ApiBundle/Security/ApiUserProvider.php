@@ -21,7 +21,6 @@ class ApiUserProvider implements UserProviderInterface
 {
     public function loadUserByUsername($username)
     {
-        // make a call to your webservice here
         $userQuery = UserQuery::create();
         $userQuery->filterByUsername($username, Criteria::EQUAL);
         $user = $userQuery->findOne();
@@ -29,8 +28,7 @@ class ApiUserProvider implements UserProviderInterface
 
         if ($user) {
             $password = $user->getPassword();
-            // @TODO fix roles
-            return new SecurityUser($username, $password, '', []);
+            return new SecurityUser($username, $password, '', ['ROLE_USER']);
         }
 
         throw new UsernameNotFoundException(

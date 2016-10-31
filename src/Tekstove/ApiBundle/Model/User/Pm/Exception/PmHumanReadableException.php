@@ -2,6 +2,8 @@
 
 namespace Tekstove\ApiBundle\Model\User\Pm\Exception;
 
+use Tekstove\ApiBundle\Exception\HumanReadableException;
+
 /**
  * Description of PmHumanReadableException
  *

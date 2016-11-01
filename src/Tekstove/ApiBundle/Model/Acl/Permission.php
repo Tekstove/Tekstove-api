@@ -16,6 +16,7 @@ use Tekstove\ApiBundle\Model\Acl\Base\Permission as BasePermission;
  */
 class Permission extends BasePermission
 {
+    const LYRIC_EDIT_DELETE = 'lyric.edit.delete';
     const LYRIC_EDIT_DOWNLOAD = 'lyric.edit.download';
     const LYRIC_EDIT_VIDEO = 'lyric.edit.video';
     

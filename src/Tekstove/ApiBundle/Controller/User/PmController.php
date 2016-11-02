@@ -50,6 +50,32 @@ class PmController extends Controller
         return $this->handleData($request, $pm);
     }
     
+    public function postAction(Request $request)
+    {
+        // @TODO add validators!
+        // @TODO use service!
+        $this->userMustBeLogged();
+        $user = $this->getUser();
+        
+        $data = json_decode($request->getContent(), true);
+        
+        $pm = new \Tekstove\ApiBundle\Model\User\Pm();
+        $pm->setUserRelatedByUserFrom($user);
+        
+        $userQuery = new \Tekstove\ApiBundle\Model\UserQuery();
+        $userTo = $userQuery->requireOneById($data['userTo']);
+        $pm->setUserRelatedByUserTo($userTo);
+        
+        $pm->setTitle($data['title']);
+                
+        $pm->setText($data['text']);
+        
+        $pm->save();
+        
+        $this->getContext()->setGroups(['List']);
+        return $this->handleData($request, $pm);
+    }
+    
     public function patchAction(Request $request, $id)
     {
         $this->userMustBeLogged();

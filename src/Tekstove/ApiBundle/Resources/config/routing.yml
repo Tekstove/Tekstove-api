@@ -55,6 +55,11 @@ tekstove_api.user.pm.patch:
     defaults: { _controller:  TekstoveApiBundle:User\Pm:patch}
     methods: [PATCH]
     
+tekstove_api.user.pm.post:
+    path: "/users/pm"
+    defaults: { _controller:  TekstoveApiBundle:User\Pm:post}
+    methods: [POST]
+    
 tekstove_api_lyric:
     path: "/lyrics"
     defaults: { _controller: TekstoveApiBundle:Lyric:index }

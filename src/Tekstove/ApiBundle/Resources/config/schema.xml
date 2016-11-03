@@ -41,6 +41,14 @@
          <column name="title" type="varchar" required="true" />
          <column name="read" type="BOOLEAN" required="true" />
          <column name="datetime" type="TIMESTAMP" />
+         
+         <behavior name="validate">
+            <parameter name="titleValidationNotEmpty"  value="{column: title, validator: NotBlank}" />
+            <parameter name="titleValidationMinLength" value="{column: title, validator: Length, options: {min: 3, max: 150}}" />
+
+            <parameter name="textValidationNotEmpty"  value="{column: text, validator: NotBlank}" />
+            <parameter name="textValidationMaxLength" value="{column: text, validator: Length, options: {min: 3, max: 999}}" />
+        </behavior>
     </table>
     
     <table name="permission" namespace="\Tekstove\ApiBundle\Model\Acl" readonly="true">

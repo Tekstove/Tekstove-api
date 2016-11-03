@@ -52,9 +52,11 @@ class PmController extends Controller
     
     public function postAction(Request $request)
     {
-        // @TODO add validators!
-        // @TODO use service!
         $this->userMustBeLogged();
+        
+        $pmRepository = $this->get('tekstove.user.pm.repository');
+        /* @var $pmRepository PmQuery */
+        
         $user = $this->getUser();
         
         $data = json_decode($request->getContent(), true);
@@ -70,7 +72,13 @@ class PmController extends Controller
                 
         $pm->setText($data['text']);
         
-        $pm->save();
+        try {
+            $pmRepository->save($pm);
+        } catch (PmHumanReadableException $e) {
+            $view = $this->handleData($request, $e->getErrors());
+            $view->setStatusCode(400);
+            return $view;
+        }
         
         $this->getContext()->setGroups(['List']);
         return $this->handleData($request, $pm);

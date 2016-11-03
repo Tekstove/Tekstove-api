@@ -31,7 +31,7 @@ class Lyric extends BaseLyric implements AutoAclSerializableInterface
     
     public function preSave(ConnectionInterface $con = null)
     {
-        if (!$this->validate($this->validator)) {
+        if (!$this->validate($this->getValidator())) {
             $errors = $this->getValidationFailures();
             $exception = new LyricHumanReadableException('Validation failed.');
             foreach ($errors as $error) {

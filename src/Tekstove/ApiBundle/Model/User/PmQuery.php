@@ -18,6 +18,8 @@ use Tekstove\ApiBundle\Model\User;
  */
 class PmQuery extends BasePmQuery
 {
+    use \Tekstove\ApiBundle\Model\RepositoryTrait;
+    
     /**
      * User should send or receive the PM
      * @param User $user
@@ -42,6 +44,7 @@ class PmQuery extends BasePmQuery
     
     public function save(Pm $pm)
     {
+        $pm->setValidator($this->getValidator());
         $pm->save();
     }
 }

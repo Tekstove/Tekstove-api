@@ -121,7 +121,7 @@ class TekstoveAbstractController extends FOSRestController
         return $data;
     }
     
-    public function applyOrders(Request $request, $data)
+    protected function applyOrders(Request $request, $data)
     {
         if (!$data instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {
             return $data;

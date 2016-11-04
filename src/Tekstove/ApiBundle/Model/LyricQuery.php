@@ -3,6 +3,7 @@
 namespace Tekstove\ApiBundle\Model;
 
 use Tekstove\ApiBundle\Model\Base\LyricQuery as BaseLyricQuery;
+use Tekstove\ApiBundle\Model\Artist\Map\ArtistLyricTableMap;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'lyric' table.
@@ -37,5 +38,24 @@ class LyricQuery extends BaseLyricQuery
         }
         
         return parent::filterByArtist($artist, $comparison);
+    }
+    
+    public function filterByArtistId($artistIds)
+    {
+        $artists = new \Propel\Runtime\Collection\ObjectCollection();
+        foreach ($artistIds as $artistId) {
+            $artist = new Artist();
+            $artist->setId($artistId);
+            $artists->append($artist);
+        }
+        
+        $this->filterByArtist($artists, \Propel\Runtime\ActiveQuery\Criteria::IN);
+        $this->groupById();
+        $this->having(
+            "COUNT(" .
+                ArtistLyricTableMap::COL_LYRIC_ID .
+            ") = " . count($artistIds)
+        );
+        return $this;
     }
 }

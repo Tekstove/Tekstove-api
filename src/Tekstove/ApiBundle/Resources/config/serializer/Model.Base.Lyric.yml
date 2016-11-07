@@ -18,4 +18,4 @@
             groups: [Details]
         cache_title_short:
             serialized_name: cacheTitleShort
-            groups: [List]
+            groups: [List, Details]

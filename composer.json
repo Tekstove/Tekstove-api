@@ -37,7 +37,8 @@
         "jms/serializer-bundle": "1.*",
         "potaka/knp-paginator-propel2bundle": "0.* || 1.*",
         "potaka/helper-casing": "^0.1.0",
-        "google/recaptcha": "^1.1"
+        "google/recaptcha": "^1.1",
+        "tekstove/content-checker": "0.* || 1.*"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.4",

@@ -33,7 +33,7 @@ class EventDispacherFactory
         return $dispacher;
     }
     
-    static function createContentChecker(ContainerInterface $container)
+    protected static function createContentChecker(ContainerInterface $container)
     {
         // THIS IS UGLY!!!
         

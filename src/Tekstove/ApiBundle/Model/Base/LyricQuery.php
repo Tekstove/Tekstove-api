@@ -32,6 +32,8 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery orderByextraInfo($order = Criteria::ASC) Order by the extra_info column
  * @method     ChildLyricQuery orderBysendBy($order = Criteria::ASC) Order by the send_by column
  * @method     ChildLyricQuery orderBycacheTitleShort($order = Criteria::ASC) Order by the cache_title_short column
+ * @method     ChildLyricQuery orderBycacheCensor($order = Criteria::ASC) Order by the cache_censor column
+ * @method     ChildLyricQuery orderBycacheCensorUpdated($order = Criteria::ASC) Order by the cache_censor_updated column
  * @method     ChildLyricQuery orderByViews($order = Criteria::ASC) Order by the views column
  * @method     ChildLyricQuery orderByPopularity($order = Criteria::ASC) Order by the popularity column
  * @method     ChildLyricQuery orderByvotesCount($order = Criteria::ASC) Order by the votes_count column
@@ -48,6 +50,8 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery groupByextraInfo() Group by the extra_info column
  * @method     ChildLyricQuery groupBysendBy() Group by the send_by column
  * @method     ChildLyricQuery groupBycacheTitleShort() Group by the cache_title_short column
+ * @method     ChildLyricQuery groupBycacheCensor() Group by the cache_censor column
+ * @method     ChildLyricQuery groupBycacheCensorUpdated() Group by the cache_censor_updated column
  * @method     ChildLyricQuery groupByViews() Group by the views column
  * @method     ChildLyricQuery groupByPopularity() Group by the popularity column
  * @method     ChildLyricQuery groupByvotesCount() Group by the votes_count column
@@ -137,6 +141,8 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric findOneByextraInfo(string $extra_info) Return the first ChildLyric filtered by the extra_info column
  * @method     ChildLyric findOneBysendBy(int $send_by) Return the first ChildLyric filtered by the send_by column
  * @method     ChildLyric findOneBycacheTitleShort(string $cache_title_short) Return the first ChildLyric filtered by the cache_title_short column
+ * @method     ChildLyric findOneBycacheCensor(boolean $cache_censor) Return the first ChildLyric filtered by the cache_censor column
+ * @method     ChildLyric findOneBycacheCensorUpdated(string $cache_censor_updated) Return the first ChildLyric filtered by the cache_censor_updated column
  * @method     ChildLyric findOneByViews(int $views) Return the first ChildLyric filtered by the views column
  * @method     ChildLyric findOneByPopularity(int $popularity) Return the first ChildLyric filtered by the popularity column
  * @method     ChildLyric findOneByvotesCount(int $votes_count) Return the first ChildLyric filtered by the votes_count column
@@ -156,6 +162,8 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric requireOneByextraInfo(string $extra_info) Return the first ChildLyric filtered by the extra_info column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBysendBy(int $send_by) Return the first ChildLyric filtered by the send_by column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneBycacheTitleShort(string $cache_title_short) Return the first ChildLyric filtered by the cache_title_short column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildLyric requireOneBycacheCensor(boolean $cache_censor) Return the first ChildLyric filtered by the cache_censor column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildLyric requireOneBycacheCensorUpdated(string $cache_censor_updated) Return the first ChildLyric filtered by the cache_censor_updated column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByViews(int $views) Return the first ChildLyric filtered by the views column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByPopularity(int $popularity) Return the first ChildLyric filtered by the popularity column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyric requireOneByvotesCount(int $votes_count) Return the first ChildLyric filtered by the votes_count column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -173,6 +181,8 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyric[]|ObjectCollection findByextraInfo(string $extra_info) Return ChildLyric objects filtered by the extra_info column
  * @method     ChildLyric[]|ObjectCollection findBysendBy(int $send_by) Return ChildLyric objects filtered by the send_by column
  * @method     ChildLyric[]|ObjectCollection findBycacheTitleShort(string $cache_title_short) Return ChildLyric objects filtered by the cache_title_short column
+ * @method     ChildLyric[]|ObjectCollection findBycacheCensor(boolean $cache_censor) Return ChildLyric objects filtered by the cache_censor column
+ * @method     ChildLyric[]|ObjectCollection findBycacheCensorUpdated(string $cache_censor_updated) Return ChildLyric objects filtered by the cache_censor_updated column
  * @method     ChildLyric[]|ObjectCollection findByViews(int $views) Return ChildLyric objects filtered by the views column
  * @method     ChildLyric[]|ObjectCollection findByPopularity(int $popularity) Return ChildLyric objects filtered by the popularity column
  * @method     ChildLyric[]|ObjectCollection findByvotesCount(int $votes_count) Return ChildLyric objects filtered by the votes_count column
@@ -278,7 +288,7 @@ abstract class LyricQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `title`, `text`, `text_bg`, `text_bg_added`, `extra_info`, `send_by`, `cache_title_short`, `views`, `popularity`, `votes_count`, `video_youtube`, `video_vbox7`, `video_metacafe`, `download` FROM `lyric` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `title`, `text`, `text_bg`, `text_bg_added`, `extra_info`, `send_by`, `cache_title_short`, `cache_censor`, `cache_censor_updated`, `views`, `popularity`, `votes_count`, `video_youtube`, `video_vbox7`, `video_metacafe`, `download` FROM `lyric` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -618,6 +628,76 @@ abstract class LyricQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(LyricTableMap::COL_CACHE_TITLE_SHORT, $cacheTitleShort, $comparison);
+    }
+
+    /**
+     * Filter the query on the cache_censor column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBycacheCensor(true); // WHERE cache_censor = true
+     * $query->filterBycacheCensor('yes'); // WHERE cache_censor = true
+     * </code>
+     *
+     * @param     boolean|string $cacheCensor The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildLyricQuery The current query, for fluid interface
+     */
+    public function filterBycacheCensor($cacheCensor = null, $comparison = null)
+    {
+        if (is_string($cacheCensor)) {
+            $cacheCensor = in_array(strtolower($cacheCensor), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(LyricTableMap::COL_CACHE_CENSOR, $cacheCensor, $comparison);
+    }
+
+    /**
+     * Filter the query on the cache_censor_updated column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBycacheCensorUpdated('2011-03-14'); // WHERE cache_censor_updated = '2011-03-14'
+     * $query->filterBycacheCensorUpdated('now'); // WHERE cache_censor_updated = '2011-03-14'
+     * $query->filterBycacheCensorUpdated(array('max' => 'yesterday')); // WHERE cache_censor_updated > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $cacheCensorUpdated The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildLyricQuery The current query, for fluid interface
+     */
+    public function filterBycacheCensorUpdated($cacheCensorUpdated = null, $comparison = null)
+    {
+        if (is_array($cacheCensorUpdated)) {
+            $useMinMax = false;
+            if (isset($cacheCensorUpdated['min'])) {
+                $this->addUsingAlias(LyricTableMap::COL_CACHE_CENSOR_UPDATED, $cacheCensorUpdated['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($cacheCensorUpdated['max'])) {
+                $this->addUsingAlias(LyricTableMap::COL_CACHE_CENSOR_UPDATED, $cacheCensorUpdated['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(LyricTableMap::COL_CACHE_CENSOR_UPDATED, $cacheCensorUpdated, $comparison);
     }
 
     /**

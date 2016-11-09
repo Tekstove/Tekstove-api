@@ -59,7 +59,7 @@ class LyricTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 15;
+    const NUM_COLUMNS = 17;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class LyricTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 15;
+    const NUM_HYDRATE_COLUMNS = 17;
 
     /**
      * the column name for the id field
@@ -110,6 +110,16 @@ class LyricTableMap extends TableMap
      * the column name for the cache_title_short field
      */
     const COL_CACHE_TITLE_SHORT = 'lyric.cache_title_short';
+
+    /**
+     * the column name for the cache_censor field
+     */
+    const COL_CACHE_CENSOR = 'lyric.cache_censor';
+
+    /**
+     * the column name for the cache_censor_updated field
+     */
+    const COL_CACHE_CENSOR_UPDATED = 'lyric.cache_censor_updated';
 
     /**
      * the column name for the views field
@@ -158,11 +168,11 @@ class LyricTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Title', 'Text', 'textBg', 'textBgAdded', 'extraInfo', 'sendBy', 'cacheTitleShort', 'Views', 'Popularity', 'votesCount', 'videoYoutube', 'videoVbox7', 'videoMetacafe', 'download', ),
-        self::TYPE_CAMELNAME     => array('id', 'title', 'text', 'textBg', 'textBgAdded', 'extraInfo', 'sendBy', 'cacheTitleShort', 'views', 'popularity', 'votesCount', 'videoYoutube', 'videoVbox7', 'videoMetacafe', 'download', ),
-        self::TYPE_COLNAME       => array(LyricTableMap::COL_ID, LyricTableMap::COL_TITLE, LyricTableMap::COL_TEXT, LyricTableMap::COL_TEXT_BG, LyricTableMap::COL_TEXT_BG_ADDED, LyricTableMap::COL_EXTRA_INFO, LyricTableMap::COL_SEND_BY, LyricTableMap::COL_CACHE_TITLE_SHORT, LyricTableMap::COL_VIEWS, LyricTableMap::COL_POPULARITY, LyricTableMap::COL_VOTES_COUNT, LyricTableMap::COL_VIDEO_YOUTUBE, LyricTableMap::COL_VIDEO_VBOX7, LyricTableMap::COL_VIDEO_METACAFE, LyricTableMap::COL_DOWNLOAD, ),
-        self::TYPE_FIELDNAME     => array('id', 'title', 'text', 'text_bg', 'text_bg_added', 'extra_info', 'send_by', 'cache_title_short', 'views', 'popularity', 'votes_count', 'video_youtube', 'video_vbox7', 'video_metacafe', 'download', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
+        self::TYPE_PHPNAME       => array('Id', 'Title', 'Text', 'textBg', 'textBgAdded', 'extraInfo', 'sendBy', 'cacheTitleShort', 'cacheCensor', 'cacheCensorUpdated', 'Views', 'Popularity', 'votesCount', 'videoYoutube', 'videoVbox7', 'videoMetacafe', 'download', ),
+        self::TYPE_CAMELNAME     => array('id', 'title', 'text', 'textBg', 'textBgAdded', 'extraInfo', 'sendBy', 'cacheTitleShort', 'cacheCensor', 'cacheCensorUpdated', 'views', 'popularity', 'votesCount', 'videoYoutube', 'videoVbox7', 'videoMetacafe', 'download', ),
+        self::TYPE_COLNAME       => array(LyricTableMap::COL_ID, LyricTableMap::COL_TITLE, LyricTableMap::COL_TEXT, LyricTableMap::COL_TEXT_BG, LyricTableMap::COL_TEXT_BG_ADDED, LyricTableMap::COL_EXTRA_INFO, LyricTableMap::COL_SEND_BY, LyricTableMap::COL_CACHE_TITLE_SHORT, LyricTableMap::COL_CACHE_CENSOR, LyricTableMap::COL_CACHE_CENSOR_UPDATED, LyricTableMap::COL_VIEWS, LyricTableMap::COL_POPULARITY, LyricTableMap::COL_VOTES_COUNT, LyricTableMap::COL_VIDEO_YOUTUBE, LyricTableMap::COL_VIDEO_VBOX7, LyricTableMap::COL_VIDEO_METACAFE, LyricTableMap::COL_DOWNLOAD, ),
+        self::TYPE_FIELDNAME     => array('id', 'title', 'text', 'text_bg', 'text_bg_added', 'extra_info', 'send_by', 'cache_title_short', 'cache_censor', 'cache_censor_updated', 'views', 'popularity', 'votes_count', 'video_youtube', 'video_vbox7', 'video_metacafe', 'download', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, )
     );
 
     /**
@@ -172,11 +182,11 @@ class LyricTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Title' => 1, 'Text' => 2, 'textBg' => 3, 'textBgAdded' => 4, 'extraInfo' => 5, 'sendBy' => 6, 'cacheTitleShort' => 7, 'Views' => 8, 'Popularity' => 9, 'votesCount' => 10, 'videoYoutube' => 11, 'videoVbox7' => 12, 'videoMetacafe' => 13, 'download' => 14, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'title' => 1, 'text' => 2, 'textBg' => 3, 'textBgAdded' => 4, 'extraInfo' => 5, 'sendBy' => 6, 'cacheTitleShort' => 7, 'views' => 8, 'popularity' => 9, 'votesCount' => 10, 'videoYoutube' => 11, 'videoVbox7' => 12, 'videoMetacafe' => 13, 'download' => 14, ),
-        self::TYPE_COLNAME       => array(LyricTableMap::COL_ID => 0, LyricTableMap::COL_TITLE => 1, LyricTableMap::COL_TEXT => 2, LyricTableMap::COL_TEXT_BG => 3, LyricTableMap::COL_TEXT_BG_ADDED => 4, LyricTableMap::COL_EXTRA_INFO => 5, LyricTableMap::COL_SEND_BY => 6, LyricTableMap::COL_CACHE_TITLE_SHORT => 7, LyricTableMap::COL_VIEWS => 8, LyricTableMap::COL_POPULARITY => 9, LyricTableMap::COL_VOTES_COUNT => 10, LyricTableMap::COL_VIDEO_YOUTUBE => 11, LyricTableMap::COL_VIDEO_VBOX7 => 12, LyricTableMap::COL_VIDEO_METACAFE => 13, LyricTableMap::COL_DOWNLOAD => 14, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'title' => 1, 'text' => 2, 'text_bg' => 3, 'text_bg_added' => 4, 'extra_info' => 5, 'send_by' => 6, 'cache_title_short' => 7, 'views' => 8, 'popularity' => 9, 'votes_count' => 10, 'video_youtube' => 11, 'video_vbox7' => 12, 'video_metacafe' => 13, 'download' => 14, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Title' => 1, 'Text' => 2, 'textBg' => 3, 'textBgAdded' => 4, 'extraInfo' => 5, 'sendBy' => 6, 'cacheTitleShort' => 7, 'cacheCensor' => 8, 'cacheCensorUpdated' => 9, 'Views' => 10, 'Popularity' => 11, 'votesCount' => 12, 'videoYoutube' => 13, 'videoVbox7' => 14, 'videoMetacafe' => 15, 'download' => 16, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'title' => 1, 'text' => 2, 'textBg' => 3, 'textBgAdded' => 4, 'extraInfo' => 5, 'sendBy' => 6, 'cacheTitleShort' => 7, 'cacheCensor' => 8, 'cacheCensorUpdated' => 9, 'views' => 10, 'popularity' => 11, 'votesCount' => 12, 'videoYoutube' => 13, 'videoVbox7' => 14, 'videoMetacafe' => 15, 'download' => 16, ),
+        self::TYPE_COLNAME       => array(LyricTableMap::COL_ID => 0, LyricTableMap::COL_TITLE => 1, LyricTableMap::COL_TEXT => 2, LyricTableMap::COL_TEXT_BG => 3, LyricTableMap::COL_TEXT_BG_ADDED => 4, LyricTableMap::COL_EXTRA_INFO => 5, LyricTableMap::COL_SEND_BY => 6, LyricTableMap::COL_CACHE_TITLE_SHORT => 7, LyricTableMap::COL_CACHE_CENSOR => 8, LyricTableMap::COL_CACHE_CENSOR_UPDATED => 9, LyricTableMap::COL_VIEWS => 10, LyricTableMap::COL_POPULARITY => 11, LyricTableMap::COL_VOTES_COUNT => 12, LyricTableMap::COL_VIDEO_YOUTUBE => 13, LyricTableMap::COL_VIDEO_VBOX7 => 14, LyricTableMap::COL_VIDEO_METACAFE => 15, LyricTableMap::COL_DOWNLOAD => 16, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'title' => 1, 'text' => 2, 'text_bg' => 3, 'text_bg_added' => 4, 'extra_info' => 5, 'send_by' => 6, 'cache_title_short' => 7, 'cache_censor' => 8, 'cache_censor_updated' => 9, 'views' => 10, 'popularity' => 11, 'votes_count' => 12, 'video_youtube' => 13, 'video_vbox7' => 14, 'video_metacafe' => 15, 'download' => 16, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, )
     );
 
     /**
@@ -204,6 +214,8 @@ class LyricTableMap extends TableMap
         $this->addColumn('extra_info', 'extraInfo', 'VARCHAR', false, 255, null);
         $this->addForeignKey('send_by', 'sendBy', 'INTEGER', 'user', 'id', false, null, null);
         $this->addColumn('cache_title_short', 'cacheTitleShort', 'VARCHAR', false, 255, null);
+        $this->addColumn('cache_censor', 'cacheCensor', 'BOOLEAN', true, 1, null);
+        $this->addColumn('cache_censor_updated', 'cacheCensorUpdated', 'TIMESTAMP', true, null, null);
         $this->addColumn('views', 'Views', 'INTEGER', false, null, null);
         $this->addColumn('popularity', 'Popularity', 'INTEGER', false, null, null);
         $this->addColumn('votes_count', 'votesCount', 'INTEGER', false, null, null);
@@ -426,6 +438,8 @@ class LyricTableMap extends TableMap
             $criteria->addSelectColumn(LyricTableMap::COL_EXTRA_INFO);
             $criteria->addSelectColumn(LyricTableMap::COL_SEND_BY);
             $criteria->addSelectColumn(LyricTableMap::COL_CACHE_TITLE_SHORT);
+            $criteria->addSelectColumn(LyricTableMap::COL_CACHE_CENSOR);
+            $criteria->addSelectColumn(LyricTableMap::COL_CACHE_CENSOR_UPDATED);
             $criteria->addSelectColumn(LyricTableMap::COL_VIEWS);
             $criteria->addSelectColumn(LyricTableMap::COL_POPULARITY);
             $criteria->addSelectColumn(LyricTableMap::COL_VOTES_COUNT);
@@ -442,6 +456,8 @@ class LyricTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.extra_info');
             $criteria->addSelectColumn($alias . '.send_by');
             $criteria->addSelectColumn($alias . '.cache_title_short');
+            $criteria->addSelectColumn($alias . '.cache_censor');
+            $criteria->addSelectColumn($alias . '.cache_censor_updated');
             $criteria->addSelectColumn($alias . '.views');
             $criteria->addSelectColumn($alias . '.popularity');
             $criteria->addSelectColumn($alias . '.votes_count');

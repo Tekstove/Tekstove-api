@@ -156,6 +156,20 @@ abstract class Lyric implements ActiveRecordInterface
     protected $cache_title_short;
 
     /**
+     * The value for the cache_censor field.
+     *
+     * @var        boolean
+     */
+    protected $cache_censor;
+
+    /**
+     * The value for the cache_censor_updated field.
+     *
+     * @var        DateTime
+     */
+    protected $cache_censor_updated;
+
+    /**
      * The value for the views field.
      *
      * @var        int
@@ -642,6 +656,46 @@ abstract class Lyric implements ActiveRecordInterface
     }
 
     /**
+     * Get the [cache_censor] column value.
+     *
+     * @return boolean
+     */
+    public function getcacheCensor()
+    {
+        return $this->cache_censor;
+    }
+
+    /**
+     * Get the [cache_censor] column value.
+     *
+     * @return boolean
+     */
+    public function isCacheCensor()
+    {
+        return $this->getcacheCensor();
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [cache_censor_updated] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getcacheCensorUpdated($format = NULL)
+    {
+        if ($format === null) {
+            return $this->cache_censor_updated;
+        } else {
+            return $this->cache_censor_updated instanceof \DateTimeInterface ? $this->cache_censor_updated->format($format) : null;
+        }
+    }
+
+    /**
      * Get the [views] column value.
      *
      * @return int
@@ -876,6 +930,54 @@ abstract class Lyric implements ActiveRecordInterface
     } // setcacheTitleShort()
 
     /**
+     * Sets the value of the [cache_censor] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\Tekstove\ApiBundle\Model\Lyric The current object (for fluent API support)
+     */
+    public function setcacheCensor($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->cache_censor !== $v) {
+            $this->cache_censor = $v;
+            $this->modifiedColumns[LyricTableMap::COL_CACHE_CENSOR] = true;
+        }
+
+        return $this;
+    } // setcacheCensor()
+
+    /**
+     * Sets the value of [cache_censor_updated] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Tekstove\ApiBundle\Model\Lyric The current object (for fluent API support)
+     */
+    public function setcacheCensorUpdated($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->cache_censor_updated !== null || $dt !== null) {
+            if ($this->cache_censor_updated === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->cache_censor_updated->format("Y-m-d H:i:s.u")) {
+                $this->cache_censor_updated = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[LyricTableMap::COL_CACHE_CENSOR_UPDATED] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setcacheCensorUpdated()
+
+    /**
      * Set the value of [views] column.
      *
      * @param int $v new value
@@ -1078,25 +1180,34 @@ abstract class Lyric implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : LyricTableMap::translateFieldName('cacheTitleShort', TableMap::TYPE_PHPNAME, $indexType)];
             $this->cache_title_short = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : LyricTableMap::translateFieldName('Views', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : LyricTableMap::translateFieldName('cacheCensor', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->cache_censor = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : LyricTableMap::translateFieldName('cacheCensorUpdated', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->cache_censor_updated = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : LyricTableMap::translateFieldName('Views', TableMap::TYPE_PHPNAME, $indexType)];
             $this->views = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : LyricTableMap::translateFieldName('Popularity', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : LyricTableMap::translateFieldName('Popularity', TableMap::TYPE_PHPNAME, $indexType)];
             $this->popularity = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : LyricTableMap::translateFieldName('votesCount', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : LyricTableMap::translateFieldName('votesCount', TableMap::TYPE_PHPNAME, $indexType)];
             $this->votes_count = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : LyricTableMap::translateFieldName('videoYoutube', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : LyricTableMap::translateFieldName('videoYoutube', TableMap::TYPE_PHPNAME, $indexType)];
             $this->video_youtube = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : LyricTableMap::translateFieldName('videoVbox7', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : LyricTableMap::translateFieldName('videoVbox7', TableMap::TYPE_PHPNAME, $indexType)];
             $this->video_vbox7 = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : LyricTableMap::translateFieldName('videoMetacafe', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 15 + $startcol : LyricTableMap::translateFieldName('videoMetacafe', TableMap::TYPE_PHPNAME, $indexType)];
             $this->video_metacafe = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : LyricTableMap::translateFieldName('download', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 16 + $startcol : LyricTableMap::translateFieldName('download', TableMap::TYPE_PHPNAME, $indexType)];
             $this->download = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
@@ -1106,7 +1217,7 @@ abstract class Lyric implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 15; // 15 = LyricTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 17; // 17 = LyricTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Lyric'), 0, $e);
@@ -1501,6 +1612,12 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_TITLE_SHORT)) {
             $modifiedColumns[':p' . $index++]  = '`cache_title_short`';
         }
+        if ($this->isColumnModified(LyricTableMap::COL_CACHE_CENSOR)) {
+            $modifiedColumns[':p' . $index++]  = '`cache_censor`';
+        }
+        if ($this->isColumnModified(LyricTableMap::COL_CACHE_CENSOR_UPDATED)) {
+            $modifiedColumns[':p' . $index++]  = '`cache_censor_updated`';
+        }
         if ($this->isColumnModified(LyricTableMap::COL_VIEWS)) {
             $modifiedColumns[':p' . $index++]  = '`views`';
         }
@@ -1556,6 +1673,12 @@ abstract class Lyric implements ActiveRecordInterface
                         break;
                     case '`cache_title_short`':
                         $stmt->bindValue($identifier, $this->cache_title_short, PDO::PARAM_STR);
+                        break;
+                    case '`cache_censor`':
+                        $stmt->bindValue($identifier, (int) $this->cache_censor, PDO::PARAM_INT);
+                        break;
+                    case '`cache_censor_updated`':
+                        $stmt->bindValue($identifier, $this->cache_censor_updated ? $this->cache_censor_updated->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                     case '`views`':
                         $stmt->bindValue($identifier, $this->views, PDO::PARAM_INT);
@@ -1665,24 +1788,30 @@ abstract class Lyric implements ActiveRecordInterface
                 return $this->getcacheTitleShort();
                 break;
             case 8:
-                return $this->getViews();
+                return $this->getcacheCensor();
                 break;
             case 9:
-                return $this->getPopularity();
+                return $this->getcacheCensorUpdated();
                 break;
             case 10:
-                return $this->getvotesCount();
+                return $this->getViews();
                 break;
             case 11:
-                return $this->getvideoYoutube();
+                return $this->getPopularity();
                 break;
             case 12:
-                return $this->getvideoVbox7();
+                return $this->getvotesCount();
                 break;
             case 13:
-                return $this->getvideoMetacafe();
+                return $this->getvideoYoutube();
                 break;
             case 14:
+                return $this->getvideoVbox7();
+                break;
+            case 15:
+                return $this->getvideoMetacafe();
+                break;
+            case 16:
                 return $this->getdownload();
                 break;
             default:
@@ -1723,16 +1852,22 @@ abstract class Lyric implements ActiveRecordInterface
             $keys[5] => $this->getextraInfo(),
             $keys[6] => $this->getsendBy(),
             $keys[7] => $this->getcacheTitleShort(),
-            $keys[8] => $this->getViews(),
-            $keys[9] => $this->getPopularity(),
-            $keys[10] => $this->getvotesCount(),
-            $keys[11] => $this->getvideoYoutube(),
-            $keys[12] => $this->getvideoVbox7(),
-            $keys[13] => $this->getvideoMetacafe(),
-            $keys[14] => $this->getdownload(),
+            $keys[8] => $this->getcacheCensor(),
+            $keys[9] => $this->getcacheCensorUpdated(),
+            $keys[10] => $this->getViews(),
+            $keys[11] => $this->getPopularity(),
+            $keys[12] => $this->getvotesCount(),
+            $keys[13] => $this->getvideoYoutube(),
+            $keys[14] => $this->getvideoVbox7(),
+            $keys[15] => $this->getvideoMetacafe(),
+            $keys[16] => $this->getdownload(),
         );
         if ($result[$keys[4]] instanceof \DateTime) {
             $result[$keys[4]] = $result[$keys[4]]->format('c');
+        }
+
+        if ($result[$keys[9]] instanceof \DateTime) {
+            $result[$keys[9]] = $result[$keys[9]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1890,24 +2025,30 @@ abstract class Lyric implements ActiveRecordInterface
                 $this->setcacheTitleShort($value);
                 break;
             case 8:
-                $this->setViews($value);
+                $this->setcacheCensor($value);
                 break;
             case 9:
-                $this->setPopularity($value);
+                $this->setcacheCensorUpdated($value);
                 break;
             case 10:
-                $this->setvotesCount($value);
+                $this->setViews($value);
                 break;
             case 11:
-                $this->setvideoYoutube($value);
+                $this->setPopularity($value);
                 break;
             case 12:
-                $this->setvideoVbox7($value);
+                $this->setvotesCount($value);
                 break;
             case 13:
-                $this->setvideoMetacafe($value);
+                $this->setvideoYoutube($value);
                 break;
             case 14:
+                $this->setvideoVbox7($value);
+                break;
+            case 15:
+                $this->setvideoMetacafe($value);
+                break;
+            case 16:
                 $this->setdownload($value);
                 break;
         } // switch()
@@ -1961,25 +2102,31 @@ abstract class Lyric implements ActiveRecordInterface
             $this->setcacheTitleShort($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setViews($arr[$keys[8]]);
+            $this->setcacheCensor($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setPopularity($arr[$keys[9]]);
+            $this->setcacheCensorUpdated($arr[$keys[9]]);
         }
         if (array_key_exists($keys[10], $arr)) {
-            $this->setvotesCount($arr[$keys[10]]);
+            $this->setViews($arr[$keys[10]]);
         }
         if (array_key_exists($keys[11], $arr)) {
-            $this->setvideoYoutube($arr[$keys[11]]);
+            $this->setPopularity($arr[$keys[11]]);
         }
         if (array_key_exists($keys[12], $arr)) {
-            $this->setvideoVbox7($arr[$keys[12]]);
+            $this->setvotesCount($arr[$keys[12]]);
         }
         if (array_key_exists($keys[13], $arr)) {
-            $this->setvideoMetacafe($arr[$keys[13]]);
+            $this->setvideoYoutube($arr[$keys[13]]);
         }
         if (array_key_exists($keys[14], $arr)) {
-            $this->setdownload($arr[$keys[14]]);
+            $this->setvideoVbox7($arr[$keys[14]]);
+        }
+        if (array_key_exists($keys[15], $arr)) {
+            $this->setvideoMetacafe($arr[$keys[15]]);
+        }
+        if (array_key_exists($keys[16], $arr)) {
+            $this->setdownload($arr[$keys[16]]);
         }
     }
 
@@ -2045,6 +2192,12 @@ abstract class Lyric implements ActiveRecordInterface
         }
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_TITLE_SHORT)) {
             $criteria->add(LyricTableMap::COL_CACHE_TITLE_SHORT, $this->cache_title_short);
+        }
+        if ($this->isColumnModified(LyricTableMap::COL_CACHE_CENSOR)) {
+            $criteria->add(LyricTableMap::COL_CACHE_CENSOR, $this->cache_censor);
+        }
+        if ($this->isColumnModified(LyricTableMap::COL_CACHE_CENSOR_UPDATED)) {
+            $criteria->add(LyricTableMap::COL_CACHE_CENSOR_UPDATED, $this->cache_censor_updated);
         }
         if ($this->isColumnModified(LyricTableMap::COL_VIEWS)) {
             $criteria->add(LyricTableMap::COL_VIEWS, $this->views);
@@ -2160,6 +2313,8 @@ abstract class Lyric implements ActiveRecordInterface
         $copyObj->setextraInfo($this->getextraInfo());
         $copyObj->setsendBy($this->getsendBy());
         $copyObj->setcacheTitleShort($this->getcacheTitleShort());
+        $copyObj->setcacheCensor($this->getcacheCensor());
+        $copyObj->setcacheCensorUpdated($this->getcacheCensorUpdated());
         $copyObj->setViews($this->getViews());
         $copyObj->setPopularity($this->getPopularity());
         $copyObj->setvotesCount($this->getvotesCount());
@@ -4072,6 +4227,8 @@ abstract class Lyric implements ActiveRecordInterface
         $this->extra_info = null;
         $this->send_by = null;
         $this->cache_title_short = null;
+        $this->cache_censor = null;
+        $this->cache_censor_updated = null;
         $this->views = null;
         $this->popularity = null;
         $this->votes_count = null;

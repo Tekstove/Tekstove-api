@@ -105,7 +105,7 @@ class User extends BaseUser
         
         $permissions = $this->getPermissions();
         
-        if (array_key_exists(Permission::LYRIC_EDIT_DELETE, $permissions)) {
+        if ($lyric->getId() && array_key_exists(Permission::LYRIC_EDIT_DELETE, $permissions)) {
             $allowedFields[] = 'delete';
         }
         

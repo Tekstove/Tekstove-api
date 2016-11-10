@@ -39,7 +39,7 @@
         
          <column name="text" type="varchar" required="true" />
          <column name="title" type="varchar" required="true" />
-         <column name="read" type="BOOLEAN" required="true" />
+         <column name="read" type="boolean" required="true" />
          <column name="datetime" type="TIMESTAMP" />
          
          <behavior name="validate">
@@ -102,6 +102,9 @@
         </foreign-key>
 
         <column name="cache_title_short" phpName="cacheTitleShort" type="varchar"/>
+        <column name="cache_censor" phpName="cacheCensor" type="boolean" required="true"/>
+        <column name="cache_censor_updated" phpName="cacheCensorUpdated" type="timestamp" required="true"/>
+        
         <column name="views" type="integer" />
         <column name="popularity" type="integer" />
         <column name="votes_count" type="integer" phpName="votesCount" />

@@ -29,6 +29,24 @@ class EventDispacherFactory
        
         $dispacher->addSubscriber($titleCacheSubscriber);
         $dispacher->addSubscriber($uploadedBySubscriber);
+        $dispacher->addSubscriber(self::createContentChecker($container));
         return $dispacher;
+    }
+    
+    protected static function createContentChecker(ContainerInterface $container)
+    {
+        // THIS IS UGLY!!!
+        
+        $kernelPath = $container->get('kernel')->getRootDir();
+        $dictionariesDir = $kernelPath . '/../vendor/tekstove/content-checker/Dictionaries/';
+        
+        $checker = new \Tekstove\ContentChecker\Checker\RegExpChecker([]);
+        foreach (['Bg/Data.txt', 'En/Data.txt'] as $relativeDictionaryPath) {
+            $dictionaryText = trim(file_get_contents($dictionariesDir . $relativeDictionaryPath));
+            $words = explode("\n", $dictionaryText);
+            $dictionary = new \Tekstove\ContentChecker\Dictionary\SimpleDictionary($words);
+            $checker->addDictionary($dictionary);
+        }
+        return new \Tekstove\ApiBundle\EventListener\Model\Lyric\LyricCensorCacheSubscriber($checker);
     }
 }

@@ -24,3 +24,6 @@
         isForbidden:
             groups: [Details]
             serialized_name: forbidden
+        isCacheCensor:
+            groups: [Details]
+            serialized_name: censor

@@ -26,8 +26,7 @@ class Lyric extends BaseLyric implements AutoAclSerializableInterface
 {
     use AclTrait;
     use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
-    
-    private $eventDispacher;
+    use \Tekstove\ApiBundle\EventDispatcher\EventDispatcherAwareTrait;
     
     public function preSave(ConnectionInterface $con = null)
     {
@@ -46,21 +45,6 @@ class Lyric extends BaseLyric implements AutoAclSerializableInterface
         return parent::preSave($con);
     }
     
-    /**
-     *
-     * @return EventDispacher
-     */
-    private function getEventDispacher()
-    {
-        if ($this->eventDispacher === null) {
-            throw new \Exception('eventDispacher not set');
-        }
-        return $this->eventDispacher;
-    }
-    public function setEventDispacher(EventDispacher $eventDispacher)
-    {
-        $this->eventDispacher = $eventDispacher;
-    }
     private function notifyPreSave(Lyric $lyric)
     {
         $event = new LyricEvent($lyric);

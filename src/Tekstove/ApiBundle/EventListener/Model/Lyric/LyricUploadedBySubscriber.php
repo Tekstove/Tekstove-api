@@ -20,16 +20,10 @@ class LyricUploadedBySubscriber implements \Symfony\Component\EventDispatcher\Ev
      * @var TokenStorage
      */
     private $securityContext;
-    /**
-     *
-     * @var AuthorizationCheckerhecker
-     */
-    private $authchecker;
-    
-    public function __construct(TokenStorage $securityContext, AuthorizationChecker $authChecker)
+
+    public function __construct(TokenStorage $securityContext)
     {
         $this->securityContext = $securityContext;
-        $this->authchecker = $authChecker;
     }
 
     

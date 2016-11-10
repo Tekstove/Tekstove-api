@@ -20,12 +20,8 @@ class EventDispacherFactory
         $titleCacheSubscriber = new LyricTitleCacheSubscriber();
 
         $securityTokenStorage = $container->get('security.token_storage');
-        $authzChecker = $container->get('security.authorization_checker');
         
-        $uploadedBySubscriber = new LyricUploadedBySubscriber(
-            $securityTokenStorage,
-            $authzChecker
-        );
+        $uploadedBySubscriber = new LyricUploadedBySubscriber($securityTokenStorage);
        
         $dispacher->addSubscriber($titleCacheSubscriber);
         $dispacher->addSubscriber($uploadedBySubscriber);

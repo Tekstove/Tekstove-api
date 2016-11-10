@@ -41,7 +41,6 @@ class LyricUploadedBySubscriber implements \Symfony\Component\EventDispatcher\Ev
         }
         $lyric = $event->getLyric();
         $this->updateUpdateuserId($lyric);
-    
     }
 
     public function updateUpdateuserId(Lyric $lyric)

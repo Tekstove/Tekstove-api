@@ -12,6 +12,9 @@
         getText:
             groups: [Details]
             serialized_name: text
+        getExtraInfo:
+            groups: [Details]
+            serialized_name: extraInfo
         getSendBy:
             groups: [List, Details]
             serialized_name: sendBy

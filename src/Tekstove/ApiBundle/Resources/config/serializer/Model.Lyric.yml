@@ -3,8 +3,30 @@
     exclude: false
     read_only: true
     virtual_properties:
+        getId:
+            groups: [List, Details]
+            serialized_name: id
+        getTitle:
+            groups: [List, Details]
+            serialized_name: title
+        getText:
+            groups: [Details]
+            serialized_name: text
+        getSendBy:
+            groups: [List, Details]
+            serialized_name: sendBy
+        getViews:
+            groups: [Details]
+            serialized_name: views
+        getPopularity:
+            groups: [Details]
+            serialized_name: popularity
+        getCacheTitleShort:
+            groups: [List, Details]
+            serialized_name: cacheTitleShort
         acl:
             groups: [Acl]
+            serialized_name: acl
         getOrderedArtists:
             groups: [Details]
             serialized_name: artists

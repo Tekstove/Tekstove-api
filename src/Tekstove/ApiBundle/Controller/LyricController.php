@@ -6,6 +6,7 @@ use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
 use Tekstove\ApiBundle\Model\Lyric;
+use Propel\Runtime\Exception\EntityNotFoundException;
 
 use Potaka\Helper\Casing\CaseHelper;
 
@@ -26,7 +27,11 @@ class LyricController extends Controller
     {
         $this->applyGroups($request);
         $lyricQuery = new LyricQuery();
-        $lyric = $lyricQuery->findOneById($id);
+        try {
+            $lyric = $lyricQuery->requireOneById($id);
+        } catch (EntityNotFoundException $e) {
+            throw $this->createNotFoundException("Lyric not found");
+        }
         return $this->handleData($request, $lyric);
     }
     

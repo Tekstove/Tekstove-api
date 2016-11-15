@@ -24,3 +24,6 @@
         getAbout:
             groups: [Details]
             serialized_name: about
+        getPermissionGroups:
+            groups: [PermissionGroups]
+            serialized_name: permissionGroups

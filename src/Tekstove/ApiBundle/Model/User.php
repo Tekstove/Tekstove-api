@@ -61,6 +61,19 @@ class User extends BaseUser
         return $return;
     }
     
+    /**
+     * @return Acl\PermissionGroup[]
+     */
+    public function getPermissionGroups()
+    {
+        $return = [];
+        foreach ($this->getPermissionGroupUsers() as $permissionGroup) {
+            $return[$permissionGroup->getGroupId()] = $permissionGroup->getPermissionGroup();
+        }
+        
+        return $return;
+    }
+    
     public function getPermission($name)
     {
         $permissions = $this->getPermissions();

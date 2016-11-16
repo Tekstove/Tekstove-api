@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\Forum\TopicQuery;
 use Tekstove\ApiBundle\Model\Acl\Permission;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Tekstove\ApiBundle\Model\Forum\Topic;
+use Tekstove\ApiBundle\Model\Forum\Post;
 
 /**
  * Description of TopicController
@@ -57,6 +59,42 @@ class TopicController extends Controller
         
         $topic = $topicQuery->findOneById($id);
         
+        return $this->handleData($request, $topic);
+    }
+    
+    public function postAction(Request $request)
+    {
+        $this->userMustBeLogged();
+        
+        $data = json_decode($request->getContent(), true);
+        
+        $categoryid = $data['category'];
+        $name = $data['name'];
+        $postText = $data['postText'];
+        
+        $categoryQuery = new \Tekstove\ApiBundle\Model\Forum\CategoryQuery();
+        $category = $categoryQuery->requireOneById($categoryid);
+        
+        $topic = new Topic();
+        $topic->setCategory($category);
+        $topic->setUser($this->getUser());
+        $topic->setName($name);
+        
+        $con = \Propel\Runtime\Propel::getConnection();
+        $con->beginTransaction();
+        
+        $topic->save();
+        
+        $post = new Post();
+        $post->setText($postText);
+        $post->setUser($this->getUser());
+        $post->setTopic($topic);
+        $postRepo = $this->get('tekstove.forum.post.repository');
+        $postRepo->save($post);
+        
+        $con->commit();
+        
+        $this->getContext()->setGroups(['List']);
         return $this->handleData($request, $topic);
     }
 }

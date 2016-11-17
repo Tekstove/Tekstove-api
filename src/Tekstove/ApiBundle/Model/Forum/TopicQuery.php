@@ -16,5 +16,11 @@ use Tekstove\ApiBundle\Model\Forum\Base\TopicQuery as BaseTopicQuery;
  */
 class TopicQuery extends BaseTopicQuery
 {
+    use \Tekstove\ApiBundle\Model\RepositoryTrait;
     
+    public function save(Topic $topic)
+    {
+        $topic->setValidator($this->getValidator());
+        $topic->save();
+    }
 }

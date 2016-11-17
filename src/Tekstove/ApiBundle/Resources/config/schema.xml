@@ -249,6 +249,11 @@
         <foreign-key foreignTable="forum_category">
             <reference local="forum_category_id" foreign="id" />
         </foreign-key>
+        
+        <behavior name="validate">
+            <parameter name="nameRequired" value="{column: name, validator: NotBlank}" />
+            <parameter name="nameMinLength" value="{column: name, validator: Length, options: {min: 5}}" />
+        </behavior>
     </table>
     
     <table name="forum_post" namespace="\Tekstove\ApiBundle\Model\Forum" phpName="Post">

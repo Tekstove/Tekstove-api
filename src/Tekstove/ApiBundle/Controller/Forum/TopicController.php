@@ -9,6 +9,7 @@ use Tekstove\ApiBundle\Model\Acl\Permission;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Tekstove\ApiBundle\Model\Forum\Topic;
 use Tekstove\ApiBundle\Model\Forum\Post;
+use Tekstove\ApiBundle\Model\Forum\Topic\TopicHumanReadableException;
 
 /**
  * Description of TopicController
@@ -79,20 +80,31 @@ class TopicController extends Controller
         $topic->setCategory($category);
         $topic->setUser($this->getUser());
         $topic->setName($name);
+        $topicRepo = $this->get('tekstove.forum.topic.repository');
         
-        $con = \Propel\Runtime\Propel::getConnection();
-        $con->beginTransaction();
-        
-        $topic->save();
-        
-        $post = new Post();
-        $post->setText($postText);
-        $post->setUser($this->getUser());
-        $post->setTopic($topic);
-        $postRepo = $this->get('tekstove.forum.post.repository');
-        $postRepo->save($post);
-        
-        $con->commit();
+        try {
+            $con = \Propel\Runtime\Propel::getConnection();
+            $con->beginTransaction();
+
+            $topicRepo->save($topic);
+
+            $post = new Post();
+            $post->setText($postText);
+            $post->setUser($this->getUser());
+            $post->setTopic($topic);
+            $postRepo = $this->get('tekstove.forum.post.repository');
+            $postRepo->save($post);
+
+            $con->commit();
+        } catch (TopicHumanReadableException $e) {
+            $view = $this->handleData($request, $e->getErrors());
+            $view->setStatusCode(400);
+            return $view;
+        } catch (Post\PostHumanReadableException $e) {
+            $view = $this->handleData($request, $e->getErrors());
+            $view->setStatusCode(400);
+            return $view;
+        }
         
         $this->getContext()->setGroups(['List']);
         return $this->handleData($request, $topic);

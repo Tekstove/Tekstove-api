@@ -10,6 +10,7 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Tekstove\ApiBundle\Model\Forum\Topic;
 use Tekstove\ApiBundle\Model\Forum\Post;
 use Tekstove\ApiBundle\Model\Forum\Topic\TopicHumanReadableException;
+use Tekstove\ApiBundle\Model\Forum\Post\PostHumanReadableException;
 
 /**
  * Description of TopicController
@@ -81,9 +82,11 @@ class TopicController extends Controller
         $topic->setUser($this->getUser());
         $topic->setName($name);
         $topicRepo = $this->get('tekstove.forum.topic.repository');
+        $postRepo = $this->get('tekstove.forum.post.repository');
+        
+        $con = \Propel\Runtime\Propel::getConnection();
         
         try {
-            $con = \Propel\Runtime\Propel::getConnection();
             $con->beginTransaction();
 
             $topicRepo->save($topic);
@@ -92,15 +95,17 @@ class TopicController extends Controller
             $post->setText($postText);
             $post->setUser($this->getUser());
             $post->setTopic($topic);
-            $postRepo = $this->get('tekstove.forum.post.repository');
+            
             $postRepo->save($post);
 
             $con->commit();
         } catch (TopicHumanReadableException $e) {
+            $con->rollBack();
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
             return $view;
-        } catch (Post\PostHumanReadableException $e) {
+        } catch (PostHumanReadableException $e) {
+            $con->rollBack();
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
             return $view;

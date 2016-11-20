@@ -99,7 +99,9 @@ class User extends BaseUser
             $owner = true;
         }
         
-        if ($owner) {
+        $permissions = $this->getPermissions();
+        
+        if ($owner || array_key_exists(Permission::LYRIC_EDIT_BASIC, $permissions)) {
             $allowedFields[] = 'title';
             $allowedFields[] = 'artists';
             $allowedFields[] = 'text';
@@ -115,8 +117,6 @@ class User extends BaseUser
                 $allowedFields[] = 'delete';
             }
         }
-        
-        $permissions = $this->getPermissions();
         
         if ($lyric->getId() && array_key_exists(Permission::LYRIC_EDIT_DELETE, $permissions)) {
             $allowedFields[] = 'delete';

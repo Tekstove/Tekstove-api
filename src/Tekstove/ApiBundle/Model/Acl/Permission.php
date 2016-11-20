@@ -19,6 +19,7 @@ class Permission extends BasePermission
     const LYRIC_EDIT_DELETE = 'lyric.edit.delete';
     const LYRIC_EDIT_DOWNLOAD = 'lyric.edit.download';
     const LYRIC_EDIT_VIDEO = 'lyric.edit.video';
+    const LYRIC_EDIT_BASIC = 'lyric.edit.basic';
     
     const FORUM_VIEW_SECRET = 'forum.secret.view';
 }

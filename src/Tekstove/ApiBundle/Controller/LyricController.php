@@ -5,6 +5,7 @@ namespace Tekstove\ApiBundle\Controller;
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
+use Tekstove\ApiBundle\Model\Lyric\LyricRedirectQuery;
 use Tekstove\ApiBundle\Model\Lyric;
 use Propel\Runtime\Exception\EntityNotFoundException;
 
@@ -30,6 +31,22 @@ class LyricController extends Controller
         try {
             $lyric = $lyricQuery->requireOneById($id);
         } catch (EntityNotFoundException $e) {
+            $redirectQuery = new LyricRedirectQuery();
+            $redirect = $redirectQuery->findOneByDeletedId($id);
+            if ($redirect) {
+                $view = $this->handleData(
+                    $request,
+                    [
+                        'redirect' => [
+                            'id' => $redirect->getRedirectId()
+                        ]
+                    ]
+                );
+                
+                $view->getResponse()->setStatusCode(404);
+                
+                return $view;
+            }
             throw $this->createNotFoundException("Lyric not found");
         }
         return $this->handleData($request, $lyric);

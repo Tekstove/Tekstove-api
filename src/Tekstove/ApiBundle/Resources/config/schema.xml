@@ -147,6 +147,11 @@
         </foreign-key>
     </table>
     
+    <table name="lyric_redirect" namespace="\Tekstove\ApiBundle\Model\Lyric">
+        <column name="deleted_id" type="integer"/>
+        <column name="redirect_id" type="integer"/>
+    </table>
+    
     <table name="lyric_translation" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
         <column name="lyric_id" type="integer"/>

@@ -5,3 +5,7 @@
     properties:
         forbidden:
             groups: [Details]
+    virtual_properties:
+        getAlbums:
+            groups: [Albums]
+            serialized_name: albums

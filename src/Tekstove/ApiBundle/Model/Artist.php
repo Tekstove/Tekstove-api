@@ -16,5 +16,15 @@ use Tekstove\ApiBundle\Model\Base\Artist as BaseArtist;
  */
 class Artist extends BaseArtist
 {
-
+    /**
+     * @return Album[]
+     */
+    public function getAlbums()
+    {
+        $return = [];
+        foreach ($this->getAlbumArtists() as $albumArtist) {
+            $return[] = $albumArtist->getAlbum();
+        }
+        return $return;
+    }
 }

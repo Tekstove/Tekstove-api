@@ -94,7 +94,8 @@ tekstove_api_lyric.delete:
 tekstove_api_languages:
     path: /languages
     defaults: { _controller: TekstoveApiBundle:Language\Languages:index }
-    
+    methods: [GET]
+
 tekstove_api_artist:
     path: "/artists"
     defaults: { _controller: TekstoveApiBundle:Artist:index }

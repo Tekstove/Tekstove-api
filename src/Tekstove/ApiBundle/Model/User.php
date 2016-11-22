@@ -38,8 +38,6 @@ class User extends BaseUser
             throw $exception;
         }
         
-        // $this->notifyPreSave($this);
-        
         return parent::preSave($con);
     }
     

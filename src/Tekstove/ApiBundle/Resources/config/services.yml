@@ -1,7 +1,6 @@
 services:
     tekstove.api.serializer.subscriber:
         class: Tekstove\ApiBundle\EventListener\Model\Lyric\SerializationSubscriber
-        arguments: ["@security.authorization_checker"]
         tags:
             - { name: "jms_serializer.event_subscriber" }
 

@@ -6,8 +6,6 @@ use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-
 use Tekstove\ApiBundle\Model\Lyric;
 
 /**
@@ -17,13 +15,6 @@ use Tekstove\ApiBundle\Model\Lyric;
  */
 class SerializationSubscriber implements EventSubscriberInterface
 {
-    private $authorizationChecker = null;
-    
-    public function __construct(AuthorizationCheckerInterface $authChecker)
-    {
-        $this->authorizationChecker = $authChecker;
-    }
-    
     public static function getSubscribedEvents()
     {
         return [

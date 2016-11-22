@@ -2,7 +2,6 @@
 
 namespace Tekstove\ApiBundle\EventListener\Model\Lyric;
 
-use Tekstove\ApiBundle\Model\Lyric;
 use Tekstove\ApiBundle\EventDispatcher\Event;
 
 use Tekstove\ContentChecker\Checker\CheckerInterface;
@@ -14,10 +13,14 @@ use Tekstove\ContentChecker\Checker\CheckerInterface;
  */
 class LyricCensorCacheSubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
 {
+    /**
+     *
+     * @var CheckerInterface
+     */
     private $checker;
     
     /**
-     * @param \Tekstove\ContentChecker\Dictionary\DictionaryInterface[] $dictionaries
+     * @param CheckerInterface $checker
      */
     public function __construct(CheckerInterface $checker)
     {

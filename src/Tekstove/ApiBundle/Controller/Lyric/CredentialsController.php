@@ -10,7 +10,7 @@ use Tekstove\ApiBundle\Model\LyricQuery;
 use Tekstove\ApiBundle\Model\User;
 
 /**
- * Description of CredentialsController
+ * Handle credentials for new items
  *
  * @author po_taka <angel.koilov@gmail.com>
  */

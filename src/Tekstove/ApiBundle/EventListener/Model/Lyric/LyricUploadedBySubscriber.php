@@ -3,7 +3,6 @@
 namespace Tekstove\ApiBundle\EventListener\Model\Lyric;
 
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 use Tekstove\ApiBundle\Model\Lyric;
 use Tekstove\ApiBundle\EventDispatcher\Event;

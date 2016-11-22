@@ -10,7 +10,7 @@ use Tekstove\ApiBundle\Model\UserQuery;
 class UserController extends TekstoveAbstractController
 {
     /**
-     * @Template();
+     * @Template()
      */
     public function indexAction(Request $request)
     {

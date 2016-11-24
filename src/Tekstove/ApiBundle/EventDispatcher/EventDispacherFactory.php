@@ -5,6 +5,7 @@ namespace Tekstove\ApiBundle\EventDispatcher;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricTitleCacheSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricUploadedBySubscriber;
+use Tekstove\ApiBundle\EventListener\Model\Lyric\VideoParserSubscriber;
 
 /**
  * Description of EventDispacherFactory
@@ -26,6 +27,7 @@ class EventDispacherFactory
         $dispacher->addSubscriber($titleCacheSubscriber);
         $dispacher->addSubscriber($uploadedBySubscriber);
         $dispacher->addSubscriber(self::createContentChecker($container));
+        $dispacher->addSubscriber(new VideoParserSubscriber());
         return $dispacher;
     }
     

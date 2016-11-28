@@ -19,7 +19,7 @@
             groups: [List, Details]
             serialized_name: sendBy
         getViews:
-            groups: [Details]
+            groups: [Details, Views]
             serialized_name: views
         getPopularity:
             groups: [Details, Popularity]

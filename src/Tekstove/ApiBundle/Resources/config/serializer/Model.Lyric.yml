@@ -22,7 +22,7 @@
             groups: [Details]
             serialized_name: views
         getPopularity:
-            groups: [Details]
+            groups: [Details, Popularity]
             serialized_name: popularity
         getCacheTitleShort:
             groups: [List, Details]

@@ -70,12 +70,11 @@ tekstove_api_lyric_credentials:
     defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index, id: ~ }
     methods: [GET]
 
-
 tekstove_api_lyric_get:
     path: "/lyrics/{id}"
     defaults: { _controller: TekstoveApiBundle:Lyric:get }
     methods: [GET]
-
+    
 tekstove_api_lyric_post:
     path: "/lyrics"
     defaults: { _controller: TekstoveApiBundle:Lyric:post}

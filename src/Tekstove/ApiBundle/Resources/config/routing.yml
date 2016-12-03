@@ -149,3 +149,8 @@ tekstove_api_forum_post_post:
     path: "/forum/post"
     defaults: { _controller: TekstoveApiBundle:Forum\Post:post }
     methods: [POST]
+
+tekstove_api_chat_messages:
+    path: "/chat/messages"
+    defaults: { _controller: TekstoveApiBundle:Chat\Messages:index }
+    methods: [GET]

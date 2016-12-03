@@ -1,0 +1,11 @@
+"Tekstove\\ApiBundle\\Model\\Chat\\Message":
+    exclusion_policy: all
+    exclude: false
+    read_only: true
+    virtual_properties:
+        getId:
+            groups: [Details, List]
+            serialized_name: id
+        getMessage:
+            groups: [Details, List]
+            serialized_name: message

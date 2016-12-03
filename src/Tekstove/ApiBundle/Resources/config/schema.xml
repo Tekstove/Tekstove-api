@@ -282,4 +282,9 @@
         </behavior>
     </table>
     
+    <table name="chat" namespace="\Tekstove\ApiBundle\Model\Chat" phpName="Message">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
+        <column name="message" type="varchar" required="true" />
+    </table>
+
 </database>

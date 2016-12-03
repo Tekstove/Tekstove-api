@@ -15,6 +15,8 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Tekstove\ApiBundle\Model\User;
+use Tekstove\ApiBundle\Model\UserQuery;
 use Tekstove\ApiBundle\Model\Chat\MessageQuery as ChildMessageQuery;
 use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
 
@@ -72,6 +74,18 @@ abstract class Message implements ActiveRecordInterface
      * @var        string
      */
     protected $message;
+
+    /**
+     * The value for the user_id field.
+     *
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
+     * @var        User
+     */
+    protected $aUser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -327,6 +341,16 @@ abstract class Message implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -365,6 +389,30 @@ abstract class Message implements ActiveRecordInterface
 
         return $this;
     } // setMessage()
+
+    /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\Chat\Message The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[MessageTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -407,6 +455,9 @@ abstract class Message implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : MessageTableMap::translateFieldName('Message', TableMap::TYPE_PHPNAME, $indexType)];
             $this->message = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : MessageTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -415,7 +466,7 @@ abstract class Message implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 2; // 2 = MessageTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 3; // 3 = MessageTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Chat\\Message'), 0, $e);
@@ -437,6 +488,9 @@ abstract class Message implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
     } // ensureConsistency
 
     /**
@@ -476,6 +530,7 @@ abstract class Message implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
         } // if (deep)
     }
 
@@ -575,6 +630,18 @@ abstract class Message implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -618,6 +685,9 @@ abstract class Message implements ActiveRecordInterface
         if ($this->isColumnModified(MessageTableMap::COL_MESSAGE)) {
             $modifiedColumns[':p' . $index++]  = '`message`';
         }
+        if ($this->isColumnModified(MessageTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = '`user_id`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `chat` (%s) VALUES (%s)',
@@ -634,6 +704,9 @@ abstract class Message implements ActiveRecordInterface
                         break;
                     case '`message`':
                         $stmt->bindValue($identifier, $this->message, PDO::PARAM_STR);
+                        break;
+                    case '`user_id`':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -703,6 +776,9 @@ abstract class Message implements ActiveRecordInterface
             case 1:
                 return $this->getMessage();
                 break;
+            case 2:
+                return $this->getUserId();
+                break;
             default:
                 return null;
                 break;
@@ -720,10 +796,11 @@ abstract class Message implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
         if (isset($alreadyDumpedObjects['Message'][$this->hashCode()])) {
@@ -734,12 +811,30 @@ abstract class Message implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getMessage(),
+            $keys[2] => $this->getUserId(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
 
+        if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'user';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+        }
 
         return $result;
     }
@@ -779,6 +874,9 @@ abstract class Message implements ActiveRecordInterface
             case 1:
                 $this->setMessage($value);
                 break;
+            case 2:
+                $this->setUserId($value);
+                break;
         } // switch()
 
         return $this;
@@ -810,6 +908,9 @@ abstract class Message implements ActiveRecordInterface
         }
         if (array_key_exists($keys[1], $arr)) {
             $this->setMessage($arr[$keys[1]]);
+        }
+        if (array_key_exists($keys[2], $arr)) {
+            $this->setUserId($arr[$keys[2]]);
         }
     }
 
@@ -857,6 +958,9 @@ abstract class Message implements ActiveRecordInterface
         }
         if ($this->isColumnModified(MessageTableMap::COL_MESSAGE)) {
             $criteria->add(MessageTableMap::COL_MESSAGE, $this->message);
+        }
+        if ($this->isColumnModified(MessageTableMap::COL_USER_ID)) {
+            $criteria->add(MessageTableMap::COL_USER_ID, $this->user_id);
         }
 
         return $criteria;
@@ -945,6 +1049,7 @@ abstract class Message implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setMessage($this->getMessage());
+        $copyObj->setUserId($this->getUserId());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -974,14 +1079,69 @@ abstract class Message implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a User object.
+     *
+     * @param  User $v
+     * @return $this|\Tekstove\ApiBundle\Model\Chat\Message The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(User $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the User object, it will not be re-added.
+        if ($v !== null) {
+            $v->addMessage($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated User object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return User The associated User object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = UserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addMessages($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeMessage($this);
+        }
         $this->id = null;
         $this->message = null;
+        $this->user_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1002,6 +1162,7 @@ abstract class Message implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aUser = null;
     }
 
     /**

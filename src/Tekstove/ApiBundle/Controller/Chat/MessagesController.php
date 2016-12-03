@@ -4,6 +4,7 @@ namespace Tekstove\ApiBundle\Controller\Chat;
 
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
+use Tekstove\ApiBundle\Model\Chat\Message;
 use Tekstove\ApiBundle\Model\Chat\MessageQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 
@@ -18,9 +19,37 @@ class MessagesController extends Controller
     {
         $this->applyGroups($request);
         $messageQuery = new MessageQuery();
-        $messageQuery->orderById(Criteria::DESC);
-        $messageQuery->setLimit(5);
+
+        if (empty($request->get('filter'))) {
+            $maxIdQuery = new MessageQuery();
+            $maxIdQuery->orderById(Criteria::DESC);
+            $lastmessage = $maxIdQuery->findOne();
+            $messageQuery->filterById(
+                $lastmessage->getId() - 10,
+                Criteria::GREATER_THAN
+            );
+        }
+
+        $messageQuery->orderById(Criteria::ASC);
+
+        $messageQuery->setLimit(10);
 
         return $this->handleData($request, $messageQuery);
+    }
+
+    public function postAction(Request $request)
+    {
+        $this->getContext()
+                ->setGroups(['List']);
+
+        $message = new Message();
+        $message->setMessage(uniqid('test_'));
+
+        if ($this->getUser()) {
+            $message->setUser($this->getUser());
+        }
+
+        $message->save();
+        return $this->handleData($request, $message);
     }
 }

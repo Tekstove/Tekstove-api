@@ -59,7 +59,7 @@ class MessageTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 2;
+    const NUM_COLUMNS = 3;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class MessageTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 2;
+    const NUM_HYDRATE_COLUMNS = 3;
 
     /**
      * the column name for the id field
@@ -80,6 +80,11 @@ class MessageTableMap extends TableMap
      * the column name for the message field
      */
     const COL_MESSAGE = 'chat.message';
+
+    /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'chat.user_id';
 
     /**
      * The default string format for model objects of the related table
@@ -93,11 +98,11 @@ class MessageTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Message', ),
-        self::TYPE_CAMELNAME     => array('id', 'message', ),
-        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID, MessageTableMap::COL_MESSAGE, ),
-        self::TYPE_FIELDNAME     => array('id', 'message', ),
-        self::TYPE_NUM           => array(0, 1, )
+        self::TYPE_PHPNAME       => array('Id', 'Message', 'UserId', ),
+        self::TYPE_CAMELNAME     => array('id', 'message', 'userId', ),
+        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID, MessageTableMap::COL_MESSAGE, MessageTableMap::COL_USER_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'message', 'user_id', ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -107,11 +112,11 @@ class MessageTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Message' => 1, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'message' => 1, ),
-        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID => 0, MessageTableMap::COL_MESSAGE => 1, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'message' => 1, ),
-        self::TYPE_NUM           => array(0, 1, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Message' => 1, 'UserId' => 2, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'message' => 1, 'userId' => 2, ),
+        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID => 0, MessageTableMap::COL_MESSAGE => 1, MessageTableMap::COL_USER_ID => 2, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'message' => 1, 'user_id' => 2, ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -133,6 +138,7 @@ class MessageTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('message', 'Message', 'VARCHAR', true, 255, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', false, null, null);
     } // initialize()
 
     /**
@@ -140,6 +146,13 @@ class MessageTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\Tekstove\\ApiBundle\\Model\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
     } // buildRelations()
 
     /**
@@ -285,9 +298,11 @@ class MessageTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(MessageTableMap::COL_ID);
             $criteria->addSelectColumn(MessageTableMap::COL_MESSAGE);
+            $criteria->addSelectColumn(MessageTableMap::COL_USER_ID);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.message');
+            $criteria->addSelectColumn($alias . '.user_id');
         }
     }
 

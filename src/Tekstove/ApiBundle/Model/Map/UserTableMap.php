@@ -247,6 +247,13 @@ class UserTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'Posts', false);
+        $this->addRelation('Message', '\\Tekstove\\ApiBundle\\Model\\Chat\\Message', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'Messages', false);
     } // buildRelations()
 
     /**

@@ -9,3 +9,6 @@
         getMessage:
             groups: [Details, List]
             serialized_name: message
+        getUser:
+            groups: [Details]
+            serialized_name: user

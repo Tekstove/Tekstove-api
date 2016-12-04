@@ -59,7 +59,7 @@ class MessageTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 4;
+    const NUM_COLUMNS = 5;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class MessageTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 4;
+    const NUM_HYDRATE_COLUMNS = 5;
 
     /**
      * the column name for the id field
@@ -85,6 +85,11 @@ class MessageTableMap extends TableMap
      * the column name for the ip field
      */
     const COL_IP = 'chat.ip';
+
+    /**
+     * the column name for the date field
+     */
+    const COL_DATE = 'chat.date';
 
     /**
      * the column name for the user_id field
@@ -103,11 +108,11 @@ class MessageTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Message', 'Ip', 'UserId', ),
-        self::TYPE_CAMELNAME     => array('id', 'message', 'ip', 'userId', ),
-        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID, MessageTableMap::COL_MESSAGE, MessageTableMap::COL_IP, MessageTableMap::COL_USER_ID, ),
-        self::TYPE_FIELDNAME     => array('id', 'message', 'ip', 'user_id', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('Id', 'Message', 'Ip', 'Date', 'UserId', ),
+        self::TYPE_CAMELNAME     => array('id', 'message', 'ip', 'date', 'userId', ),
+        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID, MessageTableMap::COL_MESSAGE, MessageTableMap::COL_IP, MessageTableMap::COL_DATE, MessageTableMap::COL_USER_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'message', 'ip', 'date', 'user_id', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -117,11 +122,11 @@ class MessageTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Message' => 1, 'Ip' => 2, 'UserId' => 3, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'message' => 1, 'ip' => 2, 'userId' => 3, ),
-        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID => 0, MessageTableMap::COL_MESSAGE => 1, MessageTableMap::COL_IP => 2, MessageTableMap::COL_USER_ID => 3, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'message' => 1, 'ip' => 2, 'user_id' => 3, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Message' => 1, 'Ip' => 2, 'Date' => 3, 'UserId' => 4, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'message' => 1, 'ip' => 2, 'date' => 3, 'userId' => 4, ),
+        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID => 0, MessageTableMap::COL_MESSAGE => 1, MessageTableMap::COL_IP => 2, MessageTableMap::COL_DATE => 3, MessageTableMap::COL_USER_ID => 4, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'message' => 1, 'ip' => 2, 'date' => 3, 'user_id' => 4, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -144,6 +149,7 @@ class MessageTableMap extends TableMap
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('message', 'Message', 'VARCHAR', true, 255, null);
         $this->addColumn('ip', 'Ip', 'VARCHAR', true, 255, null);
+        $this->addColumn('date', 'Date', 'TIMESTAMP', false, null, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', false, null, null);
     } // initialize()
 
@@ -318,11 +324,13 @@ class MessageTableMap extends TableMap
             $criteria->addSelectColumn(MessageTableMap::COL_ID);
             $criteria->addSelectColumn(MessageTableMap::COL_MESSAGE);
             $criteria->addSelectColumn(MessageTableMap::COL_IP);
+            $criteria->addSelectColumn(MessageTableMap::COL_DATE);
             $criteria->addSelectColumn(MessageTableMap::COL_USER_ID);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.message');
             $criteria->addSelectColumn($alias . '.ip');
+            $criteria->addSelectColumn($alias . '.date');
             $criteria->addSelectColumn($alias . '.user_id');
         }
     }

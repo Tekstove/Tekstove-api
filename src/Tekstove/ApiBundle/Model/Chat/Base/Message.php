@@ -2,6 +2,7 @@
 
 namespace Tekstove\ApiBundle\Model\Chat\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -15,6 +16,7 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -91,6 +93,13 @@ abstract class Message implements ActiveRecordInterface
      * @var        string
      */
     protected $ip;
+
+    /**
+     * The value for the date field.
+     *
+     * @var        DateTime
+     */
+    protected $date;
 
     /**
      * The value for the user_id field.
@@ -385,6 +394,26 @@ abstract class Message implements ActiveRecordInterface
     }
 
     /**
+     * Get the [optionally formatted] temporal [date] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getDate($format = NULL)
+    {
+        if ($format === null) {
+            return $this->date;
+        } else {
+            return $this->date instanceof \DateTimeInterface ? $this->date->format($format) : null;
+        }
+    }
+
+    /**
      * Get the [user_id] column value.
      *
      * @return int
@@ -455,6 +484,26 @@ abstract class Message implements ActiveRecordInterface
     } // setIp()
 
     /**
+     * Sets the value of [date] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Tekstove\ApiBundle\Model\Chat\Message The current object (for fluent API support)
+     */
+    public function setDate($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->date !== null || $dt !== null) {
+            if ($this->date === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->date->format("Y-m-d H:i:s.u")) {
+                $this->date = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[MessageTableMap::COL_DATE] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setDate()
+
+    /**
      * Set the value of [user_id] column.
      *
      * @param int $v new value
@@ -523,7 +572,13 @@ abstract class Message implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : MessageTableMap::translateFieldName('Ip', TableMap::TYPE_PHPNAME, $indexType)];
             $this->ip = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : MessageTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : MessageTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->date = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : MessageTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -533,7 +588,7 @@ abstract class Message implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 4; // 4 = MessageTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = MessageTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Chat\\Message'), 0, $e);
@@ -755,6 +810,9 @@ abstract class Message implements ActiveRecordInterface
         if ($this->isColumnModified(MessageTableMap::COL_IP)) {
             $modifiedColumns[':p' . $index++]  = '`ip`';
         }
+        if ($this->isColumnModified(MessageTableMap::COL_DATE)) {
+            $modifiedColumns[':p' . $index++]  = '`date`';
+        }
         if ($this->isColumnModified(MessageTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = '`user_id`';
         }
@@ -777,6 +835,9 @@ abstract class Message implements ActiveRecordInterface
                         break;
                     case '`ip`':
                         $stmt->bindValue($identifier, $this->ip, PDO::PARAM_STR);
+                        break;
+                    case '`date`':
+                        $stmt->bindValue($identifier, $this->date ? $this->date->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                     case '`user_id`':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
@@ -853,6 +914,9 @@ abstract class Message implements ActiveRecordInterface
                 return $this->getIp();
                 break;
             case 3:
+                return $this->getDate();
+                break;
+            case 4:
                 return $this->getUserId();
                 break;
             default:
@@ -888,8 +952,13 @@ abstract class Message implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getMessage(),
             $keys[2] => $this->getIp(),
-            $keys[3] => $this->getUserId(),
+            $keys[3] => $this->getDate(),
+            $keys[4] => $this->getUserId(),
         );
+        if ($result[$keys[3]] instanceof \DateTime) {
+            $result[$keys[3]] = $result[$keys[3]]->format('c');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -955,6 +1024,9 @@ abstract class Message implements ActiveRecordInterface
                 $this->setIp($value);
                 break;
             case 3:
+                $this->setDate($value);
+                break;
+            case 4:
                 $this->setUserId($value);
                 break;
         } // switch()
@@ -993,7 +1065,10 @@ abstract class Message implements ActiveRecordInterface
             $this->setIp($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setUserId($arr[$keys[3]]);
+            $this->setDate($arr[$keys[3]]);
+        }
+        if (array_key_exists($keys[4], $arr)) {
+            $this->setUserId($arr[$keys[4]]);
         }
     }
 
@@ -1044,6 +1119,9 @@ abstract class Message implements ActiveRecordInterface
         }
         if ($this->isColumnModified(MessageTableMap::COL_IP)) {
             $criteria->add(MessageTableMap::COL_IP, $this->ip);
+        }
+        if ($this->isColumnModified(MessageTableMap::COL_DATE)) {
+            $criteria->add(MessageTableMap::COL_DATE, $this->date);
         }
         if ($this->isColumnModified(MessageTableMap::COL_USER_ID)) {
             $criteria->add(MessageTableMap::COL_USER_ID, $this->user_id);
@@ -1136,6 +1214,7 @@ abstract class Message implements ActiveRecordInterface
     {
         $copyObj->setMessage($this->getMessage());
         $copyObj->setIp($this->getIp());
+        $copyObj->setDate($this->getDate());
         $copyObj->setUserId($this->getUserId());
         if ($makeNew) {
             $copyObj->setNew(true);
@@ -1229,6 +1308,7 @@ abstract class Message implements ActiveRecordInterface
         $this->id = null;
         $this->message = null;
         $this->ip = null;
+        $this->date = null;
         $this->user_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();

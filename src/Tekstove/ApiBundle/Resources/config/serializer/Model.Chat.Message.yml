@@ -9,6 +9,9 @@
         getMessage:
             groups: [Details, List]
             serialized_name: message
+        getDateTimeTimestamp:
+            groups: [Details, List]
+            serialized_name: date
         getUser:
             groups: [Details]
             serialized_name: user

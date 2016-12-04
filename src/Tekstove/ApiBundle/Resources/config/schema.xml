@@ -286,6 +286,7 @@
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
         <column name="message" type="varchar" required="true" />
         <column name="ip" type="varchar" required="true" />
+        <column name="date" type="timestamp" />
         
         <column name="user_id" type="integer" />
         <foreign-key foreignTable="user">

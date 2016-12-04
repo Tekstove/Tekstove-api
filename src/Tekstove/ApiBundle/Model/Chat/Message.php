@@ -33,4 +33,9 @@ class Message extends BaseMessage
         }
         return parent::preSave($con);
     }
+
+    public function getDateTimeTimestamp()
+    {
+        return $this->getDate('U');
+    }
 }

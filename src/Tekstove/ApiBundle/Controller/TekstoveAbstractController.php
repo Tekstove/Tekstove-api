@@ -102,7 +102,10 @@ class TekstoveAbstractController extends FOSRestController
             $filterMethod = 'filterBy' . ucfirst($field);
             switch ($operator) {
                 case '=':
-                    $data->{$filterMethod}($value, $operator);
+                    $data->{$filterMethod}($value, Criteria::EQUAL);
+                    break;
+                case '>':
+                    $data->{$filterMethod}($value, Criteria::GREATER_THAN);
                     break;
                 case 'NOT_NULL':
                     $data->{$filterMethod}(null, Criteria::ISNOTNULL);

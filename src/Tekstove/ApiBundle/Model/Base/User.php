@@ -40,6 +40,10 @@ use Tekstove\ApiBundle\Model\Acl\PermissionGroupUser;
 use Tekstove\ApiBundle\Model\Acl\PermissionGroupUserQuery;
 use Tekstove\ApiBundle\Model\Acl\Base\PermissionGroupUser as BasePermissionGroupUser;
 use Tekstove\ApiBundle\Model\Acl\Map\PermissionGroupUserTableMap;
+use Tekstove\ApiBundle\Model\Chat\Message;
+use Tekstove\ApiBundle\Model\Chat\MessageQuery;
+use Tekstove\ApiBundle\Model\Chat\Base\Message as BaseMessage;
+use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
 use Tekstove\ApiBundle\Model\Forum\Post;
 use Tekstove\ApiBundle\Model\Forum\PostQuery;
 use Tekstove\ApiBundle\Model\Forum\Topic;
@@ -223,6 +227,12 @@ abstract class User implements ActiveRecordInterface
     protected $collPostsPartial;
 
     /**
+     * @var        ObjectCollection|Message[] Collection to store aggregation of Message objects.
+     */
+    protected $collMessages;
+    protected $collMessagesPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -306,6 +316,12 @@ abstract class User implements ActiveRecordInterface
      * @var ObjectCollection|Post[]
      */
     protected $postsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|Message[]
+     */
+    protected $messagesScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Tekstove\ApiBundle\Model\Base\User object.
@@ -920,6 +936,8 @@ abstract class User implements ActiveRecordInterface
 
             $this->collPosts = null;
 
+            $this->collMessages = null;
+
         } // if (deep)
     }
 
@@ -1201,6 +1219,24 @@ abstract class User implements ActiveRecordInterface
 
             if ($this->collPosts !== null) {
                 foreach ($this->collPosts as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->messagesScheduledForDeletion !== null) {
+                if (!$this->messagesScheduledForDeletion->isEmpty()) {
+                    foreach ($this->messagesScheduledForDeletion as $message) {
+                        // need to save related object because we set the relation to null
+                        $message->save($con);
+                    }
+                    $this->messagesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collMessages !== null) {
+                foreach ($this->collMessages as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1573,6 +1609,21 @@ abstract class User implements ActiveRecordInterface
 
                 $result[$key] = $this->collPosts->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
+            if (null !== $this->collMessages) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'messages';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'chats';
+                        break;
+                    default:
+                        $key = 'Messages';
+                }
+
+                $result[$key] = $this->collMessages->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
         }
 
         return $result;
@@ -1905,6 +1956,12 @@ abstract class User implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getMessages() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addMessage($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -1975,6 +2032,9 @@ abstract class User implements ActiveRecordInterface
         }
         if ('Post' == $relationName) {
             return $this->initPosts();
+        }
+        if ('Message' == $relationName) {
+            return $this->initMessages();
         }
     }
 
@@ -4357,6 +4417,231 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collMessages collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addMessages()
+     */
+    public function clearMessages()
+    {
+        $this->collMessages = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collMessages collection loaded partially.
+     */
+    public function resetPartialMessages($v = true)
+    {
+        $this->collMessagesPartial = $v;
+    }
+
+    /**
+     * Initializes the collMessages collection.
+     *
+     * By default this just sets the collMessages collection to an empty array (like clearcollMessages());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initMessages($overrideExisting = true)
+    {
+        if (null !== $this->collMessages && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = MessageTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collMessages = new $collectionClassName;
+        $this->collMessages->setModel('\Tekstove\ApiBundle\Model\Chat\Message');
+    }
+
+    /**
+     * Gets an array of Message objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|Message[] List of Message objects
+     * @throws PropelException
+     */
+    public function getMessages(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collMessagesPartial && !$this->isNew();
+        if (null === $this->collMessages || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collMessages) {
+                // return empty collection
+                $this->initMessages();
+            } else {
+                $collMessages = MessageQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collMessagesPartial && count($collMessages)) {
+                        $this->initMessages(false);
+
+                        foreach ($collMessages as $obj) {
+                            if (false == $this->collMessages->contains($obj)) {
+                                $this->collMessages->append($obj);
+                            }
+                        }
+
+                        $this->collMessagesPartial = true;
+                    }
+
+                    return $collMessages;
+                }
+
+                if ($partial && $this->collMessages) {
+                    foreach ($this->collMessages as $obj) {
+                        if ($obj->isNew()) {
+                            $collMessages[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collMessages = $collMessages;
+                $this->collMessagesPartial = false;
+            }
+        }
+
+        return $this->collMessages;
+    }
+
+    /**
+     * Sets a collection of Message objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $messages A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setMessages(Collection $messages, ConnectionInterface $con = null)
+    {
+        /** @var Message[] $messagesToDelete */
+        $messagesToDelete = $this->getMessages(new Criteria(), $con)->diff($messages);
+
+
+        $this->messagesScheduledForDeletion = $messagesToDelete;
+
+        foreach ($messagesToDelete as $messageRemoved) {
+            $messageRemoved->setUser(null);
+        }
+
+        $this->collMessages = null;
+        foreach ($messages as $message) {
+            $this->addMessage($message);
+        }
+
+        $this->collMessages = $messages;
+        $this->collMessagesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related BaseMessage objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related BaseMessage objects.
+     * @throws PropelException
+     */
+    public function countMessages(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collMessagesPartial && !$this->isNew();
+        if (null === $this->collMessages || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collMessages) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getMessages());
+            }
+
+            $query = MessageQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collMessages);
+    }
+
+    /**
+     * Method called to associate a Message object to this object
+     * through the Message foreign key attribute.
+     *
+     * @param  Message $l Message
+     * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
+     */
+    public function addMessage(Message $l)
+    {
+        if ($this->collMessages === null) {
+            $this->initMessages();
+            $this->collMessagesPartial = true;
+        }
+
+        if (!$this->collMessages->contains($l)) {
+            $this->doAddMessage($l);
+
+            if ($this->messagesScheduledForDeletion and $this->messagesScheduledForDeletion->contains($l)) {
+                $this->messagesScheduledForDeletion->remove($this->messagesScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Message $message The Message object to add.
+     */
+    protected function doAddMessage(Message $message)
+    {
+        $this->collMessages[]= $message;
+        $message->setUser($this);
+    }
+
+    /**
+     * @param  Message $message The Message object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeMessage(Message $message)
+    {
+        if ($this->getMessages()->contains($message)) {
+            $pos = $this->collMessages->search($message);
+            $this->collMessages->remove($pos);
+            if (null === $this->messagesScheduledForDeletion) {
+                $this->messagesScheduledForDeletion = clone $this->collMessages;
+                $this->messagesScheduledForDeletion->clear();
+            }
+            $this->messagesScheduledForDeletion[]= $message;
+            $message->setUser(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -4439,6 +4724,11 @@ abstract class User implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collMessages) {
+                foreach ($this->collMessages as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collPmsRelatedByUserTo = null;
@@ -4451,6 +4741,7 @@ abstract class User implements ActiveRecordInterface
         $this->collAlbums = null;
         $this->collTopics = null;
         $this->collPosts = null;
+        $this->collMessages = null;
     }
 
     /**
@@ -4594,6 +4885,15 @@ abstract class User implements ActiveRecordInterface
             }
             if (null !== $this->collPosts) {
                 foreach ($this->collPosts as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
+            if (null !== $this->collMessages) {
+                foreach ($this->collMessages as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());

@@ -42,7 +42,7 @@
          <column name="read" type="boolean" required="true" />
          <column name="datetime" type="TIMESTAMP" />
          
-         <behavior name="validate">
+        <behavior name="validate">
             <parameter name="titleValidationNotEmpty"  value="{column: title, validator: NotBlank}" />
             <parameter name="titleValidationMinLength" value="{column: title, validator: Length, options: {min: 3, max: 150}}" />
 
@@ -282,4 +282,20 @@
         </behavior>
     </table>
     
+    <table name="chat" namespace="\Tekstove\ApiBundle\Model\Chat" phpName="Message">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
+        <column name="message" type="varchar" required="true" />
+        <column name="ip" type="varchar" required="true" />
+        <column name="date" type="timestamp" />
+        
+        <column name="user_id" type="integer" />
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+        
+        <behavior name="validate">
+            <parameter name="messageNotEmpty"  value="{column: message, validator: NotBlank}" />
+        </behavior>
+    </table>
+
 </database>

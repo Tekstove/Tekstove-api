@@ -1196,8 +1196,8 @@ abstract class Language implements ActiveRecordInterface
      */
     public function removeLyric(ChildLyric $lyric)
     {
-        if ($this->getLyrics()->contains($lyric)) { $lyricLanguage = new LyricLanguage();
-
+        if ($this->getLyrics()->contains($lyric)) {
+            $lyricLanguage = new LyricLanguage();
             $lyricLanguage->setLyric($lyric);
             if ($lyric->isLanguagesLoaded()) {
                 //remove the back reference if available

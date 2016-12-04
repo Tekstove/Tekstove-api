@@ -12,6 +12,9 @@
         getDateTimeTimestamp:
             groups: [Details, List]
             serialized_name: date
+        getIp:
+            groups: [Details]
+            serialized_name: ip
         getUser:
             groups: [Details]
             serialized_name: user

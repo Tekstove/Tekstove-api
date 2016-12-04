@@ -22,4 +22,6 @@ class Permission extends BasePermission
     const LYRIC_EDIT_BASIC = 'lyric.edit.basic';
     
     const FORUM_VIEW_SECRET = 'forum.secret.view';
+
+    const CHAT_MESSAGE_VIEW_DETAILS = 'chat.message.details.view';
 }

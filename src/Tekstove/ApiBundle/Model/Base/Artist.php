@@ -2097,8 +2097,8 @@ abstract class Artist implements ActiveRecordInterface
      */
     public function removeLyric(ChildLyric $lyric)
     {
-        if ($this->getLyrics()->contains($lyric)) { $artistLyric = new ArtistLyric();
-
+        if ($this->getLyrics()->contains($lyric)) {
+            $artistLyric = new ArtistLyric();
             $artistLyric->setLyric($lyric);
             if ($lyric->isArtistsLoaded()) {
                 //remove the back reference if available

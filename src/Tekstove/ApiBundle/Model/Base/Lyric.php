@@ -3940,8 +3940,8 @@ abstract class Lyric implements ActiveRecordInterface
      */
     public function removeArtist(ChildArtist $artist)
     {
-        if ($this->getArtists()->contains($artist)) { $artistLyric = new ArtistLyric();
-
+        if ($this->getArtists()->contains($artist)) {
+            $artistLyric = new ArtistLyric();
             $artistLyric->setArtist($artist);
             if ($artist->isLyricsLoaded()) {
                 //remove the back reference if available
@@ -4183,8 +4183,8 @@ abstract class Lyric implements ActiveRecordInterface
      */
     public function removeLanguage(ChildLanguage $language)
     {
-        if ($this->getLanguages()->contains($language)) { $lyricLanguage = new LyricLanguage();
-
+        if ($this->getLanguages()->contains($language)) {
+            $lyricLanguage = new LyricLanguage();
             $lyricLanguage->setLanguage($language);
             if ($language->isLyricsLoaded()) {
                 //remove the back reference if available

@@ -47,6 +47,8 @@ class MessagesController extends Controller
         $messageData = json_decode($request->getContent(), true);
         
         $message->setMessage($messageData['message']);
+        $ips = $request->getClientIps();
+        $message->setIp(implode('~', $ips));
 
         if ($this->getUser()) {
             $message->setUser($this->getUser());

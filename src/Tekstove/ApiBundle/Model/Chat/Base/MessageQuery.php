@@ -23,10 +23,12 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  *
  * @method     ChildMessageQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildMessageQuery orderByMessage($order = Criteria::ASC) Order by the message column
+ * @method     ChildMessageQuery orderByIp($order = Criteria::ASC) Order by the ip column
  * @method     ChildMessageQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  *
  * @method     ChildMessageQuery groupById() Group by the id column
  * @method     ChildMessageQuery groupByMessage() Group by the message column
+ * @method     ChildMessageQuery groupByIp() Group by the ip column
  * @method     ChildMessageQuery groupByUserId() Group by the user_id column
  *
  * @method     ChildMessageQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -54,6 +56,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  *
  * @method     ChildMessage findOneById(int $id) Return the first ChildMessage filtered by the id column
  * @method     ChildMessage findOneByMessage(string $message) Return the first ChildMessage filtered by the message column
+ * @method     ChildMessage findOneByIp(string $ip) Return the first ChildMessage filtered by the ip column
  * @method     ChildMessage findOneByUserId(int $user_id) Return the first ChildMessage filtered by the user_id column *
 
  * @method     ChildMessage requirePk($key, ConnectionInterface $con = null) Return the ChildMessage by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -61,11 +64,13 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  *
  * @method     ChildMessage requireOneById(int $id) Return the first ChildMessage filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByMessage(string $message) Return the first ChildMessage filtered by the message column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildMessage requireOneByIp(string $ip) Return the first ChildMessage filtered by the ip column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByUserId(int $user_id) Return the first ChildMessage filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildMessage[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildMessage objects based on current ModelCriteria
  * @method     ChildMessage[]|ObjectCollection findById(int $id) Return ChildMessage objects filtered by the id column
  * @method     ChildMessage[]|ObjectCollection findByMessage(string $message) Return ChildMessage objects filtered by the message column
+ * @method     ChildMessage[]|ObjectCollection findByIp(string $ip) Return ChildMessage objects filtered by the ip column
  * @method     ChildMessage[]|ObjectCollection findByUserId(int $user_id) Return ChildMessage objects filtered by the user_id column
  * @method     ChildMessage[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -165,7 +170,7 @@ abstract class MessageQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `message`, `user_id` FROM `chat` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `message`, `ip`, `user_id` FROM `chat` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -319,6 +324,31 @@ abstract class MessageQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(MessageTableMap::COL_MESSAGE, $message, $comparison);
+    }
+
+    /**
+     * Filter the query on the ip column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByIp('fooValue');   // WHERE ip = 'fooValue'
+     * $query->filterByIp('%fooValue%', Criteria::LIKE); // WHERE ip LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $ip The value to use as filter.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildMessageQuery The current query, for fluid interface
+     */
+    public function filterByIp($ip = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($ip)) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(MessageTableMap::COL_IP, $ip, $comparison);
     }
 
     /**

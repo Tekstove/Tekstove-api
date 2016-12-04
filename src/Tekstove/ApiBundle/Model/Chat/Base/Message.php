@@ -86,6 +86,13 @@ abstract class Message implements ActiveRecordInterface
     protected $message;
 
     /**
+     * The value for the ip field.
+     *
+     * @var        string
+     */
+    protected $ip;
+
+    /**
      * The value for the user_id field.
      *
      * @var        int
@@ -368,6 +375,16 @@ abstract class Message implements ActiveRecordInterface
     }
 
     /**
+     * Get the [ip] column value.
+     *
+     * @return string
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
      * Get the [user_id] column value.
      *
      * @return int
@@ -416,6 +433,26 @@ abstract class Message implements ActiveRecordInterface
 
         return $this;
     } // setMessage()
+
+    /**
+     * Set the value of [ip] column.
+     *
+     * @param string $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\Chat\Message The current object (for fluent API support)
+     */
+    public function setIp($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->ip !== $v) {
+            $this->ip = $v;
+            $this->modifiedColumns[MessageTableMap::COL_IP] = true;
+        }
+
+        return $this;
+    } // setIp()
 
     /**
      * Set the value of [user_id] column.
@@ -483,7 +520,10 @@ abstract class Message implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : MessageTableMap::translateFieldName('Message', TableMap::TYPE_PHPNAME, $indexType)];
             $this->message = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : MessageTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : MessageTableMap::translateFieldName('Ip', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->ip = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : MessageTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -493,7 +533,7 @@ abstract class Message implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = MessageTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = MessageTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Chat\\Message'), 0, $e);
@@ -712,6 +752,9 @@ abstract class Message implements ActiveRecordInterface
         if ($this->isColumnModified(MessageTableMap::COL_MESSAGE)) {
             $modifiedColumns[':p' . $index++]  = '`message`';
         }
+        if ($this->isColumnModified(MessageTableMap::COL_IP)) {
+            $modifiedColumns[':p' . $index++]  = '`ip`';
+        }
         if ($this->isColumnModified(MessageTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = '`user_id`';
         }
@@ -731,6 +774,9 @@ abstract class Message implements ActiveRecordInterface
                         break;
                     case '`message`':
                         $stmt->bindValue($identifier, $this->message, PDO::PARAM_STR);
+                        break;
+                    case '`ip`':
+                        $stmt->bindValue($identifier, $this->ip, PDO::PARAM_STR);
                         break;
                     case '`user_id`':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
@@ -804,6 +850,9 @@ abstract class Message implements ActiveRecordInterface
                 return $this->getMessage();
                 break;
             case 2:
+                return $this->getIp();
+                break;
+            case 3:
                 return $this->getUserId();
                 break;
             default:
@@ -838,7 +887,8 @@ abstract class Message implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getMessage(),
-            $keys[2] => $this->getUserId(),
+            $keys[2] => $this->getIp(),
+            $keys[3] => $this->getUserId(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -902,6 +952,9 @@ abstract class Message implements ActiveRecordInterface
                 $this->setMessage($value);
                 break;
             case 2:
+                $this->setIp($value);
+                break;
+            case 3:
                 $this->setUserId($value);
                 break;
         } // switch()
@@ -937,7 +990,10 @@ abstract class Message implements ActiveRecordInterface
             $this->setMessage($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setUserId($arr[$keys[2]]);
+            $this->setIp($arr[$keys[2]]);
+        }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setUserId($arr[$keys[3]]);
         }
     }
 
@@ -985,6 +1041,9 @@ abstract class Message implements ActiveRecordInterface
         }
         if ($this->isColumnModified(MessageTableMap::COL_MESSAGE)) {
             $criteria->add(MessageTableMap::COL_MESSAGE, $this->message);
+        }
+        if ($this->isColumnModified(MessageTableMap::COL_IP)) {
+            $criteria->add(MessageTableMap::COL_IP, $this->ip);
         }
         if ($this->isColumnModified(MessageTableMap::COL_USER_ID)) {
             $criteria->add(MessageTableMap::COL_USER_ID, $this->user_id);
@@ -1076,6 +1135,7 @@ abstract class Message implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setMessage($this->getMessage());
+        $copyObj->setIp($this->getIp());
         $copyObj->setUserId($this->getUserId());
         if ($makeNew) {
             $copyObj->setNew(true);
@@ -1168,6 +1228,7 @@ abstract class Message implements ActiveRecordInterface
         }
         $this->id = null;
         $this->message = null;
+        $this->ip = null;
         $this->user_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();

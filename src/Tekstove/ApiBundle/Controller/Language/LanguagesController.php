@@ -18,7 +18,7 @@ class LanguagesController extends Controller
         $languagesQuery = new LanguageQuery();
         $languagesQuery->orderById();
         
-        $this->setItemsPerPage(999);
+        $request->query->set('limit', 99);
         
         return $this->handleData($request, $languagesQuery);
     }

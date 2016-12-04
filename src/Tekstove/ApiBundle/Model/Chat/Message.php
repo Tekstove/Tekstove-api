@@ -4,6 +4,8 @@ namespace Tekstove\ApiBundle\Model\Chat;
 
 use Tekstove\ApiBundle\Model\Chat\Base\Message as BaseMessage;
 
+use Tekstove\ApiBundle\Model\Chat\Exception\MessageHumanReadableException;
+
 /**
  * Skeleton subclass for representing a row from the 'chat' table.
  *
@@ -16,5 +18,19 @@ use Tekstove\ApiBundle\Model\Chat\Base\Message as BaseMessage;
  */
 class Message extends BaseMessage
 {
+    use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
 
+    public function preSave(\Propel\Runtime\Connection\ConnectionInterface $con = null)
+    {
+        if (!$this->validate($this->getValidator())) {
+            $errors = $this->getValidationFailures();
+            $exception = new MessageHumanReadableException('Validation failed.');
+            foreach ($errors as $error) {
+                /* @var $error \Symfony\Component\Validator\ConstraintViolationInterface */
+                $exception->addError($error->getPropertyPath(), $error->getMessage());
+            }
+            throw $exception;
+        }
+        return parent::preSave($con);
+    }
 }

@@ -16,5 +16,11 @@ use Tekstove\ApiBundle\Model\Chat\Base\MessageQuery as BaseMessageQuery;
  */
 class MessageQuery extends BaseMessageQuery
 {
+    use \Tekstove\ApiBundle\Model\RepositoryTrait;
 
+    public function save(Message $message)
+    {
+        $message->setValidator($this->getvalidator());
+        $message->save();
+    }
 }

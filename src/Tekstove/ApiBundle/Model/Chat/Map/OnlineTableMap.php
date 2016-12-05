@@ -134,7 +134,7 @@ class OnlineTableMap extends TableMap
         $this->setIdentifierQuoting(true);
         $this->setClassName('\\Tekstove\\ApiBundle\\Model\\Chat\\Online');
         $this->setPackage('Tekstove.ApiBundle.Model.Chat');
-        $this->setUseIdGenerator(true);
+        $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('user_id', 'UserId', 'INTEGER' , 'user', 'id', true, null, null);
         $this->addPrimaryKey('username', 'Username', 'VARCHAR', true, 255, null);
@@ -472,10 +472,6 @@ class OnlineTableMap extends TableMap
             $criteria = clone $criteria; // rename for clarity
         } else {
             $criteria = $criteria->buildCriteria(); // build Criteria from Online object
-        }
-
-        if ($criteria->containsKey(OnlineTableMap::COL_USER_ID) && $criteria->keyContainsValue(OnlineTableMap::COL_USER_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.OnlineTableMap::COL_USER_ID.')');
         }
 
 

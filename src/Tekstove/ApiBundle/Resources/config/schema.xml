@@ -299,7 +299,7 @@
     </table>
     
     <table name="chat_online" namespace="\Tekstove\ApiBundle\Model\Chat" phpName="Online">
-        <column name="user_id" type="integer" required="true" primarykey="true" autoIncrement="true" />
+        <column name="user_id" type="integer" required="true" primarykey="true" />
         <column name="username" type="varchar" required="true" primarykey="true" />
         <column name="date" type="timestamp" />
         

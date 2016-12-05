@@ -5,6 +5,7 @@ namespace Tekstove\ApiBundle\Controller\Chat;
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\Chat\OnlineQuery;
+use Tekstove\ApiBundle\Model\Chat\Online;
 use Propel\Runtime\ActiveQuery\Criteria;
 
 /**
@@ -37,10 +38,16 @@ class OnlineController extends Controller
         $this->getContext()
                 ->setGroups(['List']);
 
-
-
         if ($this->getUser()) {
-            
+            $onlineQuery = new OnlineQuery();
+            $onlineUser = $onlineQuery->findOneByUserId($this->getUser()->getId());
+            if (empty($onlineUser)) {
+                $onlineUser = new Online();
+                $onlineUser->setUser($this->getUser());
+            }
+
+            $onlineUser->setDate(time());
+            $onlineUser->save();
         }
 
         return $this->handleData($request, null);

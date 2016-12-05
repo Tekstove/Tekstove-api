@@ -254,6 +254,13 @@ class UserTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'Messages', false);
+        $this->addRelation('Online', '\\Tekstove\\ApiBundle\\Model\\Chat\\Online', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'Onlines', false);
     } // buildRelations()
 
     /**

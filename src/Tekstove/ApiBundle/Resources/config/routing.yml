@@ -159,3 +159,9 @@ tekstove_api_chat_messages_post:
     path: "/chat/messages"
     defaults: { _controller: TekstoveApiBundle:Chat\Messages:post }
     methods: [POST]
+
+tekstove_api_chat_online_index:
+    path: "/chat/online"
+    defaults: { _controller: TekstoveApiBundle:Chat\Online:index }
+    methods: [GET]
+

@@ -42,8 +42,12 @@ use Tekstove\ApiBundle\Model\Acl\Base\PermissionGroupUser as BasePermissionGroup
 use Tekstove\ApiBundle\Model\Acl\Map\PermissionGroupUserTableMap;
 use Tekstove\ApiBundle\Model\Chat\Message;
 use Tekstove\ApiBundle\Model\Chat\MessageQuery;
+use Tekstove\ApiBundle\Model\Chat\Online;
+use Tekstove\ApiBundle\Model\Chat\OnlineQuery;
 use Tekstove\ApiBundle\Model\Chat\Base\Message as BaseMessage;
+use Tekstove\ApiBundle\Model\Chat\Base\Online as BaseOnline;
 use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
+use Tekstove\ApiBundle\Model\Chat\Map\OnlineTableMap;
 use Tekstove\ApiBundle\Model\Forum\Post;
 use Tekstove\ApiBundle\Model\Forum\PostQuery;
 use Tekstove\ApiBundle\Model\Forum\Topic;
@@ -233,6 +237,12 @@ abstract class User implements ActiveRecordInterface
     protected $collMessagesPartial;
 
     /**
+     * @var        ObjectCollection|Online[] Collection to store aggregation of Online objects.
+     */
+    protected $collOnlines;
+    protected $collOnlinesPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -322,6 +332,12 @@ abstract class User implements ActiveRecordInterface
      * @var ObjectCollection|Message[]
      */
     protected $messagesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|Online[]
+     */
+    protected $onlinesScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Tekstove\ApiBundle\Model\Base\User object.
@@ -938,6 +954,8 @@ abstract class User implements ActiveRecordInterface
 
             $this->collMessages = null;
 
+            $this->collOnlines = null;
+
         } // if (deep)
     }
 
@@ -1237,6 +1255,23 @@ abstract class User implements ActiveRecordInterface
 
             if ($this->collMessages !== null) {
                 foreach ($this->collMessages as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->onlinesScheduledForDeletion !== null) {
+                if (!$this->onlinesScheduledForDeletion->isEmpty()) {
+                    \Tekstove\ApiBundle\Model\Chat\OnlineQuery::create()
+                        ->filterByPrimaryKeys($this->onlinesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->onlinesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collOnlines !== null) {
+                foreach ($this->collOnlines as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1624,6 +1659,21 @@ abstract class User implements ActiveRecordInterface
 
                 $result[$key] = $this->collMessages->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
+            if (null !== $this->collOnlines) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'onlines';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'chat_onlines';
+                        break;
+                    default:
+                        $key = 'Onlines';
+                }
+
+                $result[$key] = $this->collOnlines->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
         }
 
         return $result;
@@ -1962,6 +2012,12 @@ abstract class User implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getOnlines() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addOnline($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -2035,6 +2091,9 @@ abstract class User implements ActiveRecordInterface
         }
         if ('Message' == $relationName) {
             return $this->initMessages();
+        }
+        if ('Online' == $relationName) {
+            return $this->initOnlines();
         }
     }
 
@@ -4642,6 +4701,234 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collOnlines collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addOnlines()
+     */
+    public function clearOnlines()
+    {
+        $this->collOnlines = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collOnlines collection loaded partially.
+     */
+    public function resetPartialOnlines($v = true)
+    {
+        $this->collOnlinesPartial = $v;
+    }
+
+    /**
+     * Initializes the collOnlines collection.
+     *
+     * By default this just sets the collOnlines collection to an empty array (like clearcollOnlines());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initOnlines($overrideExisting = true)
+    {
+        if (null !== $this->collOnlines && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = OnlineTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collOnlines = new $collectionClassName;
+        $this->collOnlines->setModel('\Tekstove\ApiBundle\Model\Chat\Online');
+    }
+
+    /**
+     * Gets an array of Online objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|Online[] List of Online objects
+     * @throws PropelException
+     */
+    public function getOnlines(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collOnlinesPartial && !$this->isNew();
+        if (null === $this->collOnlines || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collOnlines) {
+                // return empty collection
+                $this->initOnlines();
+            } else {
+                $collOnlines = OnlineQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collOnlinesPartial && count($collOnlines)) {
+                        $this->initOnlines(false);
+
+                        foreach ($collOnlines as $obj) {
+                            if (false == $this->collOnlines->contains($obj)) {
+                                $this->collOnlines->append($obj);
+                            }
+                        }
+
+                        $this->collOnlinesPartial = true;
+                    }
+
+                    return $collOnlines;
+                }
+
+                if ($partial && $this->collOnlines) {
+                    foreach ($this->collOnlines as $obj) {
+                        if ($obj->isNew()) {
+                            $collOnlines[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collOnlines = $collOnlines;
+                $this->collOnlinesPartial = false;
+            }
+        }
+
+        return $this->collOnlines;
+    }
+
+    /**
+     * Sets a collection of Online objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $onlines A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setOnlines(Collection $onlines, ConnectionInterface $con = null)
+    {
+        /** @var Online[] $onlinesToDelete */
+        $onlinesToDelete = $this->getOnlines(new Criteria(), $con)->diff($onlines);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->onlinesScheduledForDeletion = clone $onlinesToDelete;
+
+        foreach ($onlinesToDelete as $onlineRemoved) {
+            $onlineRemoved->setUser(null);
+        }
+
+        $this->collOnlines = null;
+        foreach ($onlines as $online) {
+            $this->addOnline($online);
+        }
+
+        $this->collOnlines = $onlines;
+        $this->collOnlinesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related BaseOnline objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related BaseOnline objects.
+     * @throws PropelException
+     */
+    public function countOnlines(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collOnlinesPartial && !$this->isNew();
+        if (null === $this->collOnlines || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collOnlines) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getOnlines());
+            }
+
+            $query = OnlineQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collOnlines);
+    }
+
+    /**
+     * Method called to associate a Online object to this object
+     * through the Online foreign key attribute.
+     *
+     * @param  Online $l Online
+     * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
+     */
+    public function addOnline(Online $l)
+    {
+        if ($this->collOnlines === null) {
+            $this->initOnlines();
+            $this->collOnlinesPartial = true;
+        }
+
+        if (!$this->collOnlines->contains($l)) {
+            $this->doAddOnline($l);
+
+            if ($this->onlinesScheduledForDeletion and $this->onlinesScheduledForDeletion->contains($l)) {
+                $this->onlinesScheduledForDeletion->remove($this->onlinesScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Online $online The Online object to add.
+     */
+    protected function doAddOnline(Online $online)
+    {
+        $this->collOnlines[]= $online;
+        $online->setUser($this);
+    }
+
+    /**
+     * @param  Online $online The Online object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeOnline(Online $online)
+    {
+        if ($this->getOnlines()->contains($online)) {
+            $pos = $this->collOnlines->search($online);
+            $this->collOnlines->remove($pos);
+            if (null === $this->onlinesScheduledForDeletion) {
+                $this->onlinesScheduledForDeletion = clone $this->collOnlines;
+                $this->onlinesScheduledForDeletion->clear();
+            }
+            $this->onlinesScheduledForDeletion[]= clone $online;
+            $online->setUser(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -4729,6 +5016,11 @@ abstract class User implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collOnlines) {
+                foreach ($this->collOnlines as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collPmsRelatedByUserTo = null;
@@ -4742,6 +5034,7 @@ abstract class User implements ActiveRecordInterface
         $this->collTopics = null;
         $this->collPosts = null;
         $this->collMessages = null;
+        $this->collOnlines = null;
     }
 
     /**
@@ -4894,6 +5187,15 @@ abstract class User implements ActiveRecordInterface
             }
             if (null !== $this->collMessages) {
                 foreach ($this->collMessages as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
+            if (null !== $this->collOnlines) {
+                foreach ($this->collOnlines as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());

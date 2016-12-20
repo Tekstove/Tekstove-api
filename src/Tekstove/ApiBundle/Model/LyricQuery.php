@@ -58,4 +58,14 @@ class LyricQuery extends BaseLyricQuery
         );
         return $this;
     }
+
+    public function filterByUser($user, $comparison = null)
+    {
+        if (is_numeric($user)) {
+            $this->addAnd(Map\LyricTableMap::COL_SEND_BY, $user, \Propel\Runtime\ActiveQuery\Criteria::EQUAL);
+            return $this;
+        }
+
+        return parent::filterByUser($user, $comparison);
+    }
 }

@@ -1,171 +1,28 @@
-tekstove_api_user:
-    path: "/users"
-    defaults: { _controller: TekstoveApiBundle:User:index }
-    methods: [GET]
+tekstove_api_album_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/album.yml"
+    prefix:   /albums
 
-tekstove_api_user_register_index:
-    path: "/users/register"
-    defaults: { _controller: TekstoveApiBundle:User/Register:index }
-    methods: [GET]
-    
-tekstove_api_user_register_post:
-    path: "/users/register"
-    defaults: { _controller: TekstoveApiBundle:User/Register:post }
-    methods: [POST]
+tekstove_api_artist_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/artist.yml"
+    prefix:   /artists
 
-tekstove_api_user_get:
-    path: "/users/{id}"
-    defaults: { _controller: TekstoveApiBundle:User:get }
-    methods: [GET]
-    requirements:
-        id:  \d+
+tekstove_api_chat_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/chat.yml"
+    prefix:   /chat
 
-tekstove_api_user_login_post:
-    path: "/users/login"
-    defaults: { _controller: TekstoveApiBundle:User\Login:post }
-    methods: [POST]
-    
-tekstove_api_user_login_get:
-    path: "/users/login"
-    defaults: { _controller: TekstoveApiBundle:User\Login:get }
-    methods: [GET]
+tekstove_api_forum_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/forum.yml"
+    prefix:   /forum
 
-tekstove_api_user_credentials_list:
-    path: "/users/credentials"
-    defaults: { _controller: TekstoveApiBundle:UserCredentials:index }
-    methods: [GET]
+tekstove_api_lyric_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/lyric.yml"
+    prefix:   /lyrics
 
-tekstove_api_user_credentials:
-    path: "/users/credentials/{id}"
-    defaults: { _controller: TekstoveApiBundle:UserCredentials:get }
-    methods: [GET]
-    
-tekstove_api.user.pm.index:
-    path: "/users/pm"
-    defaults: { _controller: TekstoveApiBundle:User\Pm:index }
-    methods: [GET]
-    
-tekstove_api.user.pm.get:
-    path: "/users/pm/{id}"
-    defaults: { _controller: TekstoveApiBundle:User\Pm:get }
-    methods: [GET]
-    
-tekstove_api.user.pm.patch:
-    path: "/users/pm/{id}"
-    defaults: { _controller:  TekstoveApiBundle:User\Pm:patch}
-    methods: [PATCH]
-    
-tekstove_api.user.pm.post:
-    path: "/users/pm"
-    defaults: { _controller:  TekstoveApiBundle:User\Pm:post}
-    methods: [POST]
-    
-tekstove_api_lyric:
-    path: "/lyrics"
-    defaults: { _controller: TekstoveApiBundle:Lyric:index }
-    methods: [GET]
-
-tekstove_api_lyric_credentials:
-    path: "/lyrics/credentials/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index, id: ~ }
-    methods: [GET]
-
-tekstove_api_lyric_get:
-    path: "/lyrics/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric:get }
-    methods: [GET]
-    
-tekstove_api_lyric_post:
-    path: "/lyrics"
-    defaults: { _controller: TekstoveApiBundle:Lyric:post}
-    methods: [POST]
-    
-tekstove_api_lyric_patch:
-    path: "/lyrics/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric:patch}
-    methods: [PATCH]
-    
-tekstove_api_lyric.delete:
-    path: "/lyrics/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric:delete}
-    methods: [DELETE]
+tekstove_api_user_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/user.yml"
+    prefix:   /users
 
 tekstove_api_languages:
     path: /languages
     defaults: { _controller: TekstoveApiBundle:Language\Languages:index }
     methods: [GET]
-
-tekstove_api_artist:
-    path: "/artists"
-    defaults: { _controller: TekstoveApiBundle:Artist:index }
-    methods: [GET]
-
-tekstove_api_artist.get:
-    path: "/artists/{id}"
-    defaults: { _controller: TekstoveApiBundle:Artist:get }
-    methods: [GET]
-
-tekstove_api_lyric_album_get:
-    path: "/albums/{id}"
-    defaults: { _controller: TekstoveApiBundle:Album:get }
-    methods: [GET]
-
-tekstove_api_lyric_album_index:
-    path: "/albums"
-    defaults: { _controller: TekstoveApiBundle:Album:index }
-    methods: [GET]
-
-tekstove_api_forum_category_index:
-    path: "/forum/category"
-    defaults: { _controller: TekstoveApiBundle:Forum\Category:index }
-    methods: [GET]
-    
-tekstove_api_forum_category_get:
-    path: "/forum/category/{id}"
-    defaults: { _controller: TekstoveApiBundle:Forum\Category:get }
-    methods: [GET]
-
-tekstove_api_forum_topic_index:
-    path: "/forum/topic"
-    defaults: { _controller: TekstoveApiBundle:Forum\Topic:index }
-    methods: [GET]
-    
-tekstove_api_forum_topic_:
-    path: "/forum/topic"
-    defaults: { _controller: TekstoveApiBundle:Forum\Topic:post }
-    methods: [POST]
-
-tekstove_api_forum_topic_get:
-    path: "/forum/topic/{id}"
-    defaults: { _controller: TekstoveApiBundle:Forum\Topic:get }
-    methods: [GET]
-
-tekstove_api_forum_post_index:
-    path: "/forum/post"
-    defaults: { _controller: TekstoveApiBundle:Forum\Post:index }
-    methods: [GET]
-    
-tekstove_api_forum_post_post:
-    path: "/forum/post"
-    defaults: { _controller: TekstoveApiBundle:Forum\Post:post }
-    methods: [POST]
-
-tekstove_api_chat_messages_index:
-    path: "/chat/messages"
-    defaults: { _controller: TekstoveApiBundle:Chat\Messages:index }
-    methods: [GET]
-
-tekstove_api_chat_messages_post:
-    path: "/chat/messages"
-    defaults: { _controller: TekstoveApiBundle:Chat\Messages:post }
-    methods: [POST]
-
-tekstove_api_chat_online_index:
-    path: "/chat/online"
-    defaults: { _controller: TekstoveApiBundle:Chat\Online:index }
-    methods: [GET]
-
-tekstove_api_chat_online_post:
-    path: "/chat/online"
-    defaults: { _controller: TekstoveApiBundle:Chat\Online:post }
-    methods: [POST]

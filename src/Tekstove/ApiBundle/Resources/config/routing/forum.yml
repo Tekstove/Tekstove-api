@@ -1,0 +1,34 @@
+tekstove_api_forum_category_index:
+    path: "/category"
+    defaults: { _controller: TekstoveApiBundle:Forum\Category:index }
+    methods: [GET]
+    
+tekstove_api_forum_category_get:
+    path: "/category/{id}"
+    defaults: { _controller: TekstoveApiBundle:Forum\Category:get }
+    methods: [GET]
+
+tekstove_api_forum_topic_index:
+    path: "/topic"
+    defaults: { _controller: TekstoveApiBundle:Forum\Topic:index }
+    methods: [GET]
+    
+tekstove_api_forum_topic_:
+    path: "/topic"
+    defaults: { _controller: TekstoveApiBundle:Forum\Topic:post }
+    methods: [POST]
+
+tekstove_api_forum_topic_get:
+    path: "/topic/{id}"
+    defaults: { _controller: TekstoveApiBundle:Forum\Topic:get }
+    methods: [GET]
+
+tekstove_api_forum_post_index:
+    path: "/post"
+    defaults: { _controller: TekstoveApiBundle:Forum\Post:index }
+    methods: [GET]
+    
+tekstove_api_forum_post_post:
+    path: "/post"
+    defaults: { _controller: TekstoveApiBundle:Forum\Post:post }
+    methods: [POST]

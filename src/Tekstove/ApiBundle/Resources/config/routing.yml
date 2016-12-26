@@ -1,3 +1,7 @@
+tekstove_api_chat_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/chat.yml"
+    prefix:   /chat
+
 tekstove_api_user_routing:
     resource: "@TekstoveApiBundle/Resources/config/routing/user.yml"
     prefix:   /users
@@ -34,23 +38,3 @@ tekstove_api_lyric_album_index:
     path: "/albums"
     defaults: { _controller: TekstoveApiBundle:Album:index }
     methods: [GET]
-
-tekstove_api_chat_messages_index:
-    path: "/chat/messages"
-    defaults: { _controller: TekstoveApiBundle:Chat\Messages:index }
-    methods: [GET]
-
-tekstove_api_chat_messages_post:
-    path: "/chat/messages"
-    defaults: { _controller: TekstoveApiBundle:Chat\Messages:post }
-    methods: [POST]
-
-tekstove_api_chat_online_index:
-    path: "/chat/online"
-    defaults: { _controller: TekstoveApiBundle:Chat\Online:index }
-    methods: [GET]
-
-tekstove_api_chat_online_post:
-    path: "/chat/online"
-    defaults: { _controller: TekstoveApiBundle:Chat\Online:post }
-    methods: [POST]

@@ -1,0 +1,29 @@
+tekstove_api_lyric:
+    path: "/"
+    defaults: { _controller: TekstoveApiBundle:Lyric:index }
+    methods: [GET]
+
+tekstove_api_lyric_credentials:
+    path: "/credentials/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index, id: ~ }
+    methods: [GET]
+
+tekstove_api_lyric_get:
+    path: "/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric:get }
+    methods: [GET]
+    
+tekstove_api_lyric_post:
+    path: "/"
+    defaults: { _controller: TekstoveApiBundle:Lyric:post}
+    methods: [POST]
+    
+tekstove_api_lyric_patch:
+    path: "/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric:patch}
+    methods: [PATCH]
+    
+tekstove_api_lyric.delete:
+    path: "/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric:delete}
+    methods: [DELETE]

@@ -2,35 +2,9 @@ tekstove_api_user_routing:
     resource: "@TekstoveApiBundle/Resources/config/routing/user.yml"
     prefix:   /users
 
-tekstove_api_lyric:
-    path: "/lyrics"
-    defaults: { _controller: TekstoveApiBundle:Lyric:index }
-    methods: [GET]
-
-tekstove_api_lyric_credentials:
-    path: "/lyrics/credentials/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index, id: ~ }
-    methods: [GET]
-
-tekstove_api_lyric_get:
-    path: "/lyrics/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric:get }
-    methods: [GET]
-    
-tekstove_api_lyric_post:
-    path: "/lyrics"
-    defaults: { _controller: TekstoveApiBundle:Lyric:post}
-    methods: [POST]
-    
-tekstove_api_lyric_patch:
-    path: "/lyrics/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric:patch}
-    methods: [PATCH]
-    
-tekstove_api_lyric.delete:
-    path: "/lyrics/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric:delete}
-    methods: [DELETE]
+tekstove_api_lyric_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/lyric.yml"
+    prefix:   /lyrics
 
 tekstove_api_languages:
     path: /languages

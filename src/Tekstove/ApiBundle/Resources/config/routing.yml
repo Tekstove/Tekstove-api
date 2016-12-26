@@ -2,17 +2,17 @@ tekstove_api_chat_routing:
     resource: "@TekstoveApiBundle/Resources/config/routing/chat.yml"
     prefix:   /chat
 
-tekstove_api_user_routing:
-    resource: "@TekstoveApiBundle/Resources/config/routing/user.yml"
-    prefix:   /users
+tekstove_api_forum_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/forum.yml"
+    prefix:   /forum
 
 tekstove_api_lyric_routing:
     resource: "@TekstoveApiBundle/Resources/config/routing/lyric.yml"
     prefix:   /lyrics
 
-tekstove_api_forum_routing:
-    resource: "@TekstoveApiBundle/Resources/config/routing/forum.yml"
-    prefix:   /forum
+tekstove_api_user_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/user.yml"
+    prefix:   /users
 
 tekstove_api_languages:
     path: /languages

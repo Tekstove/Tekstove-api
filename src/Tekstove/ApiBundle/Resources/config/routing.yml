@@ -1,4 +1,8 @@
 tekstove_api_chat_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/album.yml"
+    prefix:   /albums
+
+tekstove_api_chat_routing:
     resource: "@TekstoveApiBundle/Resources/config/routing/chat.yml"
     prefix:   /chat
 
@@ -27,14 +31,4 @@ tekstove_api_artist:
 tekstove_api_artist.get:
     path: "/artists/{id}"
     defaults: { _controller: TekstoveApiBundle:Artist:get }
-    methods: [GET]
-
-tekstove_api_album_get:
-    path: "/albums/{id}"
-    defaults: { _controller: TekstoveApiBundle:Album:get }
-    methods: [GET]
-
-tekstove_api_album_index:
-    path: "/albums"
-    defaults: { _controller: TekstoveApiBundle:Album:index }
     methods: [GET]

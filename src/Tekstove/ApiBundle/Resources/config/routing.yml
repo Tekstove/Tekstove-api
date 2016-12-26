@@ -6,6 +6,10 @@ tekstove_api_lyric_routing:
     resource: "@TekstoveApiBundle/Resources/config/routing/lyric.yml"
     prefix:   /lyrics
 
+tekstove_api_forum_routing:
+    resource: "@TekstoveApiBundle/Resources/config/routing/forum.yml"
+    prefix:   /forum
+
 tekstove_api_languages:
     path: /languages
     defaults: { _controller: TekstoveApiBundle:Language\Languages:index }
@@ -30,41 +34,6 @@ tekstove_api_lyric_album_index:
     path: "/albums"
     defaults: { _controller: TekstoveApiBundle:Album:index }
     methods: [GET]
-
-tekstove_api_forum_category_index:
-    path: "/forum/category"
-    defaults: { _controller: TekstoveApiBundle:Forum\Category:index }
-    methods: [GET]
-    
-tekstove_api_forum_category_get:
-    path: "/forum/category/{id}"
-    defaults: { _controller: TekstoveApiBundle:Forum\Category:get }
-    methods: [GET]
-
-tekstove_api_forum_topic_index:
-    path: "/forum/topic"
-    defaults: { _controller: TekstoveApiBundle:Forum\Topic:index }
-    methods: [GET]
-    
-tekstove_api_forum_topic_:
-    path: "/forum/topic"
-    defaults: { _controller: TekstoveApiBundle:Forum\Topic:post }
-    methods: [POST]
-
-tekstove_api_forum_topic_get:
-    path: "/forum/topic/{id}"
-    defaults: { _controller: TekstoveApiBundle:Forum\Topic:get }
-    methods: [GET]
-
-tekstove_api_forum_post_index:
-    path: "/forum/post"
-    defaults: { _controller: TekstoveApiBundle:Forum\Post:index }
-    methods: [GET]
-    
-tekstove_api_forum_post_post:
-    path: "/forum/post"
-    defaults: { _controller: TekstoveApiBundle:Forum\Post:post }
-    methods: [POST]
 
 tekstove_api_chat_messages_index:
     path: "/chat/messages"

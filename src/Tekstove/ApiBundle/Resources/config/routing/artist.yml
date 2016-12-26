@@ -1,0 +1,10 @@
+tekstove_api_artist:
+    path: "/"
+    defaults: { _controller: TekstoveApiBundle:Artist:index }
+    methods: [GET]
+
+tekstove_api_artist.get:
+    path: "/{id}"
+    defaults: { _controller: TekstoveApiBundle:Artist:get }
+    methods: [GET]
+

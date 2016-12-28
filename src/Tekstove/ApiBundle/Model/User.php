@@ -12,6 +12,9 @@ use Tekstove\ApiBundle\Model\User\Pm;
 use Tekstove\ApiBundle\Model\User\PmQuery;
 use Tekstove\ApiBundle\Model\Lyric;
 
+use Tekstove\ApiBundle\Model\Acl\EditableInterface;
+use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
+
 /**
  * Skeleton subclass for representing a row from the 'user' table.
  *
@@ -22,9 +25,10 @@ use Tekstove\ApiBundle\Model\Lyric;
  * long as it does not already exist in the output directory.
  *
  */
-class User extends BaseUser
+class User extends BaseUser implements EditableInterface, AutoAclSerializableInterface
 {
     use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
+    use AclTrait;
     
     public function preSave(ConnectionInterface $con = null)
     {
@@ -154,5 +158,10 @@ class User extends BaseUser
         $pmQUery->filterByRead(0);
         $unreadPmCount = $pmQUery->count();
         return $unreadPmCount;
+    }
+
+    public function getEditableFields()
+    {
+        return null;
     }
 }

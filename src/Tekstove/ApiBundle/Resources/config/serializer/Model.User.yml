@@ -27,3 +27,8 @@
         getPermissionGroups:
             groups: [PermissionGroups]
             serialized_name: permissionGroups
+        getEditableFields:
+            groups: [EditableFields]
+            serialized_name: _editableFields
+        acl:
+            groups: [Acl]

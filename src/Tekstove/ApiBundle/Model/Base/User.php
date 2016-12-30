@@ -21,6 +21,7 @@ use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
@@ -1007,6 +1008,10 @@ abstract class User implements ActiveRecordInterface
     {
         if ($this->isDeleted()) {
             throw new PropelException("You cannot save an object that has been deleted.");
+        }
+
+        if ($this->alreadyInSave) {
+            return 0;
         }
 
         if ($con === null) {
@@ -5064,6 +5069,8 @@ abstract class User implements ActiveRecordInterface
         $metadata->addPropertyConstraint('username', new Unique());
         $metadata->addPropertyConstraint('password', new NotBlank());
         $metadata->addPropertyConstraint('api_key', new NotBlank());
+        $metadata->addPropertyConstraint('avatar', new Length(array ('max' => 100,)));
+        $metadata->addPropertyConstraint('about', new Length(array ('max' => 65000,)));
     }
 
     /**

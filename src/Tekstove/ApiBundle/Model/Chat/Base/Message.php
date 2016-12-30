@@ -706,6 +706,10 @@ abstract class Message implements ActiveRecordInterface
             throw new PropelException("You cannot save an object that has been deleted.");
         }
 
+        if ($this->alreadyInSave) {
+            return 0;
+        }
+
         if ($con === null) {
             $con = Propel::getServiceContainer()->getWriteConnection(MessageTableMap::DATABASE_NAME);
         }

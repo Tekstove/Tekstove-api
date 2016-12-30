@@ -8,8 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Propel\Runtime\ActiveQuery\Criteria;
 
-use Potaka\Helper\Casing\CaseHelper;
-
 /**
  * Description of TekstoveAbstractController
  *

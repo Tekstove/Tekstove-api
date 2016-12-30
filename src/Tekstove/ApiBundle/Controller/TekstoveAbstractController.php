@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Propel\Runtime\ActiveQuery\Criteria;
 
+use Potaka\Helper\Casing\CaseHelper;
+
 /**
  * Description of TekstoveAbstractController
  *
@@ -183,7 +185,7 @@ class TekstoveAbstractController extends FOSRestController
         
         return $data;
     }
-    
+
     protected function propelSetter($object, $values, $setter)
     {
         // @TODO @FIXME

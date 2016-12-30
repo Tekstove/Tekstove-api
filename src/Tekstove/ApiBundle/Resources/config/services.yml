@@ -58,11 +58,15 @@ services:
         calls:
             - [setEventDispacher, ["@tekstove.event_dispacher"]]
             - [setValidator, ["@validator"]]
-        
+
+    tekstove.api.populator.patch:
+        class: Tekstove\ApiBundle\Populator\PathPopulator
+        arguments: ["@security.token_storage"]
+
     tekstove.event_dispacher.factory:
         class: Tekstove\ApiBundle\EventDispatcher\EventDispacherFactory
         arguments: []
-    
+
     tekstove.event_dispacher:
         class: Tekstove\ApiBundle\EventDispatcher\EventDispacher
         factory: ["@tekstove.event_dispacher.factory", createDispacher]

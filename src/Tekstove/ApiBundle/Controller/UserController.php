@@ -46,28 +46,10 @@ class UserController extends TekstoveAbstractController
         $user = $userQuery->requireOneById($id);
         
         try {
-            $currentUser = $this->getUser();
-            $allowedFields = $currentUser->getAllowedUserFields($user);
-
-            $caseHelper = new CaseHelper();
             $content = $request->getContent();
             $pathData = json_decode($content, true);
-            foreach ($allowedFields as $field) {
-                foreach ($pathData as $path) {
-                    switch ($path['op']) {
-                        case 'replace':
-                            if ($path['path'] === '/' . $field) {
-                                $bumpyCase = $caseHelper->bumpyCase($field);
-                                $setter = 'set' . $bumpyCase;
-                                $value = $path['value'];
-                                $user->{$setter}($value);
-                            }
-                            break;
-                        default:
-                            throw new \Exception('not implemented `op`');
-                    }
-                }
-            }
+            $pathPopulator = $this->get('tekstove.api.populator.patch');
+            $pathPopulator->populateObject($pathData, $user);
             $repo->save($user);
             return $this->handleData($request, $user);
         } catch (UserHumanReadableException $e) {

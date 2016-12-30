@@ -40,7 +40,6 @@ class UserVoter extends Voter
         switch ($attribute) {
             case 'avatar':
             case 'about':
-            case 'edit':
                 if ($currentUser->getId() == $userToEdit->getId()) {
                     return true;
                 }

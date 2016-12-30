@@ -9,5 +9,4 @@ namespace Tekstove\ApiBundle\Model\Acl;
  */
 interface EditableInterface
 {
-    public function getEditableFields();
 }

@@ -171,9 +171,4 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         $unreadPmCount = $pmQUery->count();
         return $unreadPmCount;
     }
-
-    public function getEditableFields()
-    {
-        return null;
-    }
 }

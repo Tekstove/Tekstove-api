@@ -49,16 +49,21 @@ class AclSubscriber implements EventSubscriberInterface
             return true;
         }
 
-        $objectClass = get_class($object);
-
         $visitor = $event->getVisitor();
         $context = $event->getContext();
+        $groups = $context->attributes->get('groups')->get();
 
-        $propertyMetadata = $context->getmetadataFactory()
-                                        ->getMetadataForClass($objectClass)
-                                            ->propertyMetadata;
+        $objectClass = get_class($object);
 
-        switch (get_class($object)) {
+        $relativeClassName = str_replace('Tekstove\\ApiBundle\\Model\\', '', $objectClass);
+        $relativeClassWithDots = str_replace('\\', '.', $relativeClassName);
+
+        $editableFieldsPermission = $relativeClassWithDots . '.EditableFields';
+        if (false === array_search($editableFieldsPermission, $groups)) {
+            return false;
+        }
+
+        switch ($objectClass) {
             case \Tekstove\ApiBundle\Model\User::class:
                 $properties = [
                     'avatar',
@@ -69,25 +74,13 @@ class AclSubscriber implements EventSubscriberInterface
                 return true;
         }
 
-        $editableFieldsMetaData = $propertyMetadata['editableFields'];
-
-        $exclusionStrategy = $context->getExclusionStrategy();
-
-        // @TODO
-        // really, I don't know why there is no exclusion strategy!
-        if (!$exclusionStrategy) {
-            return false;
-        }
-
-        if (false == $exclusionStrategy->shouldSkipProperty($editableFieldsMetaData, $context)) {
-            $editableFields = [];
-            foreach ($properties as $property) {
-                if ($this->authorizationChecker->isGranted($property, $object)) {
-                    $editableFields[$property] = $property;
-                }
+        $editableFields = [];
+        foreach ($properties as $property) {
+            if ($this->authorizationChecker->isGranted($property, $object)) {
+                $editableFields[$property] = $property;
             }
-            $visitor->addData('_editableFields', $editableFields);
         }
+        $visitor->addData('_editableFields', $editableFields);
     }
 
     public function handleAclField(ObjectEvent $event)
@@ -110,12 +103,6 @@ class AclSubscriber implements EventSubscriberInterface
         $aclMetaData = $propertyMetadata['acl'];
 
         $exclusionStrategy = $context->getExclusionStrategy();
-
-        // @TODO
-        // really, I don't know why there is no exclusion strategy!
-        if (!$exclusionStrategy) {
-            return false;
-        }
 
         if (false == $exclusionStrategy->shouldSkipProperty($aclMetaData, $context)) {
             $acl = [];

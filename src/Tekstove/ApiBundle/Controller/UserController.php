@@ -48,6 +48,7 @@ class UserController extends TekstoveAbstractController
             $content = $request->getContent();
             $pathData = json_decode($content, true);
             $pathPopulator = $this->get('tekstove.api.populator.patch');
+            /* @var $pathPopulator \Tekstove\ApiBundle\Populator\PathPopulator */
             $pathPopulator->populateObject($pathData, $user);
             $repo->save($user);
             return $this->handleData($request, $user);

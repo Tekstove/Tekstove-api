@@ -147,6 +147,18 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         
         return $return;
     }
+
+    public function getAllowedUserFields(User $user)
+    {
+        $return = [];
+
+        if ($user->getId() === $this->getId()) {
+            $return[] = 'about';
+            $return[] = 'avatar';
+        }
+
+        return $return;
+    }
     
     /**
      * @return integer

@@ -4,7 +4,6 @@ namespace Tekstove\ApiBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Potaka\Helper\Casing\CaseHelper;
 
 use Tekstove\ApiBundle\Model\UserQuery;
 use Tekstove\ApiBundle\Model\User\Exception\UserHumanReadableException;

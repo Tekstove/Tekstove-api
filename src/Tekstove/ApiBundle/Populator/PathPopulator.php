@@ -52,7 +52,7 @@ class PathPopulator
             case User::class:
                 $allowedFields = $currentUser->getAllowedUserFields($object);
                 break;
-            default :
+            default:
                 throw new \RuntimeException("Not implemented for class " . get_class($object));
         }
 

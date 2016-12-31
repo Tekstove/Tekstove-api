@@ -22,6 +22,9 @@
             <parameter name="requiredPassword" value="{column: password, validator: NotBlank}"/>
             
             <parameter name="requiredApiKey" value="{column: api_key, validator: NotBlank}" />
+
+            <parameter name="avatarMaxLength" value="{column: avatar, validator: Length, options: {max: 100}}" />
+            <parameter name="aboutMaxLength" value="{column: about, validator: Length, options: {max: 65000}}" />
         </behavior>
     </table>
     

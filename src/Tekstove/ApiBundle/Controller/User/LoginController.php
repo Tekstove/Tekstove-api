@@ -35,7 +35,8 @@ class LoginController extends TekstoveAbstractController
     {
         $this->userMustBeLogged();
         $user = $this->getUser();
-        
+
+        $this->getContext()->setGroups(['Details', 'Credentials']);
         return $this->handleData($request, $user);
     }
 }

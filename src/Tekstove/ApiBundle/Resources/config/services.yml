@@ -9,7 +9,7 @@ services:
         arguments: ["@security.authorization_checker"]
         tags:
             - { name: "jms_serializer.event_subscriber" }
-    
+            
     tekstove.api.serializer.chat.message_subscriber:
         class: Tekstove\ApiBundle\EventListener\Model\Serialize\Chat\MessageSubscriber
         arguments: ["@security.authorization_checker"]
@@ -58,11 +58,15 @@ services:
         calls:
             - [setEventDispacher, ["@tekstove.event_dispacher"]]
             - [setValidator, ["@validator"]]
-        
+
+    tekstove.api.populator.patch:
+        class: Tekstove\ApiBundle\Populator\PathPopulator
+        arguments: ["@security.token_storage"]
+
     tekstove.event_dispacher.factory:
         class: Tekstove\ApiBundle\EventDispatcher\EventDispacherFactory
         arguments: []
-    
+
     tekstove.event_dispacher:
         class: Tekstove\ApiBundle\EventDispatcher\EventDispacher
         factory: ["@tekstove.event_dispacher.factory", createDispacher]
@@ -81,6 +85,12 @@ services:
             - { name: security.voter }
     tekstove.api.security.chat.messave_voter:
         class: Tekstove\ApiBundle\Security\Authorization\Voter\Chat\MessageVoter
+        public: false
+        tags:
+            - { name: security.voter }
+
+    tekstove.api.security.user_voter:
+        class: Tekstove\ApiBundle\Security\Authorization\Voter\UserVoter
         public: false
         tags:
             - { name: security.voter }

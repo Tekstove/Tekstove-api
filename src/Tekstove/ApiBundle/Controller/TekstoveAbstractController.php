@@ -183,7 +183,7 @@ class TekstoveAbstractController extends FOSRestController
         
         return $data;
     }
-    
+
     protected function propelSetter($object, $values, $setter)
     {
         // @TODO @FIXME

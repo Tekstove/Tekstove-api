@@ -27,3 +27,5 @@
         getPermissionGroups:
             groups: [PermissionGroups]
             serialized_name: permissionGroups
+        acl:
+            groups: [Acl]

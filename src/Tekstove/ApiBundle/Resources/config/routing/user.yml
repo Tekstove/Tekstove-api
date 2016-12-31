@@ -20,6 +20,11 @@ tekstove_api_user_get:
     requirements:
         id:  \d+
 
+tekstove_api.user.patch:
+    path: "/{id}"
+    defaults: { _controller:  TekstoveApiBundle:User:patch}
+    methods: [PATCH]
+
 tekstove_api_user_login_post:
     path: "/login"
     defaults: { _controller: TekstoveApiBundle:User\Login:post }
@@ -49,7 +54,7 @@ tekstove_api.user.pm.get:
     path: "/pm/{id}"
     defaults: { _controller: TekstoveApiBundle:User\Pm:get }
     methods: [GET]
-    
+
 tekstove_api.user.pm.patch:
     path: "/pm/{id}"
     defaults: { _controller:  TekstoveApiBundle:User\Pm:patch}

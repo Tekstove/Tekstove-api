@@ -28,7 +28,7 @@ class PathPopulator
     /**
      * @return User|false Get logged user
      */
-    protected function getUset()
+    protected function getUser()
     {
         $token = $this->tokenStorage->getToken();
         return $token->getUser();
@@ -36,7 +36,7 @@ class PathPopulator
 
     protected function isLogged()
     {
-        return $this->getUset() instanceof User;
+        return $this->getUser() instanceof User;
     }
 
     public function populateObject($data, $object)
@@ -46,7 +46,7 @@ class PathPopulator
             return false;
         }
 
-        $currentUser = $this->getUset();
+        $currentUser = $this->getUser();
 
         switch (get_class($object)) {
             case User::class:

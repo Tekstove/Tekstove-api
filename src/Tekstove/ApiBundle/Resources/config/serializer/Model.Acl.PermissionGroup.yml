@@ -9,8 +9,5 @@
             groups: [Details, List]
             serialized_name: name
         getImage:
-            groups: [Details, List]
-            serialized_name: image
-        getImage:
             groups: [Details]
             serialized_name: image

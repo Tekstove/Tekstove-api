@@ -40,6 +40,8 @@ class PostController extends Controller
     public function postAction(Request $request)
     {
         $this->userMustBeLogged();
+
+        $this->getContext()->setGroups(['List']);
         
         $postDataJson = $request->getContent();
         $postData = json_decode($postDataJson, true);

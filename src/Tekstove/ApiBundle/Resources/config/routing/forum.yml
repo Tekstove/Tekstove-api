@@ -1,5 +1,5 @@
 tekstove_api_forum_category_index:
-    path: "/category"
+    path: "/category/"
     defaults: { _controller: TekstoveApiBundle:Forum\Category:index }
     methods: [GET]
     
@@ -9,12 +9,12 @@ tekstove_api_forum_category_get:
     methods: [GET]
 
 tekstove_api_forum_topic_index:
-    path: "/topic"
+    path: "/topic/"
     defaults: { _controller: TekstoveApiBundle:Forum\Topic:index }
     methods: [GET]
     
 tekstove_api_forum_topic_:
-    path: "/topic"
+    path: "/topic/"
     defaults: { _controller: TekstoveApiBundle:Forum\Topic:post }
     methods: [POST]
 
@@ -24,11 +24,11 @@ tekstove_api_forum_topic_get:
     methods: [GET]
 
 tekstove_api_forum_post_index:
-    path: "/post"
+    path: "/post/"
     defaults: { _controller: TekstoveApiBundle:Forum\Post:index }
     methods: [GET]
     
 tekstove_api_forum_post_post:
-    path: "/post"
+    path: "/post/"
     defaults: { _controller: TekstoveApiBundle:Forum\Post:post }
     methods: [POST]

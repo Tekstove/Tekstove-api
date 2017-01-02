@@ -5,6 +5,11 @@ tekstove_api_lyric:
 
 tekstove_api_lyric_credentials:
     path: "/credentials/{id}"
+    defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index }
+    methods: [GET]
+    
+tekstove_api_lyric_credentials_new_lyric:
+    path: "/credentials/"
     defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index, id: ~ }
     methods: [GET]
 

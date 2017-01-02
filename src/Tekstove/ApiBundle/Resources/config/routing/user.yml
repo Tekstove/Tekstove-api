@@ -4,12 +4,12 @@ tekstove_api_user:
     methods: [GET]
 
 tekstove_api_user_register_index:
-    path: "/register"
+    path: "/register/"
     defaults: { _controller: TekstoveApiBundle:User/Register:index }
     methods: [GET]
     
 tekstove_api_user_register_post:
-    path: "/register"
+    path: "/register/"
     defaults: { _controller: TekstoveApiBundle:User/Register:post }
     methods: [POST]
 
@@ -26,7 +26,7 @@ tekstove_api.user.patch:
     methods: [PATCH]
 
 tekstove_api_user_login_post:
-    path: "/login"
+    path: "/login/"
     defaults: { _controller: TekstoveApiBundle:User\Login:post }
     methods: [POST]
     
@@ -36,7 +36,7 @@ tekstove_api_user_login_get:
     methods: [GET]
 
 tekstove_api_user_credentials_list:
-    path: "/credentials"
+    path: "/credentials/"
     defaults: { _controller: TekstoveApiBundle:UserCredentials:index }
     methods: [GET]
 
@@ -46,7 +46,7 @@ tekstove_api_user_credentials:
     methods: [GET]
     
 tekstove_api.user.pm.index:
-    path: "/pm"
+    path: "/pm/"
     defaults: { _controller: TekstoveApiBundle:User\Pm:index }
     methods: [GET]
     
@@ -61,6 +61,6 @@ tekstove_api.user.pm.patch:
     methods: [PATCH]
     
 tekstove_api.user.pm.post:
-    path: "/pm"
+    path: "/pm/"
     defaults: { _controller:  TekstoveApiBundle:User\Pm:post}
     methods: [POST]

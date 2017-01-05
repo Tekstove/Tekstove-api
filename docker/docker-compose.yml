@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+  tekstove-web:
+    image: tekstove-api-web:1
+    ports:
+    - "81:80"

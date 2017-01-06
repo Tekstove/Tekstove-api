@@ -9,20 +9,24 @@ RUN echo "deb http://ftp.bg.debian.org/debian/ jessie main contrib non-free" >> 
 RUN echo "deb-src http://ftp.bg.debian.org/debian/ jessie main contrib non-free" >> /etc/apt/sources.list
 RUN apt-get update 
 
-RUN apt-get install -y php7.0-fpm php7.0-xml git unzip curl apache2 libapache2-mod-fastcgi apache2-mpm-worker
-RUN a2enmod actions fastcgi
+RUN apt-get install -y php7.0-fpm php7.0-xml php7.0-mysql git unzip curl apache2 libapache2-mod-fastcgi apache2-mpm-worker
+RUN a2enmod actions fastcgi rewrite
 
 RUN echo '\
 <VirtualHost *:80>           \n\
-DocumentRoot /var/www        \n\
-<Directory "/var/www">       \n\
+ServerName api.tekstove.fb   \n\
+DocumentRoot /var/www/tekstove-api/web   \n\
+RewriteEngine On             \n\
+<Directory "/var/www/tekstove-api/web">  \n\
+  RewriteCond %{REQUEST_FILENAME} !-f    \n\
+  RewriteRule ^(.*)$ /app_dev.php [QSA,L]\n\
   Options All                \n\
   AllowOverride All          \n\
   Require all granted        \n\
 </Directory>                 \n\
 <Directory /usr/lib/cgi-bin> \n\
-        Require all granted  \n\
-    </Directory>             \n\
+  Require all granted        \n\
+</Directory>                 \n\
 AddHandler php-cgi .php      \n\
 Action php-cgi /php-cgi      \n\
 Alias /php-cgi /usr/lib/cgi-bin/php  \n\

@@ -3,5 +3,7 @@ version: '2'
 services:
   tekstove-web:
     image: tekstove-api-web:1
+    volumes:
+      - ../:/var/www/tekstove-api
     ports:
     - "81:80"

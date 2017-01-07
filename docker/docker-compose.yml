@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  tekstove-web:
+  tekstove.api-web:
     image: tekstoveinfo/api.web:latest
     volumes:
       - ../:/var/www/tekstove-api

@@ -12,7 +12,7 @@ services:
             
     tekstove.api.serializer.chat.message_subscriber:
         class: Tekstove\ApiBundle\EventListener\Model\Serialize\Chat\MessageSubscriber
-        arguments: ["@security.authorization_checker"]
+        arguments: ["@security.authorization_checker", "@potaka.bbcode.full"]
         tags:
             - { name: "jms_serializer.event_subscriber" }
 

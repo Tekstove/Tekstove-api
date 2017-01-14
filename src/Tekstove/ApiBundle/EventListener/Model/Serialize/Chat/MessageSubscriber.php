@@ -7,8 +7,6 @@ use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use Tekstove\ApiBundle\Model\Chat\Message;
 
-use Potaka\BbcodeBundle\BbCode\TextToHtml;
-
 /**
  * Description of MessageSubscriber
  *

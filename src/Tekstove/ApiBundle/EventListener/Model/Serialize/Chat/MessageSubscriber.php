@@ -17,12 +17,10 @@ use Potaka\BbcodeBundle\BbCode\TextToHtml;
 class MessageSubscriber implements EventSubscriberInterface
 {
     private $authorizationChecker;
-    private $bbCode;
 
-    public function __construct(AuthorizationCheckerInterface $authChecker, TextToHtml $bbCode)
+    public function __construct(AuthorizationCheckerInterface $authChecker)
     {
         $this->authorizationChecker = $authChecker;
-        $this->bbCode = $bbCode;
     }
 
     public static function getSubscribedEvents()
@@ -60,11 +58,5 @@ class MessageSubscriber implements EventSubscriberInterface
                 $visitor->setdata('ip', null);
             }
         }
-
-        // this is used in chat. Chat use api directly
-        $messageHtmlEscaped = \htmlspecialchars($object->getMessage(), ENT_QUOTES);
-        $messageBodyHtml = $this->bbCode->getHtml($messageHtmlEscaped);
-        $htmlNewLine = nl2br($messageBodyHtml);
-        $visitor->setdata('messageHtml', $htmlNewLine);
     }
 }

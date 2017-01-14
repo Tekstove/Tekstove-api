@@ -88,6 +88,13 @@ abstract class Message implements ActiveRecordInterface
     protected $message;
 
     /**
+     * The value for the message_html field.
+     *
+     * @var        string
+     */
+    protected $message_html;
+
+    /**
      * The value for the ip field.
      *
      * @var        string
@@ -384,6 +391,16 @@ abstract class Message implements ActiveRecordInterface
     }
 
     /**
+     * Get the [message_html] column value.
+     *
+     * @return string
+     */
+    public function getMessageHtml()
+    {
+        return $this->message_html;
+    }
+
+    /**
      * Get the [ip] column value.
      *
      * @return string
@@ -462,6 +479,26 @@ abstract class Message implements ActiveRecordInterface
 
         return $this;
     } // setMessage()
+
+    /**
+     * Set the value of [message_html] column.
+     *
+     * @param string $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\Chat\Message The current object (for fluent API support)
+     */
+    public function setMessageHtml($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->message_html !== $v) {
+            $this->message_html = $v;
+            $this->modifiedColumns[MessageTableMap::COL_MESSAGE_HTML] = true;
+        }
+
+        return $this;
+    } // setMessageHtml()
 
     /**
      * Set the value of [ip] column.
@@ -569,16 +606,19 @@ abstract class Message implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : MessageTableMap::translateFieldName('Message', TableMap::TYPE_PHPNAME, $indexType)];
             $this->message = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : MessageTableMap::translateFieldName('Ip', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : MessageTableMap::translateFieldName('MessageHtml', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->message_html = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : MessageTableMap::translateFieldName('Ip', TableMap::TYPE_PHPNAME, $indexType)];
             $this->ip = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : MessageTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : MessageTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->date = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : MessageTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : MessageTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -588,7 +628,7 @@ abstract class Message implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = MessageTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = MessageTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Chat\\Message'), 0, $e);
@@ -811,6 +851,9 @@ abstract class Message implements ActiveRecordInterface
         if ($this->isColumnModified(MessageTableMap::COL_MESSAGE)) {
             $modifiedColumns[':p' . $index++]  = '`message`';
         }
+        if ($this->isColumnModified(MessageTableMap::COL_MESSAGE_HTML)) {
+            $modifiedColumns[':p' . $index++]  = '`message_html`';
+        }
         if ($this->isColumnModified(MessageTableMap::COL_IP)) {
             $modifiedColumns[':p' . $index++]  = '`ip`';
         }
@@ -836,6 +879,9 @@ abstract class Message implements ActiveRecordInterface
                         break;
                     case '`message`':
                         $stmt->bindValue($identifier, $this->message, PDO::PARAM_STR);
+                        break;
+                    case '`message_html`':
+                        $stmt->bindValue($identifier, $this->message_html, PDO::PARAM_STR);
                         break;
                     case '`ip`':
                         $stmt->bindValue($identifier, $this->ip, PDO::PARAM_STR);
@@ -915,12 +961,15 @@ abstract class Message implements ActiveRecordInterface
                 return $this->getMessage();
                 break;
             case 2:
-                return $this->getIp();
+                return $this->getMessageHtml();
                 break;
             case 3:
-                return $this->getDate();
+                return $this->getIp();
                 break;
             case 4:
+                return $this->getDate();
+                break;
+            case 5:
                 return $this->getUserId();
                 break;
             default:
@@ -955,12 +1004,13 @@ abstract class Message implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getMessage(),
-            $keys[2] => $this->getIp(),
-            $keys[3] => $this->getDate(),
-            $keys[4] => $this->getUserId(),
+            $keys[2] => $this->getMessageHtml(),
+            $keys[3] => $this->getIp(),
+            $keys[4] => $this->getDate(),
+            $keys[5] => $this->getUserId(),
         );
-        if ($result[$keys[3]] instanceof \DateTime) {
-            $result[$keys[3]] = $result[$keys[3]]->format('c');
+        if ($result[$keys[4]] instanceof \DateTime) {
+            $result[$keys[4]] = $result[$keys[4]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1025,12 +1075,15 @@ abstract class Message implements ActiveRecordInterface
                 $this->setMessage($value);
                 break;
             case 2:
-                $this->setIp($value);
+                $this->setMessageHtml($value);
                 break;
             case 3:
-                $this->setDate($value);
+                $this->setIp($value);
                 break;
             case 4:
+                $this->setDate($value);
+                break;
+            case 5:
                 $this->setUserId($value);
                 break;
         } // switch()
@@ -1066,13 +1119,16 @@ abstract class Message implements ActiveRecordInterface
             $this->setMessage($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setIp($arr[$keys[2]]);
+            $this->setMessageHtml($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setDate($arr[$keys[3]]);
+            $this->setIp($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUserId($arr[$keys[4]]);
+            $this->setDate($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setUserId($arr[$keys[5]]);
         }
     }
 
@@ -1120,6 +1176,9 @@ abstract class Message implements ActiveRecordInterface
         }
         if ($this->isColumnModified(MessageTableMap::COL_MESSAGE)) {
             $criteria->add(MessageTableMap::COL_MESSAGE, $this->message);
+        }
+        if ($this->isColumnModified(MessageTableMap::COL_MESSAGE_HTML)) {
+            $criteria->add(MessageTableMap::COL_MESSAGE_HTML, $this->message_html);
         }
         if ($this->isColumnModified(MessageTableMap::COL_IP)) {
             $criteria->add(MessageTableMap::COL_IP, $this->ip);
@@ -1217,6 +1276,7 @@ abstract class Message implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setMessage($this->getMessage());
+        $copyObj->setMessageHtml($this->getMessageHtml());
         $copyObj->setIp($this->getIp());
         $copyObj->setDate($this->getDate());
         $copyObj->setUserId($this->getUserId());
@@ -1311,6 +1371,7 @@ abstract class Message implements ActiveRecordInterface
         }
         $this->id = null;
         $this->message = null;
+        $this->message_html = null;
         $this->ip = null;
         $this->date = null;
         $this->user_id = null;

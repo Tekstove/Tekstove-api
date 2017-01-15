@@ -3,6 +3,7 @@
 namespace Tekstove\ApiBundle\Model\Chat;
 
 use Tekstove\ApiBundle\Model\Chat\Base\Message as BaseMessage;
+use Tekstove\ApiBundle\EventDispatcher\Chat\MessageEvent;
 
 use Tekstove\ApiBundle\Model\Chat\Exception\MessageHumanReadableException;
 
@@ -19,6 +20,7 @@ use Tekstove\ApiBundle\Model\Chat\Exception\MessageHumanReadableException;
 class Message extends BaseMessage
 {
     use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
+    use \Tekstove\ApiBundle\EventDispatcher\EventDispatcherAwareTrait;
 
     public function preSave(\Propel\Runtime\Connection\ConnectionInterface $con = null)
     {
@@ -31,6 +33,9 @@ class Message extends BaseMessage
             }
             throw $exception;
         }
+
+        $event = new MessageEvent($this);
+        $this->getEventDispacher()->dispatch('tekstove.chat.message.save', $event);
         return parent::preSave($con);
     }
 

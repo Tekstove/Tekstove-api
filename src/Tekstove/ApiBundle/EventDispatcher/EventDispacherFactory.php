@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricTitleCacheSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricUploadedBySubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\VideoParserSubscriber;
+use Tekstove\ApiBundle\EventListener\Model\Chat\MessageHtmlSubscriber;
 
 /**
  * Description of EventDispacherFactory
@@ -28,6 +29,7 @@ class EventDispacherFactory
         $dispacher->addSubscriber($uploadedBySubscriber);
         $dispacher->addSubscriber(self::createContentChecker($container));
         $dispacher->addSubscriber(new VideoParserSubscriber());
+        $dispacher->addSubscriber(new MessageHtmlSubscriber($container->get('potaka.bbcode.full')));
         return $dispacher;
     }
     

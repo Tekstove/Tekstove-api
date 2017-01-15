@@ -14,7 +14,7 @@ use Tekstove\ApiBundle\Model\Chat\Message;
  */
 class MessageSubscriber implements EventSubscriberInterface
 {
-    private $authorizationChecker = null;
+    private $authorizationChecker;
 
     public function __construct(AuthorizationCheckerInterface $authChecker)
     {

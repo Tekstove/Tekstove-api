@@ -23,12 +23,14 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  *
  * @method     ChildMessageQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildMessageQuery orderByMessage($order = Criteria::ASC) Order by the message column
+ * @method     ChildMessageQuery orderByMessageHtml($order = Criteria::ASC) Order by the message_html column
  * @method     ChildMessageQuery orderByIp($order = Criteria::ASC) Order by the ip column
  * @method     ChildMessageQuery orderByDate($order = Criteria::ASC) Order by the date column
  * @method     ChildMessageQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  *
  * @method     ChildMessageQuery groupById() Group by the id column
  * @method     ChildMessageQuery groupByMessage() Group by the message column
+ * @method     ChildMessageQuery groupByMessageHtml() Group by the message_html column
  * @method     ChildMessageQuery groupByIp() Group by the ip column
  * @method     ChildMessageQuery groupByDate() Group by the date column
  * @method     ChildMessageQuery groupByUserId() Group by the user_id column
@@ -58,6 +60,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  *
  * @method     ChildMessage findOneById(int $id) Return the first ChildMessage filtered by the id column
  * @method     ChildMessage findOneByMessage(string $message) Return the first ChildMessage filtered by the message column
+ * @method     ChildMessage findOneByMessageHtml(string $message_html) Return the first ChildMessage filtered by the message_html column
  * @method     ChildMessage findOneByIp(string $ip) Return the first ChildMessage filtered by the ip column
  * @method     ChildMessage findOneByDate(string $date) Return the first ChildMessage filtered by the date column
  * @method     ChildMessage findOneByUserId(int $user_id) Return the first ChildMessage filtered by the user_id column *
@@ -67,6 +70,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  *
  * @method     ChildMessage requireOneById(int $id) Return the first ChildMessage filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByMessage(string $message) Return the first ChildMessage filtered by the message column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildMessage requireOneByMessageHtml(string $message_html) Return the first ChildMessage filtered by the message_html column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByIp(string $ip) Return the first ChildMessage filtered by the ip column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByDate(string $date) Return the first ChildMessage filtered by the date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByUserId(int $user_id) Return the first ChildMessage filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -74,6 +78,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessage[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildMessage objects based on current ModelCriteria
  * @method     ChildMessage[]|ObjectCollection findById(int $id) Return ChildMessage objects filtered by the id column
  * @method     ChildMessage[]|ObjectCollection findByMessage(string $message) Return ChildMessage objects filtered by the message column
+ * @method     ChildMessage[]|ObjectCollection findByMessageHtml(string $message_html) Return ChildMessage objects filtered by the message_html column
  * @method     ChildMessage[]|ObjectCollection findByIp(string $ip) Return ChildMessage objects filtered by the ip column
  * @method     ChildMessage[]|ObjectCollection findByDate(string $date) Return ChildMessage objects filtered by the date column
  * @method     ChildMessage[]|ObjectCollection findByUserId(int $user_id) Return ChildMessage objects filtered by the user_id column
@@ -175,7 +180,7 @@ abstract class MessageQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `message`, `ip`, `date`, `user_id` FROM `chat` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `message`, `message_html`, `ip`, `date`, `user_id` FROM `chat` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -329,6 +334,31 @@ abstract class MessageQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(MessageTableMap::COL_MESSAGE, $message, $comparison);
+    }
+
+    /**
+     * Filter the query on the message_html column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByMessageHtml('fooValue');   // WHERE message_html = 'fooValue'
+     * $query->filterByMessageHtml('%fooValue%', Criteria::LIKE); // WHERE message_html LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $messageHtml The value to use as filter.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildMessageQuery The current query, for fluid interface
+     */
+    public function filterByMessageHtml($messageHtml = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($messageHtml)) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(MessageTableMap::COL_MESSAGE_HTML, $messageHtml, $comparison);
     }
 
     /**

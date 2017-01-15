@@ -18,6 +18,11 @@ trait EventDispatcherAwareTrait
         $this->eventDispacher = $eventDispacher;
     }
 
+    /**
+     *
+     * @return EventDispatcherInterface
+     * @throws \RuntimeException
+     */
     public function getEventDispacher()
     {
         if ($this->eventDispacher === null) {

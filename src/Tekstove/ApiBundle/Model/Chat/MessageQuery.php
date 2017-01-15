@@ -21,6 +21,7 @@ class MessageQuery extends BaseMessageQuery
     public function save(Message $message)
     {
         $message->setValidator($this->getvalidator());
+        $message->setEventDispacher($this->getEventDispacher());
         $message->save();
     }
 }

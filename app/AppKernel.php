@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new Propel\Bundle\PropelBundle\PropelBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new Tekstove\ApiBundle\TekstoveApiBundle(),
+            new Potaka\BbcodeBundle\PotakaBbcodeBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

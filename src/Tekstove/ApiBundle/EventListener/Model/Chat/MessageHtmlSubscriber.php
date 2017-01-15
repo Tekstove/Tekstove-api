@@ -41,7 +41,8 @@ class MessageHtmlSubscriber implements EventSubscriberInterface
             return false;
         }
         $message = $event->getMessage();
-        $html = $this->bbCodeToHtml->getHtml($message->getMessage());
+        $escapedMessage = htmlspecialchars($message->getMessage(), ENT_QUOTES);
+        $html = $this->bbCodeToHtml->getHtml($escapedMessage);
         $message->setMessageHtml($html);
     }
 }

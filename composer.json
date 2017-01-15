@@ -36,7 +36,7 @@
         "friendsofsymfony/rest-bundle": "^1.7",
         "jms/serializer-bundle": "1.1.*",
         "potaka/knp-paginator-propel2bundle": "0.* || 1.*",
-        "potaka/bbcode-bundle": "dev-master",
+        "potaka/bbcode-bundle": "^0.1.0",
         "potaka/helper-casing": "^0.1.0",
         "google/recaptcha": "^1.1",
         "tekstove/content-checker": "0.* || 1.*",

@@ -10,7 +10,7 @@ use Tekstove\ApiBundle\Model\Chat\Exception\MessageHumanReadableException;
 use Propel\Runtime\ActiveQuery\Criteria;
 
 /**
- * Description of MessagesController
+ * MessagesController
  *
  * @author po_taka <angel.koilov@gmail.com>
  */
@@ -26,14 +26,12 @@ class MessagesController extends Controller
             $maxIdQuery->orderById(Criteria::DESC);
             $lastmessage = $maxIdQuery->findOne();
             $messageQuery->filterById(
-                $lastmessage->getId() - 10,
+                $lastmessage->getId() - 20,
                 Criteria::GREATER_THAN
             );
         }
 
         $messageQuery->orderById(Criteria::ASC);
-
-        $messageQuery->setLimit(10);
 
         return $this->handleData($request, $messageQuery);
     }

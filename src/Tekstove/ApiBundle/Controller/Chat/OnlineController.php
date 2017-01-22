@@ -44,6 +44,7 @@ class OnlineController extends Controller
             if (empty($onlineUser)) {
                 $onlineUser = new Online();
                 $onlineUser->setUser($this->getUser());
+                $onlineUser->setUsername($this->getUser()->getUsername());
             }
 
             $onlineUser->setDate(time());

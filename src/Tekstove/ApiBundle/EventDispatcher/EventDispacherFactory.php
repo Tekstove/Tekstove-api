@@ -27,6 +27,7 @@ class EventDispacherFactory
        
         $dispacher->addSubscriber($titleCacheSubscriber);
         $dispacher->addSubscriber($uploadedBySubscriber);
+        $dispacher->addSubscriber(new \Tekstove\ApiBundle\EventListener\Model\Lyric\LyricAntiSpamSubscriber());
         $dispacher->addSubscriber(self::createContentChecker($container));
         $dispacher->addSubscriber(new VideoParserSubscriber());
         $dispacher->addSubscriber(new MessageHtmlSubscriber($container->get('potaka.bbcode.full')));

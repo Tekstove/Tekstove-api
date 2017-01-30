@@ -32,5 +32,10 @@ class LyricAntiSpamSubscriber implements \Symfony\Component\EventDispatcher\Even
             throw $exception;
         }
 
+        if ($lyric->getText() === $lyric->getextraInfo()) {
+            $exception = new \Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException("Spam filter failed");
+            $exception->addError('text', 'Полето не може да е сещото като "допълнително инфо"');
+            throw $exception;
+        }
     }
 }

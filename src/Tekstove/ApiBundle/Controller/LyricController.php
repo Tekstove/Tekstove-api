@@ -49,6 +49,26 @@ class LyricController extends Controller
             }
             throw $this->createNotFoundException("Lyric not found");
         }
+
+
+        // Instead of this fire event!
+        $redis = $this->get('tekstove.api.lyric.count.redis');
+        /* @var $redis \Predis\Client */
+        $redis->sadd(
+            'lyric.views.' . $lyric->getId(),
+            $request->getClientIp() . uniqid() // @FIXME
+        );
+
+        $redis->sadd(
+            'lyric.views',
+            $lyric->getId()
+        );
+
+        $result = $redis->scard('lyric.views.' . $lyric->getId());
+
+        dump($result);
+        dump($redis);
+        die;
         return $this->handleData($request, $lyric);
     }
     

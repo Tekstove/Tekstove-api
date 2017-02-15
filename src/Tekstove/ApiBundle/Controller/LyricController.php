@@ -23,7 +23,7 @@ class LyricController extends Controller
         $lyricQuery = new LyricQuery();
         return $this->handleData($request, $lyricQuery);
     }
-    
+
     public function getAction(Request $request, $id)
     {
         $this->applyGroups($request);
@@ -42,36 +42,20 @@ class LyricController extends Controller
                         ]
                     ]
                 );
-                
+
                 $view->getResponse()->setStatusCode(404);
-                
+
                 return $view;
             }
             throw $this->createNotFoundException("Lyric not found");
         }
 
+        $viewEvent = new \Tekstove\ApiBundle\EventDispatcher\Lyric\LyricEvent($lyric);
+        $this->get('tekstove.event_dispacher')->dispatch('tekstove.lyric.view', $viewEvent);
 
-        // Instead of this fire event!
-        $redis = $this->get('tekstove.api.lyric.count.redis');
-        /* @var $redis \Predis\Client */
-        $redis->sadd(
-            'lyric.views.' . $lyric->getId(),
-            $request->getClientIp() . uniqid() // @FIXME
-        );
-
-        $redis->sadd(
-            'lyric.views',
-            $lyric->getId()
-        );
-
-        $result = $redis->scard('lyric.views.' . $lyric->getId());
-
-        dump($result);
-        dump($redis);
-        die;
         return $this->handleData($request, $lyric);
     }
-    
+
     public function postAction(Request $request)
     {
         $repo = $this->get('tekstove.lyric.repository');
@@ -86,10 +70,10 @@ class LyricController extends Controller
             }
 
             $allowedFields = $user->getAllowedLyricFields($lyric);
-            
+
             $lyricDataJson = $request->getContent();
             $lyricData = json_decode($lyricDataJson, true);
-            
+
             $caseHelper = new CaseHelper();
             foreach ($allowedFields as $field) {
                 $bumpyCase = $caseHelper->bumpyCase($field);

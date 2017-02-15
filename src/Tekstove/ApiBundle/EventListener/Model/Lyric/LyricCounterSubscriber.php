@@ -13,14 +13,15 @@ use Predis\Client;
  */
 class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
 {
-
+    private $logger;
     private $redisClient;
     private $requestStack;
 
-    public function __construct(Client $redisClient, RequestStack $requestStack)
+    public function __construct(Client $redisClient, RequestStack $requestStack, \Psr\Log\LoggerInterface $logger)
     {
         $this->redisClient = $redisClient;
         $this->requestStack = $requestStack;
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents()
@@ -48,8 +49,7 @@ class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\Event
                 $lyric->getId()
             );
         } catch (\Exception $e) {
-            // @TODO log in monolog
-            error_log($e);
+            $this->logger->emergency('Can\'t write view', [$e]);
         }
     }
 }

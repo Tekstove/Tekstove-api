@@ -36,7 +36,8 @@ class EventDispacherFactory
         $dispacher->addSubscriber(
             new LyricCounterSubscriber(
                 $container->get('tekstove.api.lyric.count.redis'),
-                $container->get('request_stack')
+                $container->get('request_stack'),
+                $container->get('logger')
             )
         );
         return $dispacher;

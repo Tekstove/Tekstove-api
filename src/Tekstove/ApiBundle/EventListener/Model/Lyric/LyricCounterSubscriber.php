@@ -41,6 +41,9 @@ class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\Event
         try {
             $this->redisClient->sadd(
                 'lyric.views.' . $lyric->getId(),
+                // @FIXME
+                // if user is logged use his id!
+                // same ip but different user is count!
                 $this->requestStack->getCurrentRequest()->getClientIp()
             );
 

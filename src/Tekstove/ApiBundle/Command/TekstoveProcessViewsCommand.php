@@ -21,7 +21,6 @@ class TekstoveProcessViewsCommand extends ContainerAwareCommand
         $redis = $this->getContainer()->get('tekstove.api.lyric.count.redis');
         /* @var $redis \Predis\Client */
 
-        $lyricQuery = new \Tekstove\ApiBundle\Model\LyricQuery();
         $con = \Propel\Runtime\Propel::getWriteConnection(\Tekstove\ApiBundle\Model\Map\LyricTableMap::DATABASE_NAME);
         $sql = "
             UPDATE
@@ -63,5 +62,4 @@ class TekstoveProcessViewsCommand extends ContainerAwareCommand
             $output->writeln('Exit 0');
         }
     }
-
 }

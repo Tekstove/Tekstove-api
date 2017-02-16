@@ -37,7 +37,8 @@ class EventDispacherFactory
             new LyricCounterSubscriber(
                 $container->get('tekstove.api.lyric.count.redis'),
                 $container->get('request_stack'),
-                $container->get('logger')
+                $container->get('logger'),
+                $container->get('security.token_storage')
             )
         );
         return $dispacher;

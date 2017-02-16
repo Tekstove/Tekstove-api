@@ -33,7 +33,7 @@ class TekstoveProcessViewsCommand extends ContainerAwareCommand
         $stm = $con->prepare($sql);
 
         do {
-            $lyricsToProcess = $redis->spop('lyric.views', 5);
+            $lyricsToProcess = $redis->spop('lyric.views', 50);
             if (empty($lyricsToProcess)) {
                 break;
             }
@@ -55,7 +55,9 @@ class TekstoveProcessViewsCommand extends ContainerAwareCommand
                 }
             }
 
-            $redis->del($keysToDelete);
+            if (!empty($keysToDelete)) {
+                $redis->del($keysToDelete);
+            }
         } while (!empty($lyricsToProcess));
 
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG) {

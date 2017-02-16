@@ -3,8 +3,10 @@
 namespace Tekstove\ApiBundle\EventListener\Model\Lyric;
 
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Tekstove\ApiBundle\EventDispatcher\Event;
 use Predis\Client;
+use Psr\Log\LoggerInterface;
 
 /**
  * Description of LyricCounterSubscriber
@@ -16,12 +18,14 @@ class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\Event
     private $logger;
     private $redisClient;
     private $requestStack;
+    private $tokenStorage;
 
-    public function __construct(Client $redisClient, RequestStack $requestStack, \Psr\Log\LoggerInterface $logger)
+    public function __construct(Client $redisClient, RequestStack $requestStack, LoggerInterface $logger, TokenStorageInterface $tokenStorage)
     {
         $this->redisClient = $redisClient;
         $this->requestStack = $requestStack;
         $this->logger = $logger;
+        $this->tokenStorage = $tokenStorage;
     }
 
     public static function getSubscribedEvents()
@@ -38,13 +42,17 @@ class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\Event
         }
         $lyric = $event->getLyric();
 
+        $user = $this->tokenStorage->getToken()->getUser();
+        if ($user instanceof \Tekstove\ApiBundle\Model\User) {
+            $viewKey = 'u' . $user->getId();
+        } else {
+            $viewKey = $this->requestStack->getCurrentRequest()->getClientIp();
+        }
+
         try {
             $this->redisClient->sadd(
                 'lyric.views.' . $lyric->getId(),
-                // @FIXME
-                // if user is logged use his id!
-                // same ip but different user is count!
-                $this->requestStack->getCurrentRequest()->getClientIp()
+                $viewKey
             );
 
             $this->redisClient->sadd(

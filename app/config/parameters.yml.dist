@@ -20,3 +20,6 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
     tekstove_api.recaptcha.key: yourKeyHere
     tekstove_api.recaptcha.secret: yourSecretHere
+
+    tekstove_api.lyric.votes.redis.host: tekstove.api-redis
+    tekstove_api.lyric.votes.redis.port: 6379

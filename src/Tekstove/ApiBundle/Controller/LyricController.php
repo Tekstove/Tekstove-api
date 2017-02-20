@@ -23,7 +23,7 @@ class LyricController extends Controller
         $lyricQuery = new LyricQuery();
         return $this->handleData($request, $lyricQuery);
     }
-    
+
     public function getAction(Request $request, $id)
     {
         $this->applyGroups($request);
@@ -42,16 +42,20 @@ class LyricController extends Controller
                         ]
                     ]
                 );
-                
+
                 $view->getResponse()->setStatusCode(404);
-                
+
                 return $view;
             }
             throw $this->createNotFoundException("Lyric not found");
         }
+
+        $viewEvent = new \Tekstove\ApiBundle\EventDispatcher\Lyric\LyricEvent($lyric);
+        $this->get('tekstove.event_dispacher')->dispatch('tekstove.lyric.view', $viewEvent);
+
         return $this->handleData($request, $lyric);
     }
-    
+
     public function postAction(Request $request)
     {
         $repo = $this->get('tekstove.lyric.repository');
@@ -66,10 +70,10 @@ class LyricController extends Controller
             }
 
             $allowedFields = $user->getAllowedLyricFields($lyric);
-            
+
             $lyricDataJson = $request->getContent();
             $lyricData = json_decode($lyricDataJson, true);
-            
+
             $caseHelper = new CaseHelper();
             foreach ($allowedFields as $field) {
                 $bumpyCase = $caseHelper->bumpyCase($field);

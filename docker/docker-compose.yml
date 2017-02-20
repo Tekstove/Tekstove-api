@@ -1,9 +1,13 @@
 version: '2'
 
 services:
-  tekstove.api-web:
-    image: tekstoveinfo/api.web:latest
-    volumes:
-      - ../:/var/www/tekstove-api
-    ports:
-    - "81:80"
+    tekstove.api-web:
+        image: tekstoveinfo/api.web:latest
+        volumes:
+            - ../:/var/www/tekstove-api
+        ports:
+            - "81:80"
+        links:
+            - tekstove.api-redis
+    tekstove.api-redis:
+        image: redis:3

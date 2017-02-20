@@ -7,6 +7,7 @@ use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricTitleCacheSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricUploadedBySubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\VideoParserSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Chat\MessageHtmlSubscriber;
+use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricCounterSubscriber;
 
 /**
  * Description of EventDispacherFactory
@@ -17,7 +18,8 @@ class EventDispacherFactory
 {
     public static function createDispacher(ContainerInterface $container)
     {
-        $dispacher = new EventDispacher();
+        $dispacher = $container->get('event_dispatcher');
+
         // add events!
         $titleCacheSubscriber = new LyricTitleCacheSubscriber();
 
@@ -31,6 +33,14 @@ class EventDispacherFactory
         $dispacher->addSubscriber(self::createContentChecker($container));
         $dispacher->addSubscriber(new VideoParserSubscriber());
         $dispacher->addSubscriber(new MessageHtmlSubscriber($container->get('potaka.bbcode.full')));
+        $dispacher->addSubscriber(
+            new LyricCounterSubscriber(
+                $container->get('tekstove.api.lyric.count.redis'),
+                $container->get('request_stack'),
+                $container->get('logger'),
+                $container->get('security.token_storage')
+            )
+        );
         return $dispacher;
     }
     

@@ -42,17 +42,17 @@ class TekstoveProcessViewsCommand extends ContainerAwareCommand
             foreach ($lyricsToProcess as $lyricId) {
                 if ($output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG) {
                     $output->writeln("Processing {$lyricId}");
-
-                    $viewsCountKey = 'lyric.views.' . $lyricId;
-                    $viewsCount = $redis->scard($viewsCountKey);
-
-                    $stm->execute([
-                        'viewCount' => $viewsCount,
-                        'lyricId' => $lyricId,
-                    ]);
-
-                    $keysToDelete[] = $viewsCountKey;
                 }
+
+                $viewsCountKey = 'lyric.views.' . $lyricId;
+                $viewsCount = $redis->scard($viewsCountKey);
+
+                $stm->execute([
+                    'viewCount' => $viewsCount,
+                    'lyricId' => $lyricId,
+                ]);
+
+                $keysToDelete[] = $viewsCountKey;
             }
 
             if (!empty($keysToDelete)) {

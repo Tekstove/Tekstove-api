@@ -5,7 +5,7 @@
     "description": "tekstove.info api",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "Tekstove\\ApiBundle\\": "src/Tekstove/ApiBundle/"
     },
     "classmap": [
         "app/AppKernel.php",

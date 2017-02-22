@@ -5,6 +5,7 @@ namespace Tekstove\ApiBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tekstove\ApiBundle\Model\Map\LyricTableMap;
 
 class TekstoveProcessViewsCommand extends ContainerAwareCommand
 {
@@ -26,7 +27,8 @@ class TekstoveProcessViewsCommand extends ContainerAwareCommand
             UPDATE
                 lyric
             SET
-                " . \Tekstove\ApiBundle\Model\Map\LyricTableMap::COL_VIEWS . " = " . \Tekstove\ApiBundle\Model\Map\LyricTableMap::COL_VIEWS . " + :viewCount
+                " . LyricTableMap::COL_VIEWS . " = " . LyricTableMap::COL_VIEWS . " + :viewCount,
+                " . LyricTableMap::COL_POPULARITY . " = " . LyricTableMap::COL_POPULARITY . " + :popularityCount
             WHERE
                 id = :lyricId
         ";
@@ -49,6 +51,7 @@ class TekstoveProcessViewsCommand extends ContainerAwareCommand
 
                 $stm->execute([
                     'viewCount' => $viewsCount,
+                    'popularityCount' => $viewsCount,
                     'lyricId' => $lyricId,
                 ]);
 

@@ -6,6 +6,9 @@ use Symfony\Component\HttpFoundation\Request;
 $loader = require __DIR__.'/../app/autoload.php';
 include_once __DIR__.'/../var/bootstrap.php.cache';
 
+// see https://github.com/Tekstove/Tekstove/issues/80
+Request::setTrustedHeaderName(Request::HEADER_FORWARDED, null);
+
 // I know this is ugly...but...sry...
 function errorToException($errNumber, $errMsg, $errFile, $errLine)
 {

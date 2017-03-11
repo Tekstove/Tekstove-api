@@ -116,6 +116,12 @@ class TekstoveAbstractController extends FOSRestController
                 case 'like':
                     $data->{$filterMethod}("{$value}", Criteria::LIKE);
                     break;
+                case 'range':
+                    if (!array_key_exists('min', $value) && !array_key_exists('min', $value)) {
+                        throw new \Exception("Please set `min` or `max` for {$filterMethod}");
+                    }
+                    $data->{$filterMethod}($value);
+                    break;
                 default:
                     throw new \Exception("Unknown operator {$operator}");
             }

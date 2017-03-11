@@ -265,6 +265,13 @@ class LyricTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'LyricVotes', false);
+        $this->addRelation('LyricTopPopularity', '\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricTopPopularity', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':lyric_id',
+    1 => ':id',
+  ),
+), null, null, 'LyricTopPopularities', false);
         $this->addRelation('AlbumLyric', '\\Tekstove\\ApiBundle\\Model\\AlbumLyric', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (

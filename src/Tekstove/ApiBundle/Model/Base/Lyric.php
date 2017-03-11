@@ -45,14 +45,18 @@ use Tekstove\ApiBundle\Model\Artist\Base\ArtistLyric as BaseArtistLyric;
 use Tekstove\ApiBundle\Model\Artist\Map\ArtistLyricTableMap;
 use Tekstove\ApiBundle\Model\Lyric\LyricLanguage;
 use Tekstove\ApiBundle\Model\Lyric\LyricLanguageQuery;
+use Tekstove\ApiBundle\Model\Lyric\LyricTopPopularity;
+use Tekstove\ApiBundle\Model\Lyric\LyricTopPopularityQuery;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslationQuery;
 use Tekstove\ApiBundle\Model\Lyric\LyricVote;
 use Tekstove\ApiBundle\Model\Lyric\LyricVoteQuery;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricLanguage as BaseLyricLanguage;
+use Tekstove\ApiBundle\Model\Lyric\Base\LyricTopPopularity as BaseLyricTopPopularity;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricTranslation as BaseLyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\Base\LyricVote as BaseLyricVote;
 use Tekstove\ApiBundle\Model\Lyric\Map\LyricLanguageTableMap;
+use Tekstove\ApiBundle\Model\Lyric\Map\LyricTopPopularityTableMap;
 use Tekstove\ApiBundle\Model\Lyric\Map\LyricTranslationTableMap;
 use Tekstove\ApiBundle\Model\Lyric\Map\LyricVoteTableMap;
 use Tekstove\ApiBundle\Model\Map\AlbumLyricTableMap;
@@ -248,6 +252,12 @@ abstract class Lyric implements ActiveRecordInterface
     protected $collLyricVotesPartial;
 
     /**
+     * @var        ObjectCollection|LyricTopPopularity[] Collection to store aggregation of LyricTopPopularity objects.
+     */
+    protected $collLyricTopPopularities;
+    protected $collLyricTopPopularitiesPartial;
+
+    /**
      * @var        ObjectCollection|ChildAlbumLyric[] Collection to store aggregation of ChildAlbumLyric objects.
      */
     protected $collAlbumLyrics;
@@ -333,6 +343,12 @@ abstract class Lyric implements ActiveRecordInterface
      * @var ObjectCollection|LyricVote[]
      */
     protected $lyricVotesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|LyricTopPopularity[]
+     */
+    protected $lyricTopPopularitiesScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -1290,6 +1306,8 @@ abstract class Lyric implements ActiveRecordInterface
 
             $this->collLyricVotes = null;
 
+            $this->collLyricTopPopularities = null;
+
             $this->collAlbumLyrics = null;
 
             $this->collArtists = null;
@@ -1542,6 +1560,24 @@ abstract class Lyric implements ActiveRecordInterface
 
             if ($this->collLyricVotes !== null) {
                 foreach ($this->collLyricVotes as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->lyricTopPopularitiesScheduledForDeletion !== null) {
+                if (!$this->lyricTopPopularitiesScheduledForDeletion->isEmpty()) {
+                    foreach ($this->lyricTopPopularitiesScheduledForDeletion as $lyricTopPopularity) {
+                        // need to save related object because we set the relation to null
+                        $lyricTopPopularity->save($con);
+                    }
+                    $this->lyricTopPopularitiesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collLyricTopPopularities !== null) {
+                foreach ($this->collLyricTopPopularities as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1955,6 +1991,21 @@ abstract class Lyric implements ActiveRecordInterface
 
                 $result[$key] = $this->collLyricVotes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
+            if (null !== $this->collLyricTopPopularities) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'lyricTopPopularities';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'lyric_top_popularities';
+                        break;
+                    default:
+                        $key = 'LyricTopPopularities';
+                }
+
+                $result[$key] = $this->collLyricTopPopularities->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
             if (null !== $this->collAlbumLyrics) {
 
                 switch ($keyType) {
@@ -2356,6 +2407,12 @@ abstract class Lyric implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getLyricTopPopularities() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addLyricTopPopularity($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getAlbumLyrics() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addAlbumLyric($relObj->copy($deepCopy));
@@ -2465,6 +2522,9 @@ abstract class Lyric implements ActiveRecordInterface
         }
         if ('LyricVote' == $relationName) {
             return $this->initLyricVotes();
+        }
+        if ('LyricTopPopularity' == $relationName) {
+            return $this->initLyricTopPopularities();
         }
         if ('AlbumLyric' == $relationName) {
             return $this->initAlbumLyrics();
@@ -3478,6 +3538,231 @@ abstract class Lyric implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collLyricTopPopularities collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addLyricTopPopularities()
+     */
+    public function clearLyricTopPopularities()
+    {
+        $this->collLyricTopPopularities = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collLyricTopPopularities collection loaded partially.
+     */
+    public function resetPartialLyricTopPopularities($v = true)
+    {
+        $this->collLyricTopPopularitiesPartial = $v;
+    }
+
+    /**
+     * Initializes the collLyricTopPopularities collection.
+     *
+     * By default this just sets the collLyricTopPopularities collection to an empty array (like clearcollLyricTopPopularities());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initLyricTopPopularities($overrideExisting = true)
+    {
+        if (null !== $this->collLyricTopPopularities && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = LyricTopPopularityTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collLyricTopPopularities = new $collectionClassName;
+        $this->collLyricTopPopularities->setModel('\Tekstove\ApiBundle\Model\Lyric\LyricTopPopularity');
+    }
+
+    /**
+     * Gets an array of LyricTopPopularity objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildLyric is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|LyricTopPopularity[] List of LyricTopPopularity objects
+     * @throws PropelException
+     */
+    public function getLyricTopPopularities(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collLyricTopPopularitiesPartial && !$this->isNew();
+        if (null === $this->collLyricTopPopularities || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collLyricTopPopularities) {
+                // return empty collection
+                $this->initLyricTopPopularities();
+            } else {
+                $collLyricTopPopularities = LyricTopPopularityQuery::create(null, $criteria)
+                    ->filterByLyric($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collLyricTopPopularitiesPartial && count($collLyricTopPopularities)) {
+                        $this->initLyricTopPopularities(false);
+
+                        foreach ($collLyricTopPopularities as $obj) {
+                            if (false == $this->collLyricTopPopularities->contains($obj)) {
+                                $this->collLyricTopPopularities->append($obj);
+                            }
+                        }
+
+                        $this->collLyricTopPopularitiesPartial = true;
+                    }
+
+                    return $collLyricTopPopularities;
+                }
+
+                if ($partial && $this->collLyricTopPopularities) {
+                    foreach ($this->collLyricTopPopularities as $obj) {
+                        if ($obj->isNew()) {
+                            $collLyricTopPopularities[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collLyricTopPopularities = $collLyricTopPopularities;
+                $this->collLyricTopPopularitiesPartial = false;
+            }
+        }
+
+        return $this->collLyricTopPopularities;
+    }
+
+    /**
+     * Sets a collection of LyricTopPopularity objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $lyricTopPopularities A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildLyric The current object (for fluent API support)
+     */
+    public function setLyricTopPopularities(Collection $lyricTopPopularities, ConnectionInterface $con = null)
+    {
+        /** @var LyricTopPopularity[] $lyricTopPopularitiesToDelete */
+        $lyricTopPopularitiesToDelete = $this->getLyricTopPopularities(new Criteria(), $con)->diff($lyricTopPopularities);
+
+
+        $this->lyricTopPopularitiesScheduledForDeletion = $lyricTopPopularitiesToDelete;
+
+        foreach ($lyricTopPopularitiesToDelete as $lyricTopPopularityRemoved) {
+            $lyricTopPopularityRemoved->setLyric(null);
+        }
+
+        $this->collLyricTopPopularities = null;
+        foreach ($lyricTopPopularities as $lyricTopPopularity) {
+            $this->addLyricTopPopularity($lyricTopPopularity);
+        }
+
+        $this->collLyricTopPopularities = $lyricTopPopularities;
+        $this->collLyricTopPopularitiesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related BaseLyricTopPopularity objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related BaseLyricTopPopularity objects.
+     * @throws PropelException
+     */
+    public function countLyricTopPopularities(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collLyricTopPopularitiesPartial && !$this->isNew();
+        if (null === $this->collLyricTopPopularities || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collLyricTopPopularities) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getLyricTopPopularities());
+            }
+
+            $query = LyricTopPopularityQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByLyric($this)
+                ->count($con);
+        }
+
+        return count($this->collLyricTopPopularities);
+    }
+
+    /**
+     * Method called to associate a LyricTopPopularity object to this object
+     * through the LyricTopPopularity foreign key attribute.
+     *
+     * @param  LyricTopPopularity $l LyricTopPopularity
+     * @return $this|\Tekstove\ApiBundle\Model\Lyric The current object (for fluent API support)
+     */
+    public function addLyricTopPopularity(LyricTopPopularity $l)
+    {
+        if ($this->collLyricTopPopularities === null) {
+            $this->initLyricTopPopularities();
+            $this->collLyricTopPopularitiesPartial = true;
+        }
+
+        if (!$this->collLyricTopPopularities->contains($l)) {
+            $this->doAddLyricTopPopularity($l);
+
+            if ($this->lyricTopPopularitiesScheduledForDeletion and $this->lyricTopPopularitiesScheduledForDeletion->contains($l)) {
+                $this->lyricTopPopularitiesScheduledForDeletion->remove($this->lyricTopPopularitiesScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LyricTopPopularity $lyricTopPopularity The LyricTopPopularity object to add.
+     */
+    protected function doAddLyricTopPopularity(LyricTopPopularity $lyricTopPopularity)
+    {
+        $this->collLyricTopPopularities[]= $lyricTopPopularity;
+        $lyricTopPopularity->setLyric($this);
+    }
+
+    /**
+     * @param  LyricTopPopularity $lyricTopPopularity The LyricTopPopularity object to remove.
+     * @return $this|ChildLyric The current object (for fluent API support)
+     */
+    public function removeLyricTopPopularity(LyricTopPopularity $lyricTopPopularity)
+    {
+        if ($this->getLyricTopPopularities()->contains($lyricTopPopularity)) {
+            $pos = $this->collLyricTopPopularities->search($lyricTopPopularity);
+            $this->collLyricTopPopularities->remove($pos);
+            if (null === $this->lyricTopPopularitiesScheduledForDeletion) {
+                $this->lyricTopPopularitiesScheduledForDeletion = clone $this->collLyricTopPopularities;
+                $this->lyricTopPopularitiesScheduledForDeletion->clear();
+            }
+            $this->lyricTopPopularitiesScheduledForDeletion[]= $lyricTopPopularity;
+            $lyricTopPopularity->setLyric(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears out the collAlbumLyrics collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
@@ -4278,6 +4563,11 @@ abstract class Lyric implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collLyricTopPopularities) {
+                foreach ($this->collLyricTopPopularities as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collAlbumLyrics) {
                 foreach ($this->collAlbumLyrics as $o) {
                     $o->clearAllReferences($deep);
@@ -4299,6 +4589,7 @@ abstract class Lyric implements ActiveRecordInterface
         $this->collLyricLanguages = null;
         $this->collLyricTranslations = null;
         $this->collLyricVotes = null;
+        $this->collLyricTopPopularities = null;
         $this->collAlbumLyrics = null;
         $this->collArtists = null;
         $this->collLanguages = null;
@@ -4400,6 +4691,15 @@ abstract class Lyric implements ActiveRecordInterface
             }
             if (null !== $this->collLyricVotes) {
                 foreach ($this->collLyricVotes as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
+            if (null !== $this->collLyricTopPopularities) {
+                foreach ($this->collLyricTopPopularities as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());

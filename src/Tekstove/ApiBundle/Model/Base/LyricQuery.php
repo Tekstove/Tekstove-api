@@ -15,6 +15,7 @@ use Tekstove\ApiBundle\Model\Lyric as ChildLyric;
 use Tekstove\ApiBundle\Model\LyricQuery as ChildLyricQuery;
 use Tekstove\ApiBundle\Model\Artist\ArtistLyric;
 use Tekstove\ApiBundle\Model\Lyric\LyricLanguage;
+use Tekstove\ApiBundle\Model\Lyric\LyricTopPopularity;
 use Tekstove\ApiBundle\Model\Lyric\LyricTranslation;
 use Tekstove\ApiBundle\Model\Lyric\LyricVote;
 use Tekstove\ApiBundle\Model\Map\LyricTableMap;
@@ -118,6 +119,16 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery rightJoinWithLyricVote() Adds a RIGHT JOIN clause and with to the query using the LyricVote relation
  * @method     ChildLyricQuery innerJoinWithLyricVote() Adds a INNER JOIN clause and with to the query using the LyricVote relation
  *
+ * @method     ChildLyricQuery leftJoinLyricTopPopularity($relationAlias = null) Adds a LEFT JOIN clause to the query using the LyricTopPopularity relation
+ * @method     ChildLyricQuery rightJoinLyricTopPopularity($relationAlias = null) Adds a RIGHT JOIN clause to the query using the LyricTopPopularity relation
+ * @method     ChildLyricQuery innerJoinLyricTopPopularity($relationAlias = null) Adds a INNER JOIN clause to the query using the LyricTopPopularity relation
+ *
+ * @method     ChildLyricQuery joinWithLyricTopPopularity($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the LyricTopPopularity relation
+ *
+ * @method     ChildLyricQuery leftJoinWithLyricTopPopularity() Adds a LEFT JOIN clause and with to the query using the LyricTopPopularity relation
+ * @method     ChildLyricQuery rightJoinWithLyricTopPopularity() Adds a RIGHT JOIN clause and with to the query using the LyricTopPopularity relation
+ * @method     ChildLyricQuery innerJoinWithLyricTopPopularity() Adds a INNER JOIN clause and with to the query using the LyricTopPopularity relation
+ *
  * @method     ChildLyricQuery leftJoinAlbumLyric($relationAlias = null) Adds a LEFT JOIN clause to the query using the AlbumLyric relation
  * @method     ChildLyricQuery rightJoinAlbumLyric($relationAlias = null) Adds a RIGHT JOIN clause to the query using the AlbumLyric relation
  * @method     ChildLyricQuery innerJoinAlbumLyric($relationAlias = null) Adds a INNER JOIN clause to the query using the AlbumLyric relation
@@ -128,7 +139,7 @@ use Tekstove\ApiBundle\Model\Map\LyricTableMap;
  * @method     ChildLyricQuery rightJoinWithAlbumLyric() Adds a RIGHT JOIN clause and with to the query using the AlbumLyric relation
  * @method     ChildLyricQuery innerJoinWithAlbumLyric() Adds a INNER JOIN clause and with to the query using the AlbumLyric relation
  *
- * @method     \Tekstove\ApiBundle\Model\UserQuery|\Tekstove\ApiBundle\Model\Artist\ArtistLyricQuery|\Tekstove\ApiBundle\Model\Lyric\LyricLanguageQuery|\Tekstove\ApiBundle\Model\Lyric\LyricTranslationQuery|\Tekstove\ApiBundle\Model\Lyric\LyricVoteQuery|\Tekstove\ApiBundle\Model\AlbumLyricQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \Tekstove\ApiBundle\Model\UserQuery|\Tekstove\ApiBundle\Model\Artist\ArtistLyricQuery|\Tekstove\ApiBundle\Model\Lyric\LyricLanguageQuery|\Tekstove\ApiBundle\Model\Lyric\LyricTranslationQuery|\Tekstove\ApiBundle\Model\Lyric\LyricVoteQuery|\Tekstove\ApiBundle\Model\Lyric\LyricTopPopularityQuery|\Tekstove\ApiBundle\Model\AlbumLyricQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildLyric findOne(ConnectionInterface $con = null) Return the first ChildLyric matching the query
  * @method     ChildLyric findOneOrCreate(ConnectionInterface $con = null) Return the first ChildLyric matching the query, or a new ChildLyric object populated from the query conditions when no match is found
@@ -1290,6 +1301,79 @@ abstract class LyricQuery extends ModelCriteria
         return $this
             ->joinLyricVote($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'LyricVote', '\Tekstove\ApiBundle\Model\Lyric\LyricVoteQuery');
+    }
+
+    /**
+     * Filter the query by a related \Tekstove\ApiBundle\Model\Lyric\LyricTopPopularity object
+     *
+     * @param \Tekstove\ApiBundle\Model\Lyric\LyricTopPopularity|ObjectCollection $lyricTopPopularity the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildLyricQuery The current query, for fluid interface
+     */
+    public function filterByLyricTopPopularity($lyricTopPopularity, $comparison = null)
+    {
+        if ($lyricTopPopularity instanceof \Tekstove\ApiBundle\Model\Lyric\LyricTopPopularity) {
+            return $this
+                ->addUsingAlias(LyricTableMap::COL_ID, $lyricTopPopularity->getLyricId(), $comparison);
+        } elseif ($lyricTopPopularity instanceof ObjectCollection) {
+            return $this
+                ->useLyricTopPopularityQuery()
+                ->filterByPrimaryKeys($lyricTopPopularity->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByLyricTopPopularity() only accepts arguments of type \Tekstove\ApiBundle\Model\Lyric\LyricTopPopularity or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the LyricTopPopularity relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildLyricQuery The current query, for fluid interface
+     */
+    public function joinLyricTopPopularity($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('LyricTopPopularity');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'LyricTopPopularity');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the LyricTopPopularity relation LyricTopPopularity object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Tekstove\ApiBundle\Model\Lyric\LyricTopPopularityQuery A secondary query class using the current class as primary query
+     */
+    public function useLyricTopPopularityQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinLyricTopPopularity($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'LyricTopPopularity', '\Tekstove\ApiBundle\Model\Lyric\LyricTopPopularityQuery');
     }
 
     /**

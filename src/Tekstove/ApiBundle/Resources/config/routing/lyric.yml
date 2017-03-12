@@ -1,3 +1,8 @@
+tekstove_api_lyric.popularity.top.index:
+    path: "/popularity/history"
+    defaults: { _controller: TekstoveApiBundle:Lyric/TopPopularity:index}
+    methods: [GET]
+
 tekstove_api_lyric:
     path: "/"
     defaults: { _controller: TekstoveApiBundle:Lyric:index }
@@ -32,3 +37,4 @@ tekstove_api_lyric.delete:
     path: "/{id}"
     defaults: { _controller: TekstoveApiBundle:Lyric:delete}
     methods: [DELETE]
+

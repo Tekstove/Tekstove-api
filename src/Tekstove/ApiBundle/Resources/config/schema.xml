@@ -187,6 +187,17 @@
         </foreign-key>
     </table>
     
+    <table name="lyric_top_popularity" namespace="\Tekstove\ApiBundle\Model\Lyric">
+        <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
+        <column name="lyric_id" type="integer" />
+        <column name="popularity" type="integer" />
+        <column name="date" type="DATE" />
+        
+        <foreign-key foreignTable="lyric">
+            <reference local="lyric_id" foreign="id" />
+        </foreign-key>
+    </table>
+    
     <table name="artist">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="name" type="varchar" />

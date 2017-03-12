@@ -1,0 +1,14 @@
+"Tekstove\\ApiBundle\\Model\\Lyric\\LyricTopPopularity":
+    exclusion_policy: all
+    exclude: false
+    read_only: true
+    virtual_properties:
+        getId:
+            groups: [List]
+            serialized_name: id
+        getLyric:
+            groups: [List]
+            serialized_name: lyric
+        getPopularity:
+            groups: [List]
+            serialized_name: popularity

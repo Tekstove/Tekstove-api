@@ -23,10 +23,12 @@ use Tekstove\ApiBundle\Model\Lyric\Map\LyricTopPopularityTableMap;
  *
  * @method     ChildLyricTopPopularityQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildLyricTopPopularityQuery orderByLyricId($order = Criteria::ASC) Order by the lyric_id column
+ * @method     ChildLyricTopPopularityQuery orderByPopularity($order = Criteria::ASC) Order by the popularity column
  * @method     ChildLyricTopPopularityQuery orderByDate($order = Criteria::ASC) Order by the date column
  *
  * @method     ChildLyricTopPopularityQuery groupById() Group by the id column
  * @method     ChildLyricTopPopularityQuery groupByLyricId() Group by the lyric_id column
+ * @method     ChildLyricTopPopularityQuery groupByPopularity() Group by the popularity column
  * @method     ChildLyricTopPopularityQuery groupByDate() Group by the date column
  *
  * @method     ChildLyricTopPopularityQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -54,6 +56,7 @@ use Tekstove\ApiBundle\Model\Lyric\Map\LyricTopPopularityTableMap;
  *
  * @method     ChildLyricTopPopularity findOneById(int $id) Return the first ChildLyricTopPopularity filtered by the id column
  * @method     ChildLyricTopPopularity findOneByLyricId(int $lyric_id) Return the first ChildLyricTopPopularity filtered by the lyric_id column
+ * @method     ChildLyricTopPopularity findOneByPopularity(int $popularity) Return the first ChildLyricTopPopularity filtered by the popularity column
  * @method     ChildLyricTopPopularity findOneByDate(string $date) Return the first ChildLyricTopPopularity filtered by the date column *
 
  * @method     ChildLyricTopPopularity requirePk($key, ConnectionInterface $con = null) Return the ChildLyricTopPopularity by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -61,11 +64,13 @@ use Tekstove\ApiBundle\Model\Lyric\Map\LyricTopPopularityTableMap;
  *
  * @method     ChildLyricTopPopularity requireOneById(int $id) Return the first ChildLyricTopPopularity filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyricTopPopularity requireOneByLyricId(int $lyric_id) Return the first ChildLyricTopPopularity filtered by the lyric_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildLyricTopPopularity requireOneByPopularity(int $popularity) Return the first ChildLyricTopPopularity filtered by the popularity column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildLyricTopPopularity requireOneByDate(string $date) Return the first ChildLyricTopPopularity filtered by the date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildLyricTopPopularity[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildLyricTopPopularity objects based on current ModelCriteria
  * @method     ChildLyricTopPopularity[]|ObjectCollection findById(int $id) Return ChildLyricTopPopularity objects filtered by the id column
  * @method     ChildLyricTopPopularity[]|ObjectCollection findByLyricId(int $lyric_id) Return ChildLyricTopPopularity objects filtered by the lyric_id column
+ * @method     ChildLyricTopPopularity[]|ObjectCollection findByPopularity(int $popularity) Return ChildLyricTopPopularity objects filtered by the popularity column
  * @method     ChildLyricTopPopularity[]|ObjectCollection findByDate(string $date) Return ChildLyricTopPopularity objects filtered by the date column
  * @method     ChildLyricTopPopularity[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -165,7 +170,7 @@ abstract class LyricTopPopularityQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `lyric_id`, `date` FROM `lyric_top_popularity` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `lyric_id`, `popularity`, `date` FROM `lyric_top_popularity` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -337,6 +342,47 @@ abstract class LyricTopPopularityQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(LyricTopPopularityTableMap::COL_LYRIC_ID, $lyricId, $comparison);
+    }
+
+    /**
+     * Filter the query on the popularity column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByPopularity(1234); // WHERE popularity = 1234
+     * $query->filterByPopularity(array(12, 34)); // WHERE popularity IN (12, 34)
+     * $query->filterByPopularity(array('min' => 12)); // WHERE popularity > 12
+     * </code>
+     *
+     * @param     mixed $popularity The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildLyricTopPopularityQuery The current query, for fluid interface
+     */
+    public function filterByPopularity($popularity = null, $comparison = null)
+    {
+        if (is_array($popularity)) {
+            $useMinMax = false;
+            if (isset($popularity['min'])) {
+                $this->addUsingAlias(LyricTopPopularityTableMap::COL_POPULARITY, $popularity['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($popularity['max'])) {
+                $this->addUsingAlias(LyricTopPopularityTableMap::COL_POPULARITY, $popularity['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(LyricTopPopularityTableMap::COL_POPULARITY, $popularity, $comparison);
     }
 
     /**

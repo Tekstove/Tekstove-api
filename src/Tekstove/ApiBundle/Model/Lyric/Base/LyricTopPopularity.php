@@ -78,6 +78,13 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
     protected $lyric_id;
 
     /**
+     * The value for the popularity field.
+     *
+     * @var        int
+     */
+    protected $popularity;
+
+    /**
      * The value for the date field.
      *
      * @var        DateTime
@@ -343,6 +350,16 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
     }
 
     /**
+     * Get the [popularity] column value.
+     *
+     * @return int
+     */
+    public function getPopularity()
+    {
+        return $this->popularity;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [date] column value.
      *
      *
@@ -407,6 +424,26 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
     } // setLyricId()
 
     /**
+     * Set the value of [popularity] column.
+     *
+     * @param int $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\Lyric\LyricTopPopularity The current object (for fluent API support)
+     */
+    public function setPopularity($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->popularity !== $v) {
+            $this->popularity = $v;
+            $this->modifiedColumns[LyricTopPopularityTableMap::COL_POPULARITY] = true;
+        }
+
+        return $this;
+    } // setPopularity()
+
+    /**
      * Sets the value of [date] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
@@ -468,7 +505,10 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : LyricTopPopularityTableMap::translateFieldName('LyricId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->lyric_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : LyricTopPopularityTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : LyricTopPopularityTableMap::translateFieldName('Popularity', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->popularity = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : LyricTopPopularityTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00') {
                 $col = null;
             }
@@ -481,7 +521,7 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = LyricTopPopularityTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = LyricTopPopularityTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Lyric\\LyricTopPopularity'), 0, $e);
@@ -704,6 +744,9 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTopPopularityTableMap::COL_LYRIC_ID)) {
             $modifiedColumns[':p' . $index++]  = '`lyric_id`';
         }
+        if ($this->isColumnModified(LyricTopPopularityTableMap::COL_POPULARITY)) {
+            $modifiedColumns[':p' . $index++]  = '`popularity`';
+        }
         if ($this->isColumnModified(LyricTopPopularityTableMap::COL_DATE)) {
             $modifiedColumns[':p' . $index++]  = '`date`';
         }
@@ -723,6 +766,9 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
                         break;
                     case '`lyric_id`':
                         $stmt->bindValue($identifier, $this->lyric_id, PDO::PARAM_INT);
+                        break;
+                    case '`popularity`':
+                        $stmt->bindValue($identifier, $this->popularity, PDO::PARAM_INT);
                         break;
                     case '`date`':
                         $stmt->bindValue($identifier, $this->date ? $this->date->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
@@ -796,6 +842,9 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
                 return $this->getLyricId();
                 break;
             case 2:
+                return $this->getPopularity();
+                break;
+            case 3:
                 return $this->getDate();
                 break;
             default:
@@ -830,10 +879,11 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getLyricId(),
-            $keys[2] => $this->getDate(),
+            $keys[2] => $this->getPopularity(),
+            $keys[3] => $this->getDate(),
         );
-        if ($result[$keys[2]] instanceof \DateTime) {
-            $result[$keys[2]] = $result[$keys[2]]->format('c');
+        if ($result[$keys[3]] instanceof \DateTime) {
+            $result[$keys[3]] = $result[$keys[3]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -898,6 +948,9 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
                 $this->setLyricId($value);
                 break;
             case 2:
+                $this->setPopularity($value);
+                break;
+            case 3:
                 $this->setDate($value);
                 break;
         } // switch()
@@ -933,7 +986,10 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
             $this->setLyricId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setDate($arr[$keys[2]]);
+            $this->setPopularity($arr[$keys[2]]);
+        }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setDate($arr[$keys[3]]);
         }
     }
 
@@ -981,6 +1037,9 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
         }
         if ($this->isColumnModified(LyricTopPopularityTableMap::COL_LYRIC_ID)) {
             $criteria->add(LyricTopPopularityTableMap::COL_LYRIC_ID, $this->lyric_id);
+        }
+        if ($this->isColumnModified(LyricTopPopularityTableMap::COL_POPULARITY)) {
+            $criteria->add(LyricTopPopularityTableMap::COL_POPULARITY, $this->popularity);
         }
         if ($this->isColumnModified(LyricTopPopularityTableMap::COL_DATE)) {
             $criteria->add(LyricTopPopularityTableMap::COL_DATE, $this->date);
@@ -1072,6 +1131,7 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setLyricId($this->getLyricId());
+        $copyObj->setPopularity($this->getPopularity());
         $copyObj->setDate($this->getDate());
         if ($makeNew) {
             $copyObj->setNew(true);
@@ -1164,6 +1224,7 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
         }
         $this->id = null;
         $this->lyric_id = null;
+        $this->popularity = null;
         $this->date = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();

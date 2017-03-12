@@ -59,7 +59,7 @@ class LyricTopPopularityTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 3;
+    const NUM_COLUMNS = 4;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class LyricTopPopularityTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 3;
+    const NUM_HYDRATE_COLUMNS = 4;
 
     /**
      * the column name for the id field
@@ -80,6 +80,11 @@ class LyricTopPopularityTableMap extends TableMap
      * the column name for the lyric_id field
      */
     const COL_LYRIC_ID = 'lyric_top_popularity.lyric_id';
+
+    /**
+     * the column name for the popularity field
+     */
+    const COL_POPULARITY = 'lyric_top_popularity.popularity';
 
     /**
      * the column name for the date field
@@ -98,11 +103,11 @@ class LyricTopPopularityTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'LyricId', 'Date', ),
-        self::TYPE_CAMELNAME     => array('id', 'lyricId', 'date', ),
-        self::TYPE_COLNAME       => array(LyricTopPopularityTableMap::COL_ID, LyricTopPopularityTableMap::COL_LYRIC_ID, LyricTopPopularityTableMap::COL_DATE, ),
-        self::TYPE_FIELDNAME     => array('id', 'lyric_id', 'date', ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id', 'LyricId', 'Popularity', 'Date', ),
+        self::TYPE_CAMELNAME     => array('id', 'lyricId', 'popularity', 'date', ),
+        self::TYPE_COLNAME       => array(LyricTopPopularityTableMap::COL_ID, LyricTopPopularityTableMap::COL_LYRIC_ID, LyricTopPopularityTableMap::COL_POPULARITY, LyricTopPopularityTableMap::COL_DATE, ),
+        self::TYPE_FIELDNAME     => array('id', 'lyric_id', 'popularity', 'date', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -112,11 +117,11 @@ class LyricTopPopularityTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'LyricId' => 1, 'Date' => 2, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'lyricId' => 1, 'date' => 2, ),
-        self::TYPE_COLNAME       => array(LyricTopPopularityTableMap::COL_ID => 0, LyricTopPopularityTableMap::COL_LYRIC_ID => 1, LyricTopPopularityTableMap::COL_DATE => 2, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'lyric_id' => 1, 'date' => 2, ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'LyricId' => 1, 'Popularity' => 2, 'Date' => 3, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'lyricId' => 1, 'popularity' => 2, 'date' => 3, ),
+        self::TYPE_COLNAME       => array(LyricTopPopularityTableMap::COL_ID => 0, LyricTopPopularityTableMap::COL_LYRIC_ID => 1, LyricTopPopularityTableMap::COL_POPULARITY => 2, LyricTopPopularityTableMap::COL_DATE => 3, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'lyric_id' => 1, 'popularity' => 2, 'date' => 3, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -138,6 +143,7 @@ class LyricTopPopularityTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('lyric_id', 'LyricId', 'INTEGER', 'lyric', 'id', false, null, null);
+        $this->addColumn('popularity', 'Popularity', 'INTEGER', false, null, null);
         $this->addColumn('date', 'Date', 'DATE', false, null, null);
     } // initialize()
 
@@ -298,10 +304,12 @@ class LyricTopPopularityTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(LyricTopPopularityTableMap::COL_ID);
             $criteria->addSelectColumn(LyricTopPopularityTableMap::COL_LYRIC_ID);
+            $criteria->addSelectColumn(LyricTopPopularityTableMap::COL_POPULARITY);
             $criteria->addSelectColumn(LyricTopPopularityTableMap::COL_DATE);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.lyric_id');
+            $criteria->addSelectColumn($alias . '.popularity');
             $criteria->addSelectColumn($alias . '.date');
         }
     }

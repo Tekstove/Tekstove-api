@@ -9,3 +9,6 @@
         getLyric:
             groups: [List]
             serialized_name: lyric
+        getPopularity:
+            groups: [List]
+            serialized_name: popularity

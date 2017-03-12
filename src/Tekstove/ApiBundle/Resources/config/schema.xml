@@ -190,6 +190,7 @@
     <table name="lyric_top_popularity" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="lyric_id" type="integer" />
+        <column name="popularity" type="integer" />
         <column name="date" type="DATE" />
         
         <foreign-key foreignTable="lyric">

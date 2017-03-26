@@ -6,6 +6,9 @@
         getId:
             groups: [Details, List]
             serialized_name: id
+        getUsername:
+            groups: [Details, List]
+            serialized_name: username
         getMessage:
             groups: [Details, List]
             serialized_name: message

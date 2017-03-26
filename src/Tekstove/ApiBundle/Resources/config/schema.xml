@@ -302,6 +302,7 @@
         <column name="message_html" type="varchar" required="true" />
         <column name="ip" type="varchar" required="true" />
         <column name="date" type="timestamp" />
+        <column name="username" type="varchar" />
         
         <column name="user_id" type="integer" />
         <foreign-key foreignTable="user">

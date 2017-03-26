@@ -50,6 +50,14 @@ class MessagesController extends Controller
 
         if ($this->getUser()) {
             $message->setUser($this->getUser());
+            $message->setUsername($this->getUser()->getUsername);
+        } else {
+            // @TODO this should be service
+            // anonymous user
+            $ip = $request->getClientIp();
+            $ua = $request->headers->get('user-agent', '');
+            $userName = crc32(sha1($ip . $ua));
+            $message->setUsername($userName);
         }
 
         $messageRepository = $this->get('tekstove.chat.message.repository');

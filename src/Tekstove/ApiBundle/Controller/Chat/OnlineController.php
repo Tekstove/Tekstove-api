@@ -62,8 +62,8 @@ class OnlineController extends Controller
             $onlineUser = $anonymousUserQuery->findOne();
             if (!$onlineUser) {
                 $onlineUser = new Online();
+                $onlineUser->setUsername($userName);
             }
-            $onlineUser->setUsername($userName);
         }
 
         $onlineUser->setDate(time());

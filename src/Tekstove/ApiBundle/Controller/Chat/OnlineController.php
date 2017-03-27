@@ -55,9 +55,7 @@ class OnlineController extends Controller
             }
         } else {
             // anonymous user
-            $ip = $request->getClientIp();
-            $ua = $request->headers->get('user-agent', '');
-            $userName = crc32(sha1($ip . $ua));
+            $userName = (new \Tekstove\ApiBundle\HttpFoundation\RequestIdentificator())->identify($request);
             $anonymousUserQuery = clone $onlineQuery;
             $anonymousUserQuery->filterByUserId(null);
             $anonymousUserQuery->filterByUsername($userName);

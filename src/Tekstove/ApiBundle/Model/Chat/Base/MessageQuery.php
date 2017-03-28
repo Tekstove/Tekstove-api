@@ -26,6 +26,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessageQuery orderByMessageHtml($order = Criteria::ASC) Order by the message_html column
  * @method     ChildMessageQuery orderByIp($order = Criteria::ASC) Order by the ip column
  * @method     ChildMessageQuery orderByDate($order = Criteria::ASC) Order by the date column
+ * @method     ChildMessageQuery orderByUsername($order = Criteria::ASC) Order by the username column
  * @method     ChildMessageQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  *
  * @method     ChildMessageQuery groupById() Group by the id column
@@ -33,6 +34,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessageQuery groupByMessageHtml() Group by the message_html column
  * @method     ChildMessageQuery groupByIp() Group by the ip column
  * @method     ChildMessageQuery groupByDate() Group by the date column
+ * @method     ChildMessageQuery groupByUsername() Group by the username column
  * @method     ChildMessageQuery groupByUserId() Group by the user_id column
  *
  * @method     ChildMessageQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -63,6 +65,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessage findOneByMessageHtml(string $message_html) Return the first ChildMessage filtered by the message_html column
  * @method     ChildMessage findOneByIp(string $ip) Return the first ChildMessage filtered by the ip column
  * @method     ChildMessage findOneByDate(string $date) Return the first ChildMessage filtered by the date column
+ * @method     ChildMessage findOneByUsername(string $username) Return the first ChildMessage filtered by the username column
  * @method     ChildMessage findOneByUserId(int $user_id) Return the first ChildMessage filtered by the user_id column *
 
  * @method     ChildMessage requirePk($key, ConnectionInterface $con = null) Return the ChildMessage by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -73,6 +76,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessage requireOneByMessageHtml(string $message_html) Return the first ChildMessage filtered by the message_html column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByIp(string $ip) Return the first ChildMessage filtered by the ip column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByDate(string $date) Return the first ChildMessage filtered by the date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildMessage requireOneByUsername(string $username) Return the first ChildMessage filtered by the username column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByUserId(int $user_id) Return the first ChildMessage filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildMessage[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildMessage objects based on current ModelCriteria
@@ -81,6 +85,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessage[]|ObjectCollection findByMessageHtml(string $message_html) Return ChildMessage objects filtered by the message_html column
  * @method     ChildMessage[]|ObjectCollection findByIp(string $ip) Return ChildMessage objects filtered by the ip column
  * @method     ChildMessage[]|ObjectCollection findByDate(string $date) Return ChildMessage objects filtered by the date column
+ * @method     ChildMessage[]|ObjectCollection findByUsername(string $username) Return ChildMessage objects filtered by the username column
  * @method     ChildMessage[]|ObjectCollection findByUserId(int $user_id) Return ChildMessage objects filtered by the user_id column
  * @method     ChildMessage[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -180,7 +185,7 @@ abstract class MessageQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `message`, `message_html`, `ip`, `date`, `user_id` FROM `chat` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `message`, `message_html`, `ip`, `date`, `username`, `user_id` FROM `chat` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -427,6 +432,31 @@ abstract class MessageQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(MessageTableMap::COL_DATE, $date, $comparison);
+    }
+
+    /**
+     * Filter the query on the username column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUsername('fooValue');   // WHERE username = 'fooValue'
+     * $query->filterByUsername('%fooValue%', Criteria::LIKE); // WHERE username LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $username The value to use as filter.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildMessageQuery The current query, for fluid interface
+     */
+    public function filterByUsername($username = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($username)) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(MessageTableMap::COL_USERNAME, $username, $comparison);
     }
 
     /**

@@ -27,7 +27,14 @@ class OnlineController extends Controller
         $onlines = $onlineQuery->find();
 
         foreach ($onlines as $online) {
-            $onlineUsers[] = $online->getUser();
+            /* @var $online Online */
+            if ($online->getUserId()) {
+                $onlineUsers[] = $online->getUser();
+            } else {
+                $anonymousUser = new \Tekstove\ApiBundle\Model\User();
+                $anonymousUser->setUsername($online->getUsername());
+                $onlineUsers[] = $anonymousUser;
+            }
         }
 
         return $this->handleData($request, ['items' => $onlineUsers]);
@@ -38,18 +45,29 @@ class OnlineController extends Controller
         $this->getContext()
                 ->setGroups(['List']);
 
+        $onlineQuery = new OnlineQuery();
         if ($this->getUser()) {
-            $onlineQuery = new OnlineQuery();
             $onlineUser = $onlineQuery->findOneByUserId($this->getUser()->getId());
             if (empty($onlineUser)) {
                 $onlineUser = new Online();
                 $onlineUser->setUser($this->getUser());
                 $onlineUser->setUsername($this->getUser()->getUsername());
             }
-
-            $onlineUser->setDate(time());
-            $onlineUser->save();
+        } else {
+            // anonymous user
+            $userName = (new \Tekstove\ApiBundle\HttpFoundation\RequestIdentificator())->identify($request);
+            $anonymousUserQuery = clone $onlineQuery;
+            $anonymousUserQuery->filterByUserId(null);
+            $anonymousUserQuery->filterByUsername($userName);
+            $onlineUser = $anonymousUserQuery->findOne();
+            if (!$onlineUser) {
+                $onlineUser = new Online();
+                $onlineUser->setUsername($userName);
+            }
         }
+
+        $onlineUser->setDate(time());
+        $onlineUser->save();
 
         return $this->handleData($request, null);
     }

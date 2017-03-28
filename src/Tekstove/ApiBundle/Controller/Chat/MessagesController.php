@@ -50,6 +50,11 @@ class MessagesController extends Controller
 
         if ($this->getUser()) {
             $message->setUser($this->getUser());
+            $message->setUsername($this->getUser()->getUsername());
+        } else {
+            // anonymous user
+            $userName = (new \Tekstove\ApiBundle\HttpFoundation\RequestIdentificator())->identify($request);
+            $message->setUsername($userName);
         }
 
         $messageRepository = $this->get('tekstove.chat.message.repository');

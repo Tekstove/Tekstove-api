@@ -7,6 +7,7 @@ use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricTitleCacheSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricUploadedBySubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\VideoParserSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Chat\MessageHtmlSubscriber;
+use Tekstove\ApiBundle\EventListener\Model\Chat\MessageValidateSafeTextSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricCounterSubscriber;
 
 /**
@@ -33,6 +34,7 @@ class EventDispacherFactory
         $dispacher->addSubscriber(self::createContentChecker($container));
         $dispacher->addSubscriber(new VideoParserSubscriber());
         $dispacher->addSubscriber(new MessageHtmlSubscriber($container->get('potaka.bbcode.full')));
+        $dispacher->addSubscriber(new MessageValidateSafeTextSubscriber(self::createChatContentChecker($container)));
         $dispacher->addSubscriber(
             new LyricCounterSubscriber(
                 $container->get('tekstove.api.lyric.count.redis'),
@@ -43,7 +45,23 @@ class EventDispacherFactory
         );
         return $dispacher;
     }
-    
+
+    protected static function createChatContentChecker(ContainerInterface $container)
+    {
+        $kernelPath = $container->get('kernel')->getRootDir();
+        $dictionariesDir = $kernelPath . '/../vendor/tekstove/content-checker/Dictionaries/';
+
+        $checker = new \Tekstove\ContentChecker\Checker\ExactChecker();
+        foreach (['sites.txt'] as $relativeDictionaryPath) {
+            $dictionaryText = trim(file_get_contents($dictionariesDir . $relativeDictionaryPath));
+            $words = explode("\n", $dictionaryText);
+            $dictionary = new \Tekstove\ContentChecker\Dictionary\SimpleDictionary($words);
+            $checker->addDictionary($dictionary);
+        }
+
+        return $checker;
+    }
+
     protected static function createContentChecker(ContainerInterface $container)
     {
         // THIS IS UGLY!!!

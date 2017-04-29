@@ -34,6 +34,9 @@ class Message extends BaseMessage
             throw $exception;
         }
 
+        $eventValidators = new MessageEvent($this);
+        $this->getEventDispacher()->dispatch('tekstove.chat.message.validate.after', $eventValidators);
+
         $event = new MessageEvent($this);
         $this->getEventDispacher()->dispatch('tekstove.chat.message.save', $event);
         return parent::preSave($con);

@@ -48,6 +48,12 @@ class MessageVoter extends Voter
                     return true;
                 }
                 return false;
+            case 'censore':
+                if ($user->getPermission(Permission::CHAT_MESSAGE_CENSORE)) {
+                    return true;
+                }
+
+                return false;
         }
     }
 }

@@ -16,8 +16,6 @@ class CensoreController extends Controller
 {
     public function postAction(Request $request)
     {
-        // @TODO check user permissions
-
         if (!$this->getUser()) {
             $accessDenied = $this->createAccessDeniedException('Not logged');
             throw $accessDenied;

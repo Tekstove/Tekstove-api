@@ -177,7 +177,7 @@ class TekstoveAbstractController extends FOSRestController
         if (!$pagination instanceof \Knp\Component\Pager\Pagination\AbstractPagination) {
             return $pagination;
         }
-        
+
         $data = [
             'items' => $pagination->getItems(),
             'pagination' => [

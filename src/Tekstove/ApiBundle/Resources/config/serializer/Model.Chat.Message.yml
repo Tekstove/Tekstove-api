@@ -6,6 +6,9 @@
         getId:
             groups: [Details, List]
             serialized_name: id
+        getIdOverride:
+            groups: [Details, List]
+            serialized_name: idOverride
         getUsername:
             groups: [Details, List]
             serialized_name: username

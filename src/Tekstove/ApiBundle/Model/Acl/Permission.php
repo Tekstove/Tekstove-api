@@ -24,4 +24,5 @@ class Permission extends BasePermission
     const FORUM_VIEW_SECRET = 'forum.secret.view';
 
     const CHAT_MESSAGE_VIEW_DETAILS = 'chat.message.details.view';
+    const CHAT_MESSAGE_CENSORE = 'chat.censore';
 }

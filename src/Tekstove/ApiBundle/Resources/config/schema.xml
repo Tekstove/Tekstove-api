@@ -298,6 +298,7 @@
     
     <table name="chat" namespace="\Tekstove\ApiBundle\Model\Chat" phpName="Message">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
+        <column name="id_override" type="integer" required="false" />
         <column name="message" type="varchar" required="true" />
         <column name="message_html" type="varchar" required="true" />
         <column name="ip" type="varchar" required="true" />

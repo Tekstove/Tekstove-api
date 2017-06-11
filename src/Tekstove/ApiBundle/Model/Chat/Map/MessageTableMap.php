@@ -59,7 +59,7 @@ class MessageTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 8;
 
     /**
      * The number of lazy-loaded columns
@@ -69,12 +69,17 @@ class MessageTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 8;
 
     /**
      * the column name for the id field
      */
     const COL_ID = 'chat.id';
+
+    /**
+     * the column name for the id_override field
+     */
+    const COL_ID_OVERRIDE = 'chat.id_override';
 
     /**
      * the column name for the message field
@@ -118,11 +123,11 @@ class MessageTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Message', 'MessageHtml', 'Ip', 'Date', 'Username', 'UserId', ),
-        self::TYPE_CAMELNAME     => array('id', 'message', 'messageHtml', 'ip', 'date', 'username', 'userId', ),
-        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID, MessageTableMap::COL_MESSAGE, MessageTableMap::COL_MESSAGE_HTML, MessageTableMap::COL_IP, MessageTableMap::COL_DATE, MessageTableMap::COL_USERNAME, MessageTableMap::COL_USER_ID, ),
-        self::TYPE_FIELDNAME     => array('id', 'message', 'message_html', 'ip', 'date', 'username', 'user_id', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'IdOverride', 'Message', 'MessageHtml', 'Ip', 'Date', 'Username', 'UserId', ),
+        self::TYPE_CAMELNAME     => array('id', 'idOverride', 'message', 'messageHtml', 'ip', 'date', 'username', 'userId', ),
+        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID, MessageTableMap::COL_ID_OVERRIDE, MessageTableMap::COL_MESSAGE, MessageTableMap::COL_MESSAGE_HTML, MessageTableMap::COL_IP, MessageTableMap::COL_DATE, MessageTableMap::COL_USERNAME, MessageTableMap::COL_USER_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'id_override', 'message', 'message_html', 'ip', 'date', 'username', 'user_id', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -132,11 +137,11 @@ class MessageTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Message' => 1, 'MessageHtml' => 2, 'Ip' => 3, 'Date' => 4, 'Username' => 5, 'UserId' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'message' => 1, 'messageHtml' => 2, 'ip' => 3, 'date' => 4, 'username' => 5, 'userId' => 6, ),
-        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID => 0, MessageTableMap::COL_MESSAGE => 1, MessageTableMap::COL_MESSAGE_HTML => 2, MessageTableMap::COL_IP => 3, MessageTableMap::COL_DATE => 4, MessageTableMap::COL_USERNAME => 5, MessageTableMap::COL_USER_ID => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'message' => 1, 'message_html' => 2, 'ip' => 3, 'date' => 4, 'username' => 5, 'user_id' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'IdOverride' => 1, 'Message' => 2, 'MessageHtml' => 3, 'Ip' => 4, 'Date' => 5, 'Username' => 6, 'UserId' => 7, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'idOverride' => 1, 'message' => 2, 'messageHtml' => 3, 'ip' => 4, 'date' => 5, 'username' => 6, 'userId' => 7, ),
+        self::TYPE_COLNAME       => array(MessageTableMap::COL_ID => 0, MessageTableMap::COL_ID_OVERRIDE => 1, MessageTableMap::COL_MESSAGE => 2, MessageTableMap::COL_MESSAGE_HTML => 3, MessageTableMap::COL_IP => 4, MessageTableMap::COL_DATE => 5, MessageTableMap::COL_USERNAME => 6, MessageTableMap::COL_USER_ID => 7, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'id_override' => 1, 'message' => 2, 'message_html' => 3, 'ip' => 4, 'date' => 5, 'username' => 6, 'user_id' => 7, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -157,6 +162,7 @@ class MessageTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
+        $this->addColumn('id_override', 'IdOverride', 'INTEGER', false, null, null);
         $this->addColumn('message', 'Message', 'VARCHAR', true, 255, null);
         $this->addColumn('message_html', 'MessageHtml', 'VARCHAR', true, 255, null);
         $this->addColumn('ip', 'Ip', 'VARCHAR', true, 255, null);
@@ -334,6 +340,7 @@ class MessageTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(MessageTableMap::COL_ID);
+            $criteria->addSelectColumn(MessageTableMap::COL_ID_OVERRIDE);
             $criteria->addSelectColumn(MessageTableMap::COL_MESSAGE);
             $criteria->addSelectColumn(MessageTableMap::COL_MESSAGE_HTML);
             $criteria->addSelectColumn(MessageTableMap::COL_IP);
@@ -342,6 +349,7 @@ class MessageTableMap extends TableMap
             $criteria->addSelectColumn(MessageTableMap::COL_USER_ID);
         } else {
             $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.id_override');
             $criteria->addSelectColumn($alias . '.message');
             $criteria->addSelectColumn($alias . '.message_html');
             $criteria->addSelectColumn($alias . '.ip');

@@ -29,6 +29,7 @@ class MessagesController extends Controller
                 $lastmessage->getId() - 20,
                 Criteria::GREATER_THAN
             );
+            $messageQuery->filterByIdOverride(null, Criteria::ISNULL);
         }
 
         $messageQuery->orderById(Criteria::ASC);

@@ -34,6 +34,8 @@ class MessageSubscriber implements EventSubscriberInterface
 
     public function onPostSerialize(ObjectEvent $event)
     {
+        $this->addCensor($event);
+
         $object = $event->getObject();
 
         if (false === $object instanceof Message) {
@@ -55,6 +57,22 @@ class MessageSubscriber implements EventSubscriberInterface
             if (false === $this->authorizationChecker->isGranted('viewIp', $object)) {
                 $visitor->setdata('ip', null);
             }
+        }
+    }
+
+    public function addCensor(ObjectEvent $event)
+    {
+        $object = $event->getObject();
+        if (false === $object instanceof Message) {
+            return true;
+        }
+
+        $visitor = $event->getVisitor();
+
+        if ($this->authorizationChecker->isGranted('censore', $object)) {
+            $visitor->setdata('_meta', ['censore' => true]);
+        } else {
+            $visitor->setdata('_meta', ['censore' => false]);
         }
     }
 }

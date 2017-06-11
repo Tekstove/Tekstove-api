@@ -22,6 +22,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  *
  *
  * @method     ChildMessageQuery orderById($order = Criteria::ASC) Order by the id column
+ * @method     ChildMessageQuery orderByIdOverride($order = Criteria::ASC) Order by the id_override column
  * @method     ChildMessageQuery orderByMessage($order = Criteria::ASC) Order by the message column
  * @method     ChildMessageQuery orderByMessageHtml($order = Criteria::ASC) Order by the message_html column
  * @method     ChildMessageQuery orderByIp($order = Criteria::ASC) Order by the ip column
@@ -30,6 +31,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessageQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  *
  * @method     ChildMessageQuery groupById() Group by the id column
+ * @method     ChildMessageQuery groupByIdOverride() Group by the id_override column
  * @method     ChildMessageQuery groupByMessage() Group by the message column
  * @method     ChildMessageQuery groupByMessageHtml() Group by the message_html column
  * @method     ChildMessageQuery groupByIp() Group by the ip column
@@ -61,6 +63,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessage findOneOrCreate(ConnectionInterface $con = null) Return the first ChildMessage matching the query, or a new ChildMessage object populated from the query conditions when no match is found
  *
  * @method     ChildMessage findOneById(int $id) Return the first ChildMessage filtered by the id column
+ * @method     ChildMessage findOneByIdOverride(int $id_override) Return the first ChildMessage filtered by the id_override column
  * @method     ChildMessage findOneByMessage(string $message) Return the first ChildMessage filtered by the message column
  * @method     ChildMessage findOneByMessageHtml(string $message_html) Return the first ChildMessage filtered by the message_html column
  * @method     ChildMessage findOneByIp(string $ip) Return the first ChildMessage filtered by the ip column
@@ -72,6 +75,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  * @method     ChildMessage requireOne(ConnectionInterface $con = null) Return the first ChildMessage matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildMessage requireOneById(int $id) Return the first ChildMessage filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildMessage requireOneByIdOverride(int $id_override) Return the first ChildMessage filtered by the id_override column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByMessage(string $message) Return the first ChildMessage filtered by the message column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByMessageHtml(string $message_html) Return the first ChildMessage filtered by the message_html column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildMessage requireOneByIp(string $ip) Return the first ChildMessage filtered by the ip column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -81,6 +85,7 @@ use Tekstove\ApiBundle\Model\Chat\Map\MessageTableMap;
  *
  * @method     ChildMessage[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildMessage objects based on current ModelCriteria
  * @method     ChildMessage[]|ObjectCollection findById(int $id) Return ChildMessage objects filtered by the id column
+ * @method     ChildMessage[]|ObjectCollection findByIdOverride(int $id_override) Return ChildMessage objects filtered by the id_override column
  * @method     ChildMessage[]|ObjectCollection findByMessage(string $message) Return ChildMessage objects filtered by the message column
  * @method     ChildMessage[]|ObjectCollection findByMessageHtml(string $message_html) Return ChildMessage objects filtered by the message_html column
  * @method     ChildMessage[]|ObjectCollection findByIp(string $ip) Return ChildMessage objects filtered by the ip column
@@ -185,7 +190,7 @@ abstract class MessageQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `message`, `message_html`, `ip`, `date`, `username`, `user_id` FROM `chat` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `id_override`, `message`, `message_html`, `ip`, `date`, `username`, `user_id` FROM `chat` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -314,6 +319,47 @@ abstract class MessageQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(MessageTableMap::COL_ID, $id, $comparison);
+    }
+
+    /**
+     * Filter the query on the id_override column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByIdOverride(1234); // WHERE id_override = 1234
+     * $query->filterByIdOverride(array(12, 34)); // WHERE id_override IN (12, 34)
+     * $query->filterByIdOverride(array('min' => 12)); // WHERE id_override > 12
+     * </code>
+     *
+     * @param     mixed $idOverride The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildMessageQuery The current query, for fluid interface
+     */
+    public function filterByIdOverride($idOverride = null, $comparison = null)
+    {
+        if (is_array($idOverride)) {
+            $useMinMax = false;
+            if (isset($idOverride['min'])) {
+                $this->addUsingAlias(MessageTableMap::COL_ID_OVERRIDE, $idOverride['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($idOverride['max'])) {
+                $this->addUsingAlias(MessageTableMap::COL_ID_OVERRIDE, $idOverride['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(MessageTableMap::COL_ID_OVERRIDE, $idOverride, $comparison);
     }
 
     /**

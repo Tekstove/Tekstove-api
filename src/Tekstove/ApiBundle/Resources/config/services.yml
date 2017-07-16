@@ -9,7 +9,12 @@ services:
         arguments: ["@security.authorization_checker"]
         tags:
             - { name: "jms_serializer.event_subscriber" }
-            
+    
+    tekstove.api.http_kernel.cors_subscriber:
+        class: Tekstove\ApiBundle\EventListener\HttpKernel\CorsSubscriber
+        tags:
+            - { name: kernel.event_subscriber }
+    
     tekstove.api.serializer.chat.message_subscriber:
         class: Tekstove\ApiBundle\EventListener\Model\Serialize\Chat\MessageSubscriber
         arguments: ["@security.authorization_checker"]

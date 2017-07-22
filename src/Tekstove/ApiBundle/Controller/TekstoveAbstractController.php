@@ -25,8 +25,9 @@ class TekstoveAbstractController extends FOSRestController
     {
         if ($this->context === null) {
             $this->context = SerializationContext::create();
+            $this->context->setSerializeNull(true);
         }
-        
+
         return $this->context;
     }
     

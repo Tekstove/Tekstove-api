@@ -59,7 +59,7 @@ class ArtistTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 4;
+    const NUM_COLUMNS = 5;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ArtistTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 4;
+    const NUM_HYDRATE_COLUMNS = 5;
 
     /**
      * the column name for the id field
@@ -92,6 +92,11 @@ class ArtistTableMap extends TableMap
     const COL_FORBIDDEN = 'artist.forbidden';
 
     /**
+     * the column name for the about field
+     */
+    const COL_ABOUT = 'artist.about';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -103,11 +108,11 @@ class ArtistTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'UserId', 'Forbidden', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'userId', 'forbidden', ),
-        self::TYPE_COLNAME       => array(ArtistTableMap::COL_ID, ArtistTableMap::COL_NAME, ArtistTableMap::COL_USER_ID, ArtistTableMap::COL_FORBIDDEN, ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'user_id', 'forbidden', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'UserId', 'Forbidden', 'About', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'userId', 'forbidden', 'about', ),
+        self::TYPE_COLNAME       => array(ArtistTableMap::COL_ID, ArtistTableMap::COL_NAME, ArtistTableMap::COL_USER_ID, ArtistTableMap::COL_FORBIDDEN, ArtistTableMap::COL_ABOUT, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', 'user_id', 'forbidden', 'about', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -117,11 +122,11 @@ class ArtistTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'UserId' => 2, 'Forbidden' => 3, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'userId' => 2, 'forbidden' => 3, ),
-        self::TYPE_COLNAME       => array(ArtistTableMap::COL_ID => 0, ArtistTableMap::COL_NAME => 1, ArtistTableMap::COL_USER_ID => 2, ArtistTableMap::COL_FORBIDDEN => 3, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'user_id' => 2, 'forbidden' => 3, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'UserId' => 2, 'Forbidden' => 3, 'About' => 4, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'userId' => 2, 'forbidden' => 3, 'about' => 4, ),
+        self::TYPE_COLNAME       => array(ArtistTableMap::COL_ID => 0, ArtistTableMap::COL_NAME => 1, ArtistTableMap::COL_USER_ID => 2, ArtistTableMap::COL_FORBIDDEN => 3, ArtistTableMap::COL_ABOUT => 4, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'user_id' => 2, 'forbidden' => 3, 'about' => 4, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -145,6 +150,7 @@ class ArtistTableMap extends TableMap
         $this->addColumn('name', 'Name', 'VARCHAR', false, 255, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', false, null, null);
         $this->addColumn('forbidden', 'Forbidden', 'SMALLINT', false, null, null);
+        $this->addColumn('about', 'About', 'VARCHAR', false, 255, null);
     } // initialize()
 
     /**
@@ -321,11 +327,13 @@ class ArtistTableMap extends TableMap
             $criteria->addSelectColumn(ArtistTableMap::COL_NAME);
             $criteria->addSelectColumn(ArtistTableMap::COL_USER_ID);
             $criteria->addSelectColumn(ArtistTableMap::COL_FORBIDDEN);
+            $criteria->addSelectColumn(ArtistTableMap::COL_ABOUT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.name');
             $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.forbidden');
+            $criteria->addSelectColumn($alias . '.about');
         }
     }
 

@@ -9,3 +9,6 @@
         getAlbums:
             groups: [Albums]
             serialized_name: albums
+        getAbout:
+            groups: [Details]
+            serialized_name: about

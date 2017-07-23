@@ -71,7 +71,7 @@ class Album extends BaseAlbum implements AutoAclSerializableInterface
         foreach ($returnUnOrdered as $albumArtistData) {
             $return[] = $albumArtistData['artist'];
         }
-        
+
         return $return;
     }
 }

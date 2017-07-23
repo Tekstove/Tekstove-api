@@ -24,5 +24,6 @@
             groups: [Details]
             serialized_name: lyrics
         getOrderedArtists:
-            groups: [Details]
+            type: array<Tekstove\ApiBundle\Model\Artist>
+            groups: [Album.Details]
             serialized_name: artists

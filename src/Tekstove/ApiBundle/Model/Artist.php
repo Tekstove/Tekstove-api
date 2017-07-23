@@ -14,8 +14,11 @@ use Tekstove\ApiBundle\Model\Base\Artist as BaseArtist;
  * long as it does not already exist in the output directory.
  *
  */
-class Artist extends BaseArtist
+class Artist extends BaseArtist implements Acl\EditableInterface, Acl\AutoAclSerializableInterface
 {
+
+    use AclTrait;
+
     /**
      * @return Album[]
      */

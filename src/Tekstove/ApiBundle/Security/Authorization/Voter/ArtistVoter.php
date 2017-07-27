@@ -39,8 +39,12 @@ class ArtistVoter extends Voter
 
         switch ($attribute) {
             case 'edit':
-                // @FIXME
-                return true;
+                if ($user->getId() === 54) {
+                    // @FIXME
+                    return true;
+                }
+
+                return false;
         }
     }
 }

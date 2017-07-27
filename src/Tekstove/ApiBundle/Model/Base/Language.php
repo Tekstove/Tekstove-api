@@ -722,7 +722,8 @@ abstract class Language implements ActiveRecordInterface
     public function initRelation($relationName)
     {
         if ('LyricLanguage' == $relationName) {
-            return $this->initLyricLanguages();
+            $this->initLyricLanguages();
+            return;
         }
     }
 

@@ -1109,7 +1109,7 @@ abstract class Message implements ActiveRecordInterface
             $keys[6] => $this->getUsername(),
             $keys[7] => $this->getUserId(),
         );
-        if ($result[$keys[5]] instanceof \DateTime) {
+        if ($result[$keys[5]] instanceof \DateTimeInterface) {
             $result[$keys[5]] = $result[$keys[5]]->format('c');
         }
 

@@ -3,6 +3,7 @@
 namespace Tekstove\ApiBundle\Model;
 
 use Tekstove\ApiBundle\Model\Base\ArtistQuery as BaseArtistQuery;
+use Tekstove\ApiBundle\Model\Artist;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'artist' table.
@@ -16,5 +17,12 @@ use Tekstove\ApiBundle\Model\Base\ArtistQuery as BaseArtistQuery;
  */
 class ArtistQuery extends BaseArtistQuery
 {
+    use RepositoryTrait;
 
+    public function save(Artist $artist)
+    {
+        $artist->setEventDispacher($this->eventDispacher);
+        $artist->setValidator($this->validator);
+        $artist->save();
+    }
 }

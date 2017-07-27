@@ -982,7 +982,7 @@ abstract class Post implements ActiveRecordInterface
             $keys[3] => $this->getForumTopicId(),
             $keys[4] => $this->getDate(),
         );
-        if ($result[$keys[4]] instanceof \DateTime) {
+        if ($result[$keys[4]] instanceof \DateTimeInterface) {
             $result[$keys[4]] = $result[$keys[4]]->format('c');
         }
 

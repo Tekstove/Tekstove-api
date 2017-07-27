@@ -1385,10 +1385,12 @@ abstract class Album implements ActiveRecordInterface
     public function initRelation($relationName)
     {
         if ('AlbumArtist' == $relationName) {
-            return $this->initAlbumArtists();
+            $this->initAlbumArtists();
+            return;
         }
         if ('AlbumLyric' == $relationName) {
-            return $this->initAlbumLyrics();
+            $this->initAlbumLyrics();
+            return;
         }
     }
 

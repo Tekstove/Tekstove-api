@@ -821,7 +821,7 @@ abstract class Online implements ActiveRecordInterface
             $keys[1] => $this->getUsername(),
             $keys[2] => $this->getDate(),
         );
-        if ($result[$keys[2]] instanceof \DateTime) {
+        if ($result[$keys[2]] instanceof \DateTimeInterface) {
             $result[$keys[2]] = $result[$keys[2]]->format('c');
         }
 

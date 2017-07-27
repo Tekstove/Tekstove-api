@@ -144,6 +144,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         // @FIXME
         if ($this->getId() === 54) {
             $return[] = 'name';
+            $return[] = 'about';
         }
 
         return $return;

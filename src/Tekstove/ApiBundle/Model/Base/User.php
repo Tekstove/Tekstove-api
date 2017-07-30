@@ -2065,40 +2065,52 @@ abstract class User implements ActiveRecordInterface
     public function initRelation($relationName)
     {
         if ('PmRelatedByUserTo' == $relationName) {
-            return $this->initPmsRelatedByUserTo();
+            $this->initPmsRelatedByUserTo();
+            return;
         }
         if ('PmRelatedByUserFrom' == $relationName) {
-            return $this->initPmsRelatedByUserFrom();
+            $this->initPmsRelatedByUserFrom();
+            return;
         }
         if ('PermissionGroupUser' == $relationName) {
-            return $this->initPermissionGroupUsers();
+            $this->initPermissionGroupUsers();
+            return;
         }
         if ('Lyric' == $relationName) {
-            return $this->initLyrics();
+            $this->initLyrics();
+            return;
         }
         if ('LyricTranslation' == $relationName) {
-            return $this->initLyricTranslations();
+            $this->initLyricTranslations();
+            return;
         }
         if ('LyricVote' == $relationName) {
-            return $this->initLyricVotes();
+            $this->initLyricVotes();
+            return;
         }
         if ('Artist' == $relationName) {
-            return $this->initArtists();
+            $this->initArtists();
+            return;
         }
         if ('Album' == $relationName) {
-            return $this->initAlbums();
+            $this->initAlbums();
+            return;
         }
         if ('Topic' == $relationName) {
-            return $this->initTopics();
+            $this->initTopics();
+            return;
         }
         if ('Post' == $relationName) {
-            return $this->initPosts();
+            $this->initPosts();
+            return;
         }
         if ('Message' == $relationName) {
-            return $this->initMessages();
+            $this->initMessages();
+            return;
         }
         if ('Online' == $relationName) {
-            return $this->initOnlines();
+            $this->initOnlines();
+            return;
         }
     }
 

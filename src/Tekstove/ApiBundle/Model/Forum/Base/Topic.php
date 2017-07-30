@@ -1386,7 +1386,8 @@ abstract class Topic implements ActiveRecordInterface
     public function initRelation($relationName)
     {
         if ('Post' == $relationName) {
-            return $this->initPosts();
+            $this->initPosts();
+            return;
         }
     }
 

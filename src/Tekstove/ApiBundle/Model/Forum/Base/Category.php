@@ -799,7 +799,8 @@ abstract class Category implements ActiveRecordInterface
     public function initRelation($relationName)
     {
         if ('Topic' == $relationName) {
-            return $this->initTopics();
+            $this->initTopics();
+            return;
         }
     }
 

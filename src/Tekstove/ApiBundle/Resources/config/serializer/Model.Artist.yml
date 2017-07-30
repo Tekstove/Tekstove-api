@@ -12,3 +12,5 @@
         getAbout:
             groups: [Details]
             serialized_name: about
+        acl:
+            groups: [Artist.Acl]

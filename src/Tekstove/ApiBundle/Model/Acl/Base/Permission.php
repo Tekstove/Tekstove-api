@@ -751,7 +751,8 @@ abstract class Permission implements ActiveRecordInterface
     public function initRelation($relationName)
     {
         if ('PermissionGroupPermission' == $relationName) {
-            return $this->initPermissionGroupPermissions();
+            $this->initPermissionGroupPermissions();
+            return;
         }
     }
 

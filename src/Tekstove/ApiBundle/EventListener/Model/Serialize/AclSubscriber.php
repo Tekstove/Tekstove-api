@@ -86,11 +86,11 @@ class AclSubscriber implements EventSubscriberInterface
     public function handleAclField(ObjectEvent $event)
     {
         $object = $event->getObject();
-        
+
         if (false === $object instanceof AutoAclSerializableInterface) {
             return true;
         }
-        
+
         $objectClass = get_class($object);
         
         $visitor = $event->getVisitor();

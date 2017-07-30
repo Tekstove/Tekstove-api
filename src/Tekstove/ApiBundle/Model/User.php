@@ -137,7 +137,21 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         
         return $allowedFields;
     }
-    
+
+    public function getAllowedArtistFields(Artist $artist)
+    {
+        $return = [];
+
+        $permissions = $this->getPermissions();
+
+        if (array_key_exists(Permission::ARTIST_EDIT, $permissions)) {
+            $return[] = 'name';
+            $return[] = 'about';
+        }
+
+        return $return;
+    }
+
     public function getAllowedForumPmFields(Pm $pm)
     {
         $return = [];

@@ -1902,11 +1902,11 @@ abstract class Lyric implements ActiveRecordInterface
             $keys[15] => $this->getvideoMetacafe(),
             $keys[16] => $this->getdownload(),
         );
-        if ($result[$keys[4]] instanceof \DateTime) {
+        if ($result[$keys[4]] instanceof \DateTimeInterface) {
             $result[$keys[4]] = $result[$keys[4]]->format('c');
         }
 
-        if ($result[$keys[9]] instanceof \DateTime) {
+        if ($result[$keys[9]] instanceof \DateTimeInterface) {
             $result[$keys[9]] = $result[$keys[9]]->format('c');
         }
 
@@ -2512,22 +2512,28 @@ abstract class Lyric implements ActiveRecordInterface
     public function initRelation($relationName)
     {
         if ('ArtistLyric' == $relationName) {
-            return $this->initArtistLyrics();
+            $this->initArtistLyrics();
+            return;
         }
         if ('LyricLanguage' == $relationName) {
-            return $this->initLyricLanguages();
+            $this->initLyricLanguages();
+            return;
         }
         if ('LyricTranslation' == $relationName) {
-            return $this->initLyricTranslations();
+            $this->initLyricTranslations();
+            return;
         }
         if ('LyricVote' == $relationName) {
-            return $this->initLyricVotes();
+            $this->initLyricVotes();
+            return;
         }
         if ('LyricTopPopularity' == $relationName) {
-            return $this->initLyricTopPopularities();
+            $this->initLyricTopPopularities();
+            return;
         }
         if ('AlbumLyric' == $relationName) {
-            return $this->initAlbumLyrics();
+            $this->initAlbumLyrics();
+            return;
         }
     }
 

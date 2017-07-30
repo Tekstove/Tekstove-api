@@ -882,7 +882,7 @@ abstract class LyricTopPopularity implements ActiveRecordInterface
             $keys[2] => $this->getPopularity(),
             $keys[3] => $this->getDate(),
         );
-        if ($result[$keys[3]] instanceof \DateTime) {
+        if ($result[$keys[3]] instanceof \DateTimeInterface) {
             $result[$keys[3]] = $result[$keys[3]]->format('c');
         }
 

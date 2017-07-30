@@ -141,8 +141,10 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
     public function getAllowedArtistFields(Artist $artist)
     {
         $return = [];
-        // @FIXME
-        if ($this->getId() === 54) {
+
+        $permissions = $this->getPermissions();
+
+        if (array_key_exists(Permission::ARTIST_EDIT, $permissions)) {
             $return[] = 'name';
             $return[] = 'about';
         }

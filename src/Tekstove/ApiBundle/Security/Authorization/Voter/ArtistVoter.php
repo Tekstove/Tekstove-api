@@ -6,6 +6,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Tekstove\ApiBundle\Model\Artist;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Tekstove\ApiBundle\Model\User;
+use Tekstove\ApiBundle\Model\Acl\Permission;
 
 /**
  * Description of ArtistVoter
@@ -39,8 +40,7 @@ class ArtistVoter extends Voter
 
         switch ($attribute) {
             case 'edit':
-                if ($user->getId() === 54) {
-                    // @FIXME
+                if ($user->getPermission(Permission::ARTIST_EDIT)) {
                     return true;
                 }
 

@@ -38,11 +38,10 @@ class ArtistController extends Controller
         $artist = $repo->findOneById($id);
         
         try {
-            if ($this->getUser()) {
-                $user = $this->getUser();
-            } else {
-                $user = new User();
+            if (!$this->getUser()) {
+                throw new \RuntimeException('User must be logged!');
             }
+            $user = $this->getUser();
 
             $allowedFields = $user->getAllowedArtistFields($artist);
 

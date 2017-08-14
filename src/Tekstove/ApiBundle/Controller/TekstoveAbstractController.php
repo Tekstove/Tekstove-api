@@ -97,25 +97,19 @@ class TekstoveAbstractController extends FOSRestController
         $filters = $request->get('filters', []);
         foreach ($filters as $filter) {
             $value = $filter['value'];
-            $operator = $filter['operator'];
+            $operator = strtolower($filter['operator']);
             $field = $filter['field'];
             //@TODO maybe this should be service
             $filterMethod = 'filterBy' . ucfirst($field);
             switch ($operator) {
-                case '=':
-                    $data->{$filterMethod}($value, Criteria::EQUAL);
-                    break;
-                case '>':
-                    $data->{$filterMethod}($value, Criteria::GREATER_THAN);
+                case Criteria::EQUAL:
+                case Criteria::GREATER_THAN:
+                case Criteria::IN:
+                case Criteria::LIKE:
+                    $data->filterBy($field, $value, $operator);
                     break;
                 case 'NOT_NULL':
                     $data->{$filterMethod}(null, Criteria::ISNOTNULL);
-                    break;
-                case 'in':
-                    $data->{$filterMethod}($value, Criteria::IN);
-                    break;
-                case 'like':
-                    $data->{$filterMethod}("{$value}", Criteria::LIKE);
                     break;
                 case 'range':
                     if (!array_key_exists('min', $value) && !array_key_exists('min', $value)) {
@@ -123,12 +117,68 @@ class TekstoveAbstractController extends FOSRestController
                     }
                     $data->{$filterMethod}($value);
                     break;
+                case 'or':
+                    $condition = 1;
+                    throw new \Exception('Not implemented');
+                    break;
                 default:
                     throw new \Exception("Unknown operator {$operator}");
             }
         }
         
         return $data;
+    }
+
+    protected function generateFilters($filterCollection, \Propel\Runtime\ActiveQuery\ModelCriteria $model)
+    {
+        $filterCollection = [
+            [
+                'field' => 'id',
+                'operator' => 'eq',
+                'value' => 55,
+            ],
+            [
+                'operator' => 'or',
+                'value' => [
+                    [
+                        'field' => 'name',
+                        'operator' => 'eq',
+                        'value' => 'asdf',
+                    ],
+                    [
+                        'field' => 'name',
+                        'operator' => 'eq',
+                        'value' => 'qwer',
+                    ],
+                ]
+            ]
+        ];
+
+        $conditions = [];
+
+        foreach ($filterCollection as $filter) {
+            $operator = $filter['operator'];
+            switch ($operator) {
+                case 'or':
+                    // @FIXME
+                    return $this->generateFilters($filter['value']);
+                case 'eq':
+                    $condName = $operator . '_' . uniqid();
+
+                    $field = $filter['field'];
+                    // @FIXME quote field?
+
+                    $clause = "{$field} = ?";
+                    $model->condition(
+                        $condName,
+                        $clause,
+                        $filter['value']
+                    );
+                    break;
+
+                    $conditions[] = $condName;
+            }
+        }
     }
     
     protected function applyOrders(Request $request, $data)

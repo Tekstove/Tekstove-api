@@ -9,5 +9,16 @@ services:
             - "81:80"
         links:
             - tekstove.api-redis
+            - tekstove.api-sql
     tekstove.api-redis:
         image: redis:3
+    tekstove.api-sql:
+        image: mariadb:10
+        volumes:
+            - "./local/sql:/var/lib/mysql"
+        environment:
+            MYSQL_ROOT_PASSWORD: ~
+            MYSQL_DATABASE: 'tekstove_api'
+            MYSQL_USER: 'root'
+            MYSQL_PASS: ~
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'

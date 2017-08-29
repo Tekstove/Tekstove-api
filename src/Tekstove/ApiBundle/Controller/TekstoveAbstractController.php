@@ -132,9 +132,20 @@ class TekstoveAbstractController extends FOSRestController
                 'operator' => 'or',
                 'value' => [
                     [
-                        'field' => 'id',
-                        'value' => '400 or 1=1',
-                        'operator' => '=',
+                        'value' => '400',
+                        'operator' => 'or',
+                        'value' => [
+                            [
+                                'field' => 'id',
+                                'value' => 400,
+                                'operator' => '=',
+                            ],
+                            [
+                                'field' => 'id',
+                                'value' => 399,
+                                'operator' => '=',
+                            ],
+                        ],
                     ],
                     [
                         'field' => 'id',
@@ -156,47 +167,62 @@ class TekstoveAbstractController extends FOSRestController
     
     protected function generateCompositeCriterion(array $data, \Propel\Runtime\ActiveQuery\ModelCriteria $modelCriteria)
     {
+        $criterionName = $this->generateCompositeCriterionData($data, $modelCriteria);
+        $modelCriteria->combine([$criterionName]);
+    }
+
+    protected function generateCompositeCriterionData(array $data, \Propel\Runtime\ActiveQuery\ModelCriteria $modelCriteria)
+    {
         // @TODO validate operator!
         $operator = $data['operator'];
         $conditionsCollection = $data['value'];
         
         $tableMap = $modelCriteria->getTableMap();
         
-        $criterionsCollection = [];
+        $criterionsCollectionNames = [];
         
         foreach ($conditionsCollection as $conditionData) {
             // lets assume that there are no nesting
-            if (!$tableMap->hasColumnByPhpName($conditionData['field']) && !$tableMap->hasColumnByPhpName(ucfirst($conditionData['field']))) {
-                dump($tableMap); die;
-                throw new \Exception("Unknown field {$conditionData['field']}");
-            }
+            
 
-            switch ($conditionData['operator']) {
+            switch (strtoupper($conditionData['operator'])) {
                 case Criteria::EQUAL:
                 case Criteria::GREATER_THAN:
                 case Criteria::IN:
                 case Criteria::LIKE:
+                    // propel generate property names with upper 1st letter
+                    if (!$tableMap->hasColumnByPhpName($conditionData['field']) && !$tableMap->hasColumnByPhpName(ucfirst($conditionData['field']))) {
+                        throw new \Exception("Unknown field {$conditionData['field']}");
+                    }
+                    $criterion = $modelCriteria->getNewCriterion(
+                        $conditionData['field'],
+                        $conditionData['value'],
+                        $conditionData['operator']
+                    );
+
+                    $criterionName = uniqid();
+                    $criterionsCollectionNames[] = $criterionName;
+                    $modelCriteria->addCond($criterionName, $criterion);
+                    
+                    break;
+                case 'OR':
+                    $criterionsCollectionNames[] = $this->generateCompositeCriterionData($conditionData, $modelCriteria);
                     break;
                 default:
                     throw new \Exception("Unknown operator {$conditionData['operator']}");
             }
             
-            $criterion = $modelCriteria->getNewCriterion(
-                $conditionData['field'], 
-                $conditionData['value'], 
-                $conditionData['operator']
-            );
             
-            $criterionName = uniqid();
-            $criterionsCollection[$criterionName] = $criterion;
-            $modelCriteria->addCond($criterionName, $criterion);
         }
         
-        
+        $compositeCriterionName = 'composite_criterion_' . uniqid();
         $modelCriteria->combine(
-            array_keys($criterionsCollection),
-            $operator
+            $criterionsCollectionNames,
+            $operator,
+            $compositeCriterionName
         );
+        
+        return $compositeCriterionName;
     }
 
     protected function applyOrders(Request $request, $data)

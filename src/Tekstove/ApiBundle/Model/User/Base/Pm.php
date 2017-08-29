@@ -1459,7 +1459,7 @@ abstract class Pm implements ActiveRecordInterface
      */
     public function getUserRelatedByUserTo(ConnectionInterface $con = null)
     {
-        if ($this->aUserRelatedByUserTo === null && ($this->user_to !== null)) {
+        if ($this->aUserRelatedByUserTo === null && ($this->user_to != 0)) {
             $this->aUserRelatedByUserTo = UserQuery::create()->findPk($this->user_to, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -1510,7 +1510,7 @@ abstract class Pm implements ActiveRecordInterface
      */
     public function getUserRelatedByUserFrom(ConnectionInterface $con = null)
     {
-        if ($this->aUserRelatedByUserFrom === null && ($this->user_from !== null)) {
+        if ($this->aUserRelatedByUserFrom === null && ($this->user_from != 0)) {
             $this->aUserRelatedByUserFrom = UserQuery::create()->findPk($this->user_from, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

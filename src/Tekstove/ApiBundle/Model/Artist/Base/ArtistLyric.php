@@ -1167,7 +1167,7 @@ abstract class ArtistLyric implements ActiveRecordInterface
      */
     public function getLyric(ConnectionInterface $con = null)
     {
-        if ($this->aLyric === null && ($this->lyric_id !== null)) {
+        if ($this->aLyric === null && ($this->lyric_id != 0)) {
             $this->aLyric = LyricQuery::create()->findPk($this->lyric_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -1218,7 +1218,7 @@ abstract class ArtistLyric implements ActiveRecordInterface
      */
     public function getArtist(ConnectionInterface $con = null)
     {
-        if ($this->aArtist === null && ($this->artist_id !== null)) {
+        if ($this->aArtist === null && ($this->artist_id != 0)) {
             $this->aArtist = ArtistQuery::create()->findPk($this->artist_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

@@ -1107,7 +1107,7 @@ abstract class LyricLanguage implements ActiveRecordInterface
      */
     public function getLyric(ConnectionInterface $con = null)
     {
-        if ($this->aLyric === null && ($this->lyric_id !== null)) {
+        if ($this->aLyric === null && ($this->lyric_id != 0)) {
             $this->aLyric = LyricQuery::create()->findPk($this->lyric_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -1158,7 +1158,7 @@ abstract class LyricLanguage implements ActiveRecordInterface
      */
     public function getLanguage(ConnectionInterface $con = null)
     {
-        if ($this->aLanguage === null && ($this->language_id !== null)) {
+        if ($this->aLanguage === null && ($this->language_id != 0)) {
             $this->aLanguage = LanguageQuery::create()->findPk($this->language_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

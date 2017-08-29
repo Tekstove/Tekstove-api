@@ -97,7 +97,7 @@ class TekstoveAbstractController extends FOSRestController
         $filters = $request->get('filters', []);
         foreach ($filters as $filter) {
             $value = $filter['value'];
-            $operator = strtolower($filter['operator']);
+            $operator = strtoupper($filter['operator']);
             $field = $filter['field'];
             //@TODO maybe this should be service
             $filterMethod = 'filterBy' . ucfirst($field);
@@ -111,13 +111,13 @@ class TekstoveAbstractController extends FOSRestController
                 case 'NOT_NULL':
                     $data->{$filterMethod}(null, Criteria::ISNOTNULL);
                     break;
-                case 'range':
+                case 'RANGE':
                     if (!array_key_exists('min', $value) && !array_key_exists('min', $value)) {
                         throw new \Exception("Please set `min` or `max` for {$filterMethod}");
                     }
                     $data->{$filterMethod}($value);
                     break;
-                case 'or':
+                case 'OR':
                     $condition = 1;
                     throw new \Exception('Not implemented');
                     break;
@@ -126,61 +126,79 @@ class TekstoveAbstractController extends FOSRestController
             }
         }
         
-        return $data;
-    }
-
-    protected function generateFilters($filterCollection, \Propel\Runtime\ActiveQuery\ModelCriteria $model)
-    {
-        $filterCollection = [
-            [
-                'field' => 'id',
-                'operator' => 'eq',
-                'value' => 55,
-            ],
+        // @FIXME this is test data, remove it!
+        $this->generateCompositeCriterion(
             [
                 'operator' => 'or',
                 'value' => [
                     [
-                        'field' => 'name',
-                        'operator' => 'eq',
-                        'value' => 'asdf',
+                        'field' => 'id',
+                        'value' => '400 or 1=1',
+                        'operator' => '=',
                     ],
                     [
-                        'field' => 'name',
-                        'operator' => 'eq',
-                        'value' => 'qwer',
+                        'field' => 'id',
+                        'value' => 401,
+                        'operator' => '=',
                     ],
-                ]
-            ]
-        ];
-
-        $conditions = [];
-
-        foreach ($filterCollection as $filter) {
-            $operator = $filter['operator'];
-            switch ($operator) {
-                case 'or':
-                    // @FIXME
-                    return $this->generateFilters($filter['value']);
-                case 'eq':
-                    $condName = $operator . '_' . uniqid();
-
-                    $field = $filter['field'];
-                    // @FIXME quote field?
-
-                    $clause = "{$field} = ?";
-                    $model->condition(
-                        $condName,
-                        $clause,
-                        $filter['value']
-                    );
-                    break;
-
-                    $conditions[] = $condName;
-            }
-        }
+                    [
+                        'field' => 'id',
+                        'value' => 402,
+                        'operator' => '=',
+                    ],
+                ],
+            ], 
+            $data
+        );
+        
+        return $data;
     }
     
+    protected function generateCompositeCriterion(array $data, \Propel\Runtime\ActiveQuery\ModelCriteria $modelCriteria)
+    {
+        // @TODO validate operator!
+        $operator = $data['operator'];
+        $conditionsCollection = $data['value'];
+        
+        $tableMap = $modelCriteria->getTableMap();
+        
+        $criterionsCollection = [];
+        
+        foreach ($conditionsCollection as $conditionData) {
+            // lets assume that there are no nesting
+            if (!$tableMap->hasColumnByPhpName($conditionData['field']) && !$tableMap->hasColumnByPhpName(ucfirst($conditionData['field']))) {
+                dump($tableMap); die;
+                throw new \Exception("Unknown field {$conditionData['field']}");
+            }
+
+            switch ($conditionData['operator']) {
+                case Criteria::EQUAL:
+                case Criteria::GREATER_THAN:
+                case Criteria::IN:
+                case Criteria::LIKE:
+                    break;
+                default:
+                    throw new \Exception("Unknown operator {$conditionData['operator']}");
+            }
+            
+            $criterion = $modelCriteria->getNewCriterion(
+                $conditionData['field'], 
+                $conditionData['value'], 
+                $conditionData['operator']
+            );
+            
+            $criterionName = uniqid();
+            $criterionsCollection[$criterionName] = $criterion;
+            $modelCriteria->addCond($criterionName, $criterion);
+        }
+        
+        
+        $modelCriteria->combine(
+            array_keys($criterionsCollection),
+            $operator
+        );
+    }
+
     protected function applyOrders(Request $request, $data)
     {
         if (!$data instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {

@@ -1276,7 +1276,7 @@ abstract class AlbumLyric implements ActiveRecordInterface
      */
     public function getAlbum(ConnectionInterface $con = null)
     {
-        if ($this->aAlbum === null && ($this->album_id !== null)) {
+        if ($this->aAlbum === null && ($this->album_id != 0)) {
             $this->aAlbum = ChildAlbumQuery::create()->findPk($this->album_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -1327,7 +1327,7 @@ abstract class AlbumLyric implements ActiveRecordInterface
      */
     public function getLyric(ConnectionInterface $con = null)
     {
-        if ($this->aLyric === null && ($this->lyric_id !== null)) {
+        if ($this->aLyric === null && ($this->lyric_id != 0)) {
             $this->aLyric = ChildLyricQuery::create()->findPk($this->lyric_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

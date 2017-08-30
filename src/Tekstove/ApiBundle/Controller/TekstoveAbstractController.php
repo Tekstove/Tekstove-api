@@ -132,7 +132,6 @@ class TekstoveAbstractController extends FOSRestController
                 'operator' => 'or',
                 'value' => [
                     [
-                        'value' => '400',
                         'operator' => 'or',
                         'value' => [
                             [
@@ -153,9 +152,26 @@ class TekstoveAbstractController extends FOSRestController
                         'operator' => '=',
                     ],
                     [
+                        'operator' => 'AND',
+                        'value' => [
+                            [
+                                'field' => 'id',
+                                'operator' => 'NOT_NULL',
+                            ],
+                            [
+                                'field' => 'id',
+                                'value' => 402,
+                                'operator' => '=',
+                            ],
+                        ],
+                    ],
+                    [
                         'field' => 'id',
-                        'value' => 402,
-                        'operator' => '=',
+                        'value' => [
+                            'min' => 5,
+                            'max' => 10,
+                        ],
+                        'operator' => 'range',
                     ],
                 ],
             ], 
@@ -173,7 +189,7 @@ class TekstoveAbstractController extends FOSRestController
 
     protected function generateCompositeCriterionData(array $data, \Propel\Runtime\ActiveQuery\ModelCriteria $modelCriteria)
     {
-        // @TODO validate operator!
+        // @TODO maybe I should validate the operator!
         $operator = $data['operator'];
         $conditionsCollection = $data['value'];
         
@@ -182,37 +198,75 @@ class TekstoveAbstractController extends FOSRestController
         $criterionsCollectionNames = [];
         
         foreach ($conditionsCollection as $conditionData) {
-            // lets assume that there are no nesting
-            
-
-            switch (strtoupper($conditionData['operator'])) {
+            $conditionName = strtoupper($conditionData['operator']);
+            switch ($conditionName) {
                 case Criteria::EQUAL:
                 case Criteria::GREATER_THAN:
+                case Criteria::GREATER_EQUAL:
+                case Criteria::LESS_THAN:
+                case Criteria::LESS_EQUAL:
                 case Criteria::IN:
                 case Criteria::LIKE:
+                case 'NOT_NULL':
                     // propel generate property names with upper 1st letter
                     if (!$tableMap->hasColumnByPhpName($conditionData['field']) && !$tableMap->hasColumnByPhpName(ucfirst($conditionData['field']))) {
                         throw new \Exception("Unknown field {$conditionData['field']}");
                     }
-                    $criterion = $modelCriteria->getNewCriterion(
-                        $conditionData['field'],
-                        $conditionData['value'],
-                        $conditionData['operator']
-                    );
+
+                    if ($conditionName === 'NOT_NULL') {
+                        $criterion = $modelCriteria->getNewCriterion(
+                            $conditionData['field'],
+                            null,
+                            Criteria::ISNOTNULL
+                        );
+                    } else {
+                        $criterion = $modelCriteria->getNewCriterion(
+                            $conditionData['field'],
+                            $conditionData['value'],
+                            $conditionData['operator']
+                        );
+                    }
 
                     $criterionName = uniqid();
                     $criterionsCollectionNames[] = $criterionName;
                     $modelCriteria->addCond($criterionName, $criterion);
                     
                     break;
+                case 'RANGE':
+                    $value = $conditionData['value'];
+                    if (!isset($value['min']) && !isset($value['max'])) {
+                        throw new \Exception("Please set `min` or `max` for RANGE filter");
+                    }
+
+                    $conditionDataEmulation = [
+                        'operator' => 'AND',
+                        'value' => [],
+                    ];
+                    if (isset($value['min'])) {
+                        $conditionDataEmulation['value'][] = [
+                            'field' => $conditionData['field'],
+                            'value' => $value['min'],
+                            'operator' => Criteria::GREATER_EQUAL,
+                        ];
+                    }
+
+                    if (isset($value['max'])) {
+                        $conditionDataEmulation['value'][] = [
+                            'field' => $conditionData['field'],
+                            'value' => $value['max'],
+                            'operator' => Criteria::LESS_EQUAL,
+                        ];
+                    }
+
+                    $criterionsCollectionNames[] = $this->generateCompositeCriterionData($conditionDataEmulation, $modelCriteria);
+                    break;
                 case 'OR':
+                case 'AND':
                     $criterionsCollectionNames[] = $this->generateCompositeCriterionData($conditionData, $modelCriteria);
                     break;
                 default:
                     throw new \Exception("Unknown operator {$conditionData['operator']}");
             }
-            
-            
         }
         
         $compositeCriterionName = 'composite_criterion_' . uniqid();

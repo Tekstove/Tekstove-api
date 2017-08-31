@@ -94,189 +94,20 @@ class TekstoveAbstractController extends FOSRestController
             return $data;
         }
         
-        $filters = $request->get('filters', []);
-        foreach ($filters as $filter) {
-            $value = $filter['value'];
-            $operator = strtoupper($filter['operator']);
-            $field = $filter['field'];
-            //@TODO maybe this should be service
-            $filterMethod = 'filterBy' . ucfirst($field);
-            switch ($operator) {
-                case Criteria::EQUAL:
-                case Criteria::GREATER_THAN:
-                case Criteria::IN:
-                case Criteria::LIKE:
-                    $data->filterBy($field, $value, $operator);
-                    break;
-                case 'NOT_NULL':
-                    $data->{$filterMethod}(null, Criteria::ISNOTNULL);
-                    break;
-                case 'RANGE':
-                    if (!array_key_exists('min', $value) && !array_key_exists('min', $value)) {
-                        throw new \Exception("Please set `min` or `max` for {$filterMethod}");
-                    }
-                    $data->{$filterMethod}($value);
-                    break;
-                case 'OR':
-                    $condition = 1;
-                    throw new \Exception('Not implemented');
-                    break;
-                default:
-                    throw new \Exception("Unknown operator {$operator}");
-            }
+        $filters = $request->get('filters', null);
+
+        if ($filters) {
+            $criteriaData = [
+                'operator' => 'and',
+                'value' => $filters,
+            ];
+
+            $criteriaGenerator = new \Tekstove\ApiBundle\Repo\CriteriaGenerator();
+            $criterionName = $criteriaGenerator->generateCompositeCriterion($criteriaData, $data);
+            $data->combine([$criterionName]);
         }
-        
-        // @FIXME this is test data, remove it!
-        $this->generateCompositeCriterion(
-            [
-                'operator' => 'or',
-                'value' => [
-                    [
-                        'operator' => 'or',
-                        'value' => [
-                            [
-                                'field' => 'id',
-                                'value' => 400,
-                                'operator' => '=',
-                            ],
-                            [
-                                'field' => 'id',
-                                'value' => 399,
-                                'operator' => '=',
-                            ],
-                        ],
-                    ],
-                    [
-                        'field' => 'id',
-                        'value' => 401,
-                        'operator' => '=',
-                    ],
-                    [
-                        'operator' => 'AND',
-                        'value' => [
-                            [
-                                'field' => 'id',
-                                'operator' => 'NOT_NULL',
-                            ],
-                            [
-                                'field' => 'id',
-                                'value' => 402,
-                                'operator' => '=',
-                            ],
-                        ],
-                    ],
-                    [
-                        'field' => 'id',
-                        'value' => [
-                            'min' => 5,
-                            'max' => 10,
-                        ],
-                        'operator' => 'range',
-                    ],
-                ],
-            ], 
-            $data
-        );
-        
+
         return $data;
-    }
-    
-    protected function generateCompositeCriterion(array $data, \Propel\Runtime\ActiveQuery\ModelCriteria $modelCriteria)
-    {
-        $criterionName = $this->generateCompositeCriterionData($data, $modelCriteria);
-        $modelCriteria->combine([$criterionName]);
-    }
-
-    protected function generateCompositeCriterionData(array $data, \Propel\Runtime\ActiveQuery\ModelCriteria $modelCriteria)
-    {
-        // @TODO maybe I should validate the operator!
-        $operator = $data['operator'];
-        $conditionsCollection = $data['value'];
-        
-        $tableMap = $modelCriteria->getTableMap();
-        
-        $criterionsCollectionNames = [];
-        
-        foreach ($conditionsCollection as $conditionData) {
-            $conditionName = strtoupper($conditionData['operator']);
-            switch ($conditionName) {
-                case Criteria::EQUAL:
-                case Criteria::GREATER_THAN:
-                case Criteria::GREATER_EQUAL:
-                case Criteria::LESS_THAN:
-                case Criteria::LESS_EQUAL:
-                case Criteria::IN:
-                case Criteria::LIKE:
-                case 'NOT_NULL':
-                    // propel generate property names with upper 1st letter
-                    if (!$tableMap->hasColumnByPhpName($conditionData['field']) && !$tableMap->hasColumnByPhpName(ucfirst($conditionData['field']))) {
-                        throw new \Exception("Unknown field {$conditionData['field']}");
-                    }
-
-                    if ($conditionName === 'NOT_NULL') {
-                        $criterion = $modelCriteria->getNewCriterion(
-                            $conditionData['field'],
-                            null,
-                            Criteria::ISNOTNULL
-                        );
-                    } else {
-                        $criterion = $modelCriteria->getNewCriterion(
-                            $conditionData['field'],
-                            $conditionData['value'],
-                            $conditionData['operator']
-                        );
-                    }
-
-                    $criterionName = uniqid();
-                    $criterionsCollectionNames[] = $criterionName;
-                    $modelCriteria->addCond($criterionName, $criterion);
-                    
-                    break;
-                case 'RANGE':
-                    $value = $conditionData['value'];
-                    if (!isset($value['min']) && !isset($value['max'])) {
-                        throw new \Exception("Please set `min` or `max` for RANGE filter");
-                    }
-
-                    $conditionDataEmulation = [
-                        'operator' => 'AND',
-                        'value' => [],
-                    ];
-                    if (isset($value['min'])) {
-                        $conditionDataEmulation['value'][] = [
-                            'field' => $conditionData['field'],
-                            'value' => $value['min'],
-                            'operator' => Criteria::GREATER_EQUAL,
-                        ];
-                    }
-
-                    if (isset($value['max'])) {
-                        $conditionDataEmulation['value'][] = [
-                            'field' => $conditionData['field'],
-                            'value' => $value['max'],
-                            'operator' => Criteria::LESS_EQUAL,
-                        ];
-                    }
-
-                    $criterionsCollectionNames[] = $this->generateCompositeCriterionData($conditionDataEmulation, $modelCriteria);
-                    break;
-                case 'OR':
-                case 'AND':
-                    $criterionsCollectionNames[] = $this->generateCompositeCriterionData($conditionData, $modelCriteria);
-                    break;
-                default:
-                    throw new \Exception("Unknown operator {$conditionData['operator']}");
-            }
-        }
-        
-        $compositeCriterionName = 'composite_criterion_' . uniqid();
-        $modelCriteria->combine(
-            $criterionsCollectionNames,
-            $operator,
-            $compositeCriterionName
-        );
-        
-        return $compositeCriterionName;
     }
 
     protected function applyOrders(Request $request, $data)

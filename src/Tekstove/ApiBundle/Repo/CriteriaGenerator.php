@@ -129,9 +129,9 @@ class CriteriaGenerator
      * mapping is CamelCase
      * This getter the desribed issue
      *
-     * @param type $name
+     * @param string $name
      * @param TableMap $tableMap
-     * 
+     *
      * @return string
      *
      * @throws \Exception

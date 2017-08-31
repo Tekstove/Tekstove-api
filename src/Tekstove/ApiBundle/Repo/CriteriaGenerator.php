@@ -7,9 +7,9 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Map\TableMap;
 
 /**
- * Description of CriteriaGenerator
+ * Generate Model criteria/criterion from given data
  *
- * @author potaka
+ * @author po_taka <angel.koilov@gmail.com>
  */
 class CriteriaGenerator
 {
@@ -19,7 +19,7 @@ class CriteriaGenerator
      *
      * @param array $data
      * @param ModelCriteria $modelCriteria
-     * 
+     *
      * @return string created query criterion
      * @throws \Exception
      */
@@ -123,6 +123,19 @@ class CriteriaGenerator
         return $compositeCriterionName;
     }
 
+    /**
+     * Propel have mapper from php property to SQL field.
+     * php properties are camelCase
+     * mapping is CamelCase
+     * This getter the desribed issue
+     *
+     * @param type $name
+     * @param TableMap $tableMap
+     * 
+     * @return string
+     *
+     * @throws \Exception
+     */
     public function getSqlFieldNameFromPhpName($name, TableMap $tableMap)
     {
         // propel generate property names with upper 1st letter

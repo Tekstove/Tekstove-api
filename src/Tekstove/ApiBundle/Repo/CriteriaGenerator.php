@@ -102,11 +102,11 @@ class CriteriaGenerator
                         ];
                     }
 
-                    $criterionsCollectionNames[] = $this->generateCompositeCriterionData($conditionDataEmulation, $modelCriteria);
+                    $criterionsCollectionNames[] = $this->generateCompositeCriterion($conditionDataEmulation, $modelCriteria);
                     break;
                 case 'OR':
                 case 'AND':
-                    $criterionsCollectionNames[] = $this->generateCompositeCriterionData($conditionData, $modelCriteria);
+                    $criterionsCollectionNames[] = $this->generateCompositeCriterion($conditionData, $modelCriteria);
                     break;
                 default:
                     throw new \Exception("Unknown operator `{$conditionName}`");

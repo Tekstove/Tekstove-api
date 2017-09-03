@@ -195,7 +195,7 @@ class PmTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'validate' => array('titleValidationNotEmpty' => array ('column' => 'title','validator' => 'NotBlank',), 'titleValidationMinLength' => array ('column' => 'title','validator' => 'Length','options' => array ('min' => 3,'max' => 150,),), 'textValidationNotEmpty' => array ('column' => 'text','validator' => 'NotBlank',), 'textValidationMaxLength' => array ('column' => 'text','validator' => 'Length','options' => array ('min' => 3,'max' => 999,),), ),
+            'validate' => array('titleValidationNotEmpty' => array ('column' => 'title','validator' => 'NotBlank',), 'titleValidationMinLength' => array ('column' => 'title','validator' => 'Length','options' => array ('min' => 3,'max' => 150,),), 'textValidationNotEmpty' => array ('column' => 'text','validator' => 'NotBlank',), 'textValidationMaxLength' => array ('column' => 'text','validator' => 'Length','options' => array ('min' => 2,'max' => 2000,),), ),
         );
     } // getBehaviors()
 

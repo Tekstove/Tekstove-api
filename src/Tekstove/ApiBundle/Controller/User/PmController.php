@@ -24,13 +24,21 @@ class PmController extends Controller
         
         $this->applyGroups($request);
         $pmQuery = new PmQuery();
-        
-        if ($request->get('direction') === 'from') {
-            $pmQuery->filterByUserRelatedByUserFrom($user);
-        } else {
-            $pmQuery->filterByUserRelatedByUserTo($user);
-        }
-        
+
+        $criterionFromCriterion = $pmQuery->getNewCriterion(
+            \Tekstove\ApiBundle\Model\User\Map\PmTableMap::COL_USER_FROM,
+            $user->getId()
+        );
+
+        $criterionToCriterion = $pmQuery->getNewCriterion(
+            \Tekstove\ApiBundle\Model\User\Map\PmTableMap::COL_USER_TO,
+            $user->getId()
+        );
+        $pmQuery->addCond('criterion_pm_from', $criterionFromCriterion);
+        $pmQuery->addCond('criterion_pm_to', $criterionToCriterion);
+
+        $pmQuery->combine(['criterion_pm_from', 'criterion_pm_to'], Criteria::LOGICAL_OR);
+
         $pmQuery->orderByRead();
         $pmQuery->orderById(Criteria::DESC);
         

@@ -1591,7 +1591,7 @@ abstract class Pm implements ActiveRecordInterface
         $metadata->addPropertyConstraint('title', new NotBlank());
         $metadata->addPropertyConstraint('title', new Length(array ('min' => 3,'max' => 150,)));
         $metadata->addPropertyConstraint('text', new NotBlank());
-        $metadata->addPropertyConstraint('text', new Length(array ('min' => 3,'max' => 999,)));
+        $metadata->addPropertyConstraint('text', new Length(array ('min' => 2,'max' => 2000,)));
     }
 
     /**

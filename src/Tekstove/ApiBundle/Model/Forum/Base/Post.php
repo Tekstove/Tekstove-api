@@ -1323,7 +1323,7 @@ abstract class Post implements ActiveRecordInterface
      */
     public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
+        if ($this->aUser === null && ($this->user_id != 0)) {
             $this->aUser = UserQuery::create()->findPk($this->user_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -1374,7 +1374,7 @@ abstract class Post implements ActiveRecordInterface
      */
     public function getTopic(ConnectionInterface $con = null)
     {
-        if ($this->aTopic === null && ($this->forum_topic_id !== null)) {
+        if ($this->aTopic === null && ($this->forum_topic_id != 0)) {
             $this->aTopic = ChildTopicQuery::create()->findPk($this->forum_topic_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

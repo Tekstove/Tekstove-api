@@ -50,7 +50,7 @@
             <parameter name="titleValidationMinLength" value="{column: title, validator: Length, options: {min: 3, max: 150}}" />
 
             <parameter name="textValidationNotEmpty"  value="{column: text, validator: NotBlank}" />
-            <parameter name="textValidationMaxLength" value="{column: text, validator: Length, options: {min: 3, max: 999}}" />
+            <parameter name="textValidationMaxLength" value="{column: text, validator: Length, options: {min: 2, max: 2000}}" />
         </behavior>
     </table>
     

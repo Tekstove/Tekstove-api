@@ -762,7 +762,7 @@ abstract class PermissionGroupPermission implements ActiveRecordInterface
      */
     public function getPermissionGroup(ConnectionInterface $con = null)
     {
-        if ($this->aPermissionGroup === null && ($this->group_id !== null)) {
+        if ($this->aPermissionGroup === null && ($this->group_id != 0)) {
             $this->aPermissionGroup = ChildPermissionGroupQuery::create()->findPk($this->group_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -813,7 +813,7 @@ abstract class PermissionGroupPermission implements ActiveRecordInterface
      */
     public function getPermission(ConnectionInterface $con = null)
     {
-        if ($this->aPermission === null && ($this->permission_id !== null)) {
+        if ($this->aPermission === null && ($this->permission_id != 0)) {
             $this->aPermission = ChildPermissionQuery::create()->findPk($this->permission_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

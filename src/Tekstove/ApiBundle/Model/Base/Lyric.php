@@ -2486,7 +2486,7 @@ abstract class Lyric implements ActiveRecordInterface
      */
     public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->send_by !== null)) {
+        if ($this->aUser === null && ($this->send_by != 0)) {
             $this->aUser = ChildUserQuery::create()->findPk($this->send_by, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

@@ -1156,7 +1156,7 @@ abstract class LyricVote implements ActiveRecordInterface
      */
     public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
+        if ($this->aUser === null && ($this->user_id != 0)) {
             $this->aUser = UserQuery::create()->findPk($this->user_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -1207,7 +1207,7 @@ abstract class LyricVote implements ActiveRecordInterface
      */
     public function getLyric(ConnectionInterface $con = null)
     {
-        if ($this->aLyric === null && ($this->lyric_id !== null)) {
+        if ($this->aLyric === null && ($this->lyric_id != 0)) {
             $this->aLyric = LyricQuery::create()->findPk($this->lyric_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

@@ -1107,7 +1107,7 @@ abstract class PermissionGroupUser implements ActiveRecordInterface
      */
     public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
+        if ($this->aUser === null && ($this->user_id != 0)) {
             $this->aUser = UserQuery::create()->findPk($this->user_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -1158,7 +1158,7 @@ abstract class PermissionGroupUser implements ActiveRecordInterface
      */
     public function getPermissionGroup(ConnectionInterface $con = null)
     {
-        if ($this->aPermissionGroup === null && ($this->group_id !== null)) {
+        if ($this->aPermissionGroup === null && ($this->group_id != 0)) {
             $this->aPermissionGroup = ChildPermissionGroupQuery::create()->findPk($this->group_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

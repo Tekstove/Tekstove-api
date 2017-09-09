@@ -1216,7 +1216,7 @@ abstract class AlbumArtist implements ActiveRecordInterface
      */
     public function getAlbum(ConnectionInterface $con = null)
     {
-        if ($this->aAlbum === null && ($this->album_id !== null)) {
+        if ($this->aAlbum === null && ($this->album_id != 0)) {
             $this->aAlbum = ChildAlbumQuery::create()->findPk($this->album_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
@@ -1267,7 +1267,7 @@ abstract class AlbumArtist implements ActiveRecordInterface
      */
     public function getArtist(ConnectionInterface $con = null)
     {
-        if ($this->aArtist === null && ($this->artist_id !== null)) {
+        if ($this->aArtist === null && ($this->artist_id != 0)) {
             $this->aArtist = ChildArtistQuery::create()->findPk($this->artist_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

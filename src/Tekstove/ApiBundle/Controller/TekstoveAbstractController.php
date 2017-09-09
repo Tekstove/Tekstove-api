@@ -94,43 +94,22 @@ class TekstoveAbstractController extends FOSRestController
             return $data;
         }
         
-        $filters = $request->get('filters', []);
-        foreach ($filters as $filter) {
-            $value = $filter['value'];
-            $operator = $filter['operator'];
-            $field = $filter['field'];
-            //@TODO maybe this should be service
-            $filterMethod = 'filterBy' . ucfirst($field);
-            switch ($operator) {
-                case '=':
-                    $data->{$filterMethod}($value, Criteria::EQUAL);
-                    break;
-                case '>':
-                    $data->{$filterMethod}($value, Criteria::GREATER_THAN);
-                    break;
-                case 'NOT_NULL':
-                    $data->{$filterMethod}(null, Criteria::ISNOTNULL);
-                    break;
-                case 'in':
-                    $data->{$filterMethod}($value, Criteria::IN);
-                    break;
-                case 'like':
-                    $data->{$filterMethod}("{$value}", Criteria::LIKE);
-                    break;
-                case 'range':
-                    if (!array_key_exists('min', $value) && !array_key_exists('min', $value)) {
-                        throw new \Exception("Please set `min` or `max` for {$filterMethod}");
-                    }
-                    $data->{$filterMethod}($value);
-                    break;
-                default:
-                    throw new \Exception("Unknown operator {$operator}");
-            }
+        $filters = $request->get('filters', null);
+
+        if ($filters) {
+            $criteriaData = [
+                'operator' => 'and',
+                'value' => $filters,
+            ];
+
+            $criteriaGenerator = new \Tekstove\ApiBundle\Repo\CriteriaGenerator();
+            $criterionName = $criteriaGenerator->generateCompositeCriterion($criteriaData, $data);
+            $data->combine([$criterionName]);
         }
-        
+
         return $data;
     }
-    
+
     protected function applyOrders(Request $request, $data)
     {
         if (!$data instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {

@@ -1465,7 +1465,7 @@ abstract class Message implements ActiveRecordInterface
      */
     public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
+        if ($this->aUser === null && ($this->user_id != 0)) {
             $this->aUser = UserQuery::create()->findPk($this->user_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference

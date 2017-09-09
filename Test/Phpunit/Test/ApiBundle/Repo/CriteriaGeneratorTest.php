@@ -173,7 +173,7 @@ class CriteriaGeneratorTest extends MockeryTestCase
 
     public function testGetSqlFieldNameFromPhpNamePhpAndSqlNameNoField()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\Tekstove\ApiBundle\Repo\Exception\FieldNameNotFound::class);
         $this->expectExceptionMessage('Unknown field field1');
 
         $generator = new CriteriaGenerator();

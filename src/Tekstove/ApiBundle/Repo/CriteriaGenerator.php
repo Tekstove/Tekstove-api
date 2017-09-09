@@ -5,6 +5,7 @@ namespace Tekstove\ApiBundle\Repo;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Map\TableMap;
+use Tekstove\ApiBundle\Repo\Exception\FieldNameNotFound;
 
 /**
  * Generate Model criteria/criterion from given data
@@ -19,11 +20,12 @@ class CriteriaGenerator
      *
      * @param array $data
      * @param ModelCriteria $modelCriteria
+     * @param int nesting level
      *
      * @return string created query criterion
      * @throws \Exception
      */
-    public function generateCompositeCriterion(array $data, ModelCriteria $modelCriteria)
+    public function generateCompositeCriterion(array $data, ModelCriteria $modelCriteria, $nestingLevel = 1)
     {
         $operator = $data['operator'];
         $conditionsCollection = $data['value'];
@@ -43,7 +45,29 @@ class CriteriaGenerator
                 case 'IN':
                 case 'LIKE':
                 case 'NOT_NULL':
-                    $sqlField = $this->getSqlFieldNameFromPhpName($conditionData['field'], $tableMap);
+                    try {
+                        $sqlField = $this->getSqlFieldNameFromPhpName($conditionData['field'], $tableMap);
+                    } catch (FieldNameNotFound $e) {
+                        if ($nestingLevel > 1) {
+                            throw new \Exception('Not implemented for nested levels');
+                        }
+                        $filterMethod = 'filterBy' . ucfirst($conditionData['field']);
+                        if (method_exists($modelCriteria, $filterMethod)) {
+                            $modelCriteria->{$filterMethod}($conditionData['value']);
+
+                            // mock the criterion!
+                            $criterion = $modelCriteria->getNewCriterion(
+                                '1',
+                                '1',
+                                Criteria::EQUAL
+                            );
+
+                            $criterionName = uniqid();
+                            $criterionsCollectionNames[] = $criterionName;
+                            $modelCriteria->addCond($criterionName, $criterion);
+                            break;
+                        }
+                    }
 
                     $conditionsToAddSpaces = [
                         'IN',
@@ -102,11 +126,11 @@ class CriteriaGenerator
                         ];
                     }
 
-                    $criterionsCollectionNames[] = $this->generateCompositeCriterion($conditionDataEmulation, $modelCriteria);
+                    $criterionsCollectionNames[] = $this->generateCompositeCriterion($conditionDataEmulation, $modelCriteria, ($nestingLevel + 1));
                     break;
                 case 'OR':
                 case 'AND':
-                    $criterionsCollectionNames[] = $this->generateCompositeCriterion($conditionData, $modelCriteria);
+                    $criterionsCollectionNames[] = $this->generateCompositeCriterion($conditionData, $modelCriteria, ($nestingLevel + 1));
                     break;
                 default:
                     throw new \Exception("Unknown operator `{$conditionName}`");
@@ -127,7 +151,7 @@ class CriteriaGenerator
      * Propel have mapper from php property to SQL field.
      * php properties are camelCase
      * mapping is CamelCase
-     * This getter the desribed issue
+     * This getter fix the described issue
      *
      * @param string $name
      * @param TableMap $tableMap
@@ -144,7 +168,7 @@ class CriteriaGenerator
         } elseif ($tableMap->hasColumnByPhpName(ucfirst($name))) {
             $sqlField = $tableMap->getColumnByPhpName(ucfirst($name));
         } else {
-            throw new \Exception("Unknown field {$name}");
+            throw new FieldNameNotFound("Unknown field {$name}");
         }
 
         return $sqlField;

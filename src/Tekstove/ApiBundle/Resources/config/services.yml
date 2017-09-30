@@ -115,3 +115,13 @@ services:
     tekstove.api.lyric.count.redis:
         class: Predis\Client
         arguments: [{ host: "%tekstove_api.lyric.votes.redis.host%", port: "%tekstove_api.lyric.votes.redis.port%"}]
+
+    tekstove.api.ban.redis:
+        class: Predis\Client
+        arguments: [{ host: "%tekstove_api.ban.redis.host%", port: "%tekstove_api.ban.redis.port%"}]
+
+    tekstove.api.kernel.ban.subscriber:
+        class: Tekstove\ApiBundle\EventListener\Kernel\Request
+        arguments: ["@request_stack", "@tekstove.api.ban.redis"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

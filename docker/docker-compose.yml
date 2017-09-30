@@ -16,6 +16,7 @@ services:
         image: mariadb:10
         volumes:
             - "./local/sql:/var/lib/mysql"
+            - "./config/sql/my.cnf:/etc/mysql/my.cnf"
         environment:
             MYSQL_ROOT_PASSWORD: ~
             MYSQL_DATABASE: 'tekstove_api'

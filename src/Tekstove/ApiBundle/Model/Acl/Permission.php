@@ -27,4 +27,5 @@ class Permission extends BasePermission
 
     const CHAT_MESSAGE_VIEW_DETAILS = 'chat.message.details.view';
     const CHAT_MESSAGE_CENSORE = 'chat.censore';
+    const CHAT_MESSAGE_BAN = 'chat.ban';
 }

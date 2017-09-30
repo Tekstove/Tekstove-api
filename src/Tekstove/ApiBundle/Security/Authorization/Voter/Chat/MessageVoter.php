@@ -54,6 +54,13 @@ class MessageVoter extends Voter
                 }
 
                 return false;
+
+            case 'ban':
+                if ($user->getPermission(Permission::CHAT_MESSAGE_BAN)) {
+                    return true;
+                }
+
+                return false;
         }
     }
 }

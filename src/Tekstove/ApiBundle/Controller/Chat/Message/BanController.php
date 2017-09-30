@@ -2,7 +2,6 @@
 
 namespace Tekstove\ApiBundle\Controller\Chat\Message;
 
-
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Tekstove\ApiBundle\Model\Chat\Message;
@@ -28,15 +27,10 @@ class BanController extends Controller
             throw $accessDenied;
         }
 
-        $banRedis = $this->get('tekstove.api.ban.redis');
-        /* @var $banRedis \Predis\Client */
-        $ipBanExists = $banRedis->get($request->getClientIp());
-
-        // if ban exists -> do not overwrite
-        if (!$ipBanExists) {
-            $banRedis->setEx($request->getClientIp(), 15, 'chat ban');
-        }
-
+        $banSystem = $this->get('tekstove.api.security.ban_system');
+        /* @var $banSystem \Tekstove\ApiBundle\Security\BanSystem */
+        $banSystem->banIp($request->getClientIp(), 15 * 60, 'chat ban');
+        // @FIXME hardcoded 15minutes
 
         $censoredMessage = new Message();
         $censoredMessage->setMessage('banned by ' . $this->getUser()->getUsername());

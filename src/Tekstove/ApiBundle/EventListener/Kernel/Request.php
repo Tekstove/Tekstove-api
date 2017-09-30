@@ -3,34 +3,32 @@
 namespace Tekstove\ApiBundle\EventListener\Kernel;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Predis\Client;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Tekstove\ApiBundle\Security\BanSystem;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Description of Request
- *
- * @author potaka
+ * @author po_taka
  */
 class Request
 {
     /**
-     *
-     * @var Client
+     * @var BanSystem
      */
-    private $redisClient;
+    private $banSystem;
+
+    /**
+     * @var RequestStack
+     */
     private $requestStack;
 
-
-    public function __construct(RequestStack $requestStack, Client $redisClient) {
-        $this->redisClient = $redisClient;
+    /**
+     * @param RequestStack $requestStack
+     * @param BanSystem $banSystem
+     */
+    public function __construct(RequestStack $requestStack, BanSystem $banSystem) {
+        $this->banSystem = $banSystem;
         $this->requestStack = $requestStack;
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            'kernel.request' => 'onKernelRequest',
-        ];
     }
 
     public function onKernelRequest(GetResponseEvent $event)
@@ -39,16 +37,18 @@ class Request
 
         // do not filter get requests
         if ($currentRequest->isMethod('GET')) {
-                        return;
+            return;
         }
 
         $ip = $this->requestStack->getCurrentRequest()->getClientIp();
 
-        $isIpBanned = $this->redisClient->exists($ip);
+        $isIpBanned = $this->banSystem->isIpBanned($ip);
 
         if ($isIpBanned) {
-            // @FIXME
-            die('asdasd');
+            $response = new Response();
+            $response->setStatusCode(403);
+            $event->setResponse($response);
+            return false;
         }
     }
 }

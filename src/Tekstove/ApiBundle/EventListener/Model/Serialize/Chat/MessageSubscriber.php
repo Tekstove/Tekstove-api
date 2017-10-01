@@ -16,6 +16,8 @@ class MessageSubscriber implements EventSubscriberInterface
 {
     private $authorizationChecker;
 
+    private $metaData = [];
+
     public function __construct(AuthorizationCheckerInterface $authChecker)
     {
         $this->authorizationChecker = $authChecker;
@@ -35,6 +37,7 @@ class MessageSubscriber implements EventSubscriberInterface
     public function onPostSerialize(ObjectEvent $event)
     {
         $this->addCensor($event);
+        $this->addBan($event);
 
         $object = $event->getObject();
 
@@ -58,6 +61,22 @@ class MessageSubscriber implements EventSubscriberInterface
                 $visitor->setdata('ip', null);
             }
         }
+
+        $visitor->addData('_meta', $this->metaData);
+    }
+
+    public function addBan(ObjectEvent $event)
+    {
+        $object = $event->getObject();
+        if (false === $object instanceof Message) {
+            return true;
+        }
+
+        if ($this->authorizationChecker->isGranted('ban', $object)) {
+            $this->metaData['ban'] = true;
+        } else {
+            $this->metaData['ban'] = false;
+        }
     }
 
     public function addCensor(ObjectEvent $event)
@@ -67,12 +86,10 @@ class MessageSubscriber implements EventSubscriberInterface
             return true;
         }
 
-        $visitor = $event->getVisitor();
-
         if ($this->authorizationChecker->isGranted('censore', $object)) {
-            $visitor->setdata('_meta', ['censore' => true]);
+            $this->metaData['censore'] = true;
         } else {
-            $visitor->setdata('_meta', ['censore' => false]);
+            $this->metaData['censore'] = false;
         }
     }
 }

@@ -3,9 +3,14 @@ tekstove_api_chat_messages_index:
     defaults: { _controller: TekstoveApiBundle:Chat\Messages:index }
     methods: [GET]
 
-tekstove_api_chat_message_censore_psot:
+tekstove_api_chat_message_censore_post:
     path: "/messages/censore"
     defaults: { _controller: TekstoveApiBundle:Chat\Message\Censore:post }
+    methods: [POST]
+
+tekstove_api_message_ban_post:
+    path: "/messages/ban"
+    defaults: { _controller: TekstoveApiBundle:Chat\Message\Ban:post }
     methods: [POST]
 
 tekstove_api_chat_messages_post:

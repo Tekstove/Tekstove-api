@@ -23,3 +23,5 @@ parameters:
 
     tekstove_api.lyric.votes.redis.host: tekstove.api-redis
     tekstove_api.lyric.votes.redis.port: 6379
+    tekstove_api.ban.redis.host: tekstove.api-redis
+    tekstove_api.ban.redis.port: 6379

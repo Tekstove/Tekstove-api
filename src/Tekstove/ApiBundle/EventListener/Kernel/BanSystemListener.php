@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @author po_taka
  */
-class Request
+class BanSystemListener
 {
     /**
      * @var BanSystem
@@ -26,7 +26,8 @@ class Request
      * @param RequestStack $requestStack
      * @param BanSystem $banSystem
      */
-    public function __construct(RequestStack $requestStack, BanSystem $banSystem) {
+    public function __construct(RequestStack $requestStack, BanSystem $banSystem)
+    {
         $this->banSystem = $banSystem;
         $this->requestStack = $requestStack;
     }

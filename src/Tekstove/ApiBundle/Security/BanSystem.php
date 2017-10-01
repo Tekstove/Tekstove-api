@@ -10,45 +10,67 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class BanSystem
 {
+    /**
+     * Used to prefix all redis keys
+     */
+    const REDIS_PREFIX = 'ban.';
+
     private $redis;
 
     private $requestStack;
 
+    /**
+     * @param Client $redis
+     * @param RequestStack $requestStack
+     */
     public function __construct(Client $redis, RequestStack $requestStack)
     {
-        /**
-         * @var Client
-         */
         $this->redis = $redis;
         $this->requestStack = $requestStack;
     }
 
     /**
-     *
      * @param string $ip
      * @param int $seconds
      */
     public function banIp($ip, $seconds, $message)
     {
-        $ipBanExists = $this->redis->exists($ip);
+        $ipBanExists = $this->isIpBanned($ip);
+
+        $ipRedisKey = $this->getRedisIpKey($ip);
 
         // if current ban is for longer period do not overwrite
         if ($ipBanExists) {
-            $currentTtl = $this->redis->ttl($ip);
+            $currentTtl = $this->redis->ttl(
+                $ipRedisKey
+            );
+
             if ($currentTtl > $seconds) {
                 return null;
             }
         }
 
         $this->redis->setEx(
-            $ip,
+            $ipRedisKey,
             $seconds,
             $message
         );
     }
 
-    public function isIpBanned($ip)
+    public function isIpBanned($ip) : bool
     {
-        return $this->redis->exists($ip);
+        return $this->redis->exists(
+            $this->getRedisIpKey($ip)
+        );
+    }
+
+    /**
+     * @param string $ip
+     *
+     * @return string
+     */
+    public function getRedisIpKey($ip) : string
+    {
+        return self::REDIS_PREFIX . $ip;
     }
 }

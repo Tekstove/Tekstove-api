@@ -29,8 +29,8 @@ class BanController extends Controller
 
         $banSystem = $this->get('tekstove.api.security.ban_system');
         /* @var $banSystem \Tekstove\ApiBundle\Security\BanSystem */
-        $banSystem->banIp($request->getClientIp(), 15 * 60, 'chat ban');
-        // @FIXME hardcoded 15minutes
+        $banSystem->banIp($request->getClientIp(), 15, 'chat ban');
+        // @FIXME hardcoded 15s
 
         $censoredMessage = new Message();
         $censoredMessage->setMessage('banned by ' . $this->getUser()->getUsername());

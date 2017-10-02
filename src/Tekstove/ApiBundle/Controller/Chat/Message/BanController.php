@@ -48,7 +48,7 @@ class BanController extends Controller
         $banMinutesInSeconds = $minutes * 60;
 
         $banSystem->banIp(
-            $request->getClientIp(),
+            $message->getIp(),
             $banMinutesInSeconds,
             'chat ban'
         );

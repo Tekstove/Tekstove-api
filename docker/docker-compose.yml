@@ -10,6 +10,7 @@ services:
         links:
             - tekstove.api-redis
             - tekstove.api-sql
+        restart: always
     tekstove.api-redis:
         image: redis:3
     tekstove.api-sql:

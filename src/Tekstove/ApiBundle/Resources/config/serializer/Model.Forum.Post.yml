@@ -9,6 +9,9 @@
         getText:
             groups: [Details, List]
             serialized_name: text
+        getTextHtml:
+            groups: [Details, List]
+            serialized_name: textHtml
         getDateTimeTimestamp:
             groups: [Details, List]
             serialized_name: datetime

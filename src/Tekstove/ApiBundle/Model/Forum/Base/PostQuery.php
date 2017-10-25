@@ -23,12 +23,14 @@ use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
  *
  * @method     ChildPostQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildPostQuery orderByText($order = Criteria::ASC) Order by the text column
+ * @method     ChildPostQuery orderByTextHtml($order = Criteria::ASC) Order by the text_html column
  * @method     ChildPostQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildPostQuery orderByForumTopicId($order = Criteria::ASC) Order by the forum_topic_id column
  * @method     ChildPostQuery orderByDate($order = Criteria::ASC) Order by the date column
  *
  * @method     ChildPostQuery groupById() Group by the id column
  * @method     ChildPostQuery groupByText() Group by the text column
+ * @method     ChildPostQuery groupByTextHtml() Group by the text_html column
  * @method     ChildPostQuery groupByUserId() Group by the user_id column
  * @method     ChildPostQuery groupByForumTopicId() Group by the forum_topic_id column
  * @method     ChildPostQuery groupByDate() Group by the date column
@@ -68,6 +70,7 @@ use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
  *
  * @method     ChildPost findOneById(int $id) Return the first ChildPost filtered by the id column
  * @method     ChildPost findOneByText(string $text) Return the first ChildPost filtered by the text column
+ * @method     ChildPost findOneByTextHtml(string $text_html) Return the first ChildPost filtered by the text_html column
  * @method     ChildPost findOneByUserId(int $user_id) Return the first ChildPost filtered by the user_id column
  * @method     ChildPost findOneByForumTopicId(int $forum_topic_id) Return the first ChildPost filtered by the forum_topic_id column
  * @method     ChildPost findOneByDate(string $date) Return the first ChildPost filtered by the date column *
@@ -77,6 +80,7 @@ use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
  *
  * @method     ChildPost requireOneById(int $id) Return the first ChildPost filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPost requireOneByText(string $text) Return the first ChildPost filtered by the text column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPost requireOneByTextHtml(string $text_html) Return the first ChildPost filtered by the text_html column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPost requireOneByUserId(int $user_id) Return the first ChildPost filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPost requireOneByForumTopicId(int $forum_topic_id) Return the first ChildPost filtered by the forum_topic_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPost requireOneByDate(string $date) Return the first ChildPost filtered by the date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -84,6 +88,7 @@ use Tekstove\ApiBundle\Model\Forum\Map\PostTableMap;
  * @method     ChildPost[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPost objects based on current ModelCriteria
  * @method     ChildPost[]|ObjectCollection findById(int $id) Return ChildPost objects filtered by the id column
  * @method     ChildPost[]|ObjectCollection findByText(string $text) Return ChildPost objects filtered by the text column
+ * @method     ChildPost[]|ObjectCollection findByTextHtml(string $text_html) Return ChildPost objects filtered by the text_html column
  * @method     ChildPost[]|ObjectCollection findByUserId(int $user_id) Return ChildPost objects filtered by the user_id column
  * @method     ChildPost[]|ObjectCollection findByForumTopicId(int $forum_topic_id) Return ChildPost objects filtered by the forum_topic_id column
  * @method     ChildPost[]|ObjectCollection findByDate(string $date) Return ChildPost objects filtered by the date column
@@ -185,7 +190,7 @@ abstract class PostQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `text`, `user_id`, `forum_topic_id`, `date` FROM `forum_post` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `text`, `text_html`, `user_id`, `forum_topic_id`, `date` FROM `forum_post` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -339,6 +344,31 @@ abstract class PostQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(PostTableMap::COL_TEXT, $text, $comparison);
+    }
+
+    /**
+     * Filter the query on the text_html column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByTextHtml('fooValue');   // WHERE text_html = 'fooValue'
+     * $query->filterByTextHtml('%fooValue%', Criteria::LIKE); // WHERE text_html LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $textHtml The value to use as filter.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPostQuery The current query, for fluid interface
+     */
+    public function filterByTextHtml($textHtml = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($textHtml)) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PostTableMap::COL_TEXT_HTML, $textHtml, $comparison);
     }
 
     /**

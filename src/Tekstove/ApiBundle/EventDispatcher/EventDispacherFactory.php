@@ -43,6 +43,9 @@ class EventDispacherFactory
                 $container->get('security.token_storage')
             )
         );
+        $dispacher->addSubscriber(
+            new \Tekstove\ApiBundle\EventListener\Model\Forum\PostHtmlSubscriber($container->get('potaka.bbcode.full'))
+        );
         return $dispacher;
     }
 

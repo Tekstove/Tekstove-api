@@ -283,6 +283,7 @@
     <table name="forum_post" namespace="\Tekstove\ApiBundle\Model\Forum" phpName="Post">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
         <column name="text" type="varchar" required="true" />
+        <column name="text_html" type="varchar" />
         <column name="user_id" type="integer" />
         <column name="forum_topic_id" type="integer" required="true" />
         <column name="date" type="timestamp" />

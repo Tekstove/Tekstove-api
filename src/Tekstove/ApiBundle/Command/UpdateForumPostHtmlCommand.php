@@ -53,8 +53,6 @@ class UpdateForumPostHtmlCommand extends ContainerAwareCommand
         $postRepo = $this->getContainer()->get('tekstove.forum.post.repository');
 
         while ($row = $stm->fetch()) {
-            // @FIXME update post to trigger the listener :)
-
             $output->writeln("Processing post#" . $row['id'], OutputInterface::VERBOSITY_DEBUG);
 
             $postQuery = new \Tekstove\ApiBundle\Model\Forum\PostQuery();

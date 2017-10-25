@@ -36,6 +36,7 @@ class PostHtmlSubscriber implements EventSubscriberInterface
         $escapedMessage = htmlspecialchars($post->getText(), ENT_QUOTES);
         $newLinedMessage = nl2br($escapedMessage);
         $html = $this->bbCodeToHtml->getHtml($newLinedMessage);
-        $post->setText($html);
+
+        $post->setTextHtml($html);
     }
 }

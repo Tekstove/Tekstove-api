@@ -91,6 +91,13 @@ abstract class Post implements ActiveRecordInterface
     protected $text;
 
     /**
+     * The value for the text_html field.
+     *
+     * @var        string
+     */
+    protected $text_html;
+
+    /**
      * The value for the user_id field.
      *
      * @var        int
@@ -392,6 +399,16 @@ abstract class Post implements ActiveRecordInterface
     }
 
     /**
+     * Get the [text_html] column value.
+     *
+     * @return string
+     */
+    public function getTextHtml()
+    {
+        return $this->text_html;
+    }
+
+    /**
      * Get the [user_id] column value.
      *
      * @return int
@@ -470,6 +487,26 @@ abstract class Post implements ActiveRecordInterface
 
         return $this;
     } // setText()
+
+    /**
+     * Set the value of [text_html] column.
+     *
+     * @param string $v new value
+     * @return $this|\Tekstove\ApiBundle\Model\Forum\Post The current object (for fluent API support)
+     */
+    public function setTextHtml($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->text_html !== $v) {
+            $this->text_html = $v;
+            $this->modifiedColumns[PostTableMap::COL_TEXT_HTML] = true;
+        }
+
+        return $this;
+    } // setTextHtml()
 
     /**
      * Set the value of [user_id] column.
@@ -581,13 +618,16 @@ abstract class Post implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : PostTableMap::translateFieldName('Text', TableMap::TYPE_PHPNAME, $indexType)];
             $this->text = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PostTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PostTableMap::translateFieldName('TextHtml', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->text_html = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PostTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PostTableMap::translateFieldName('ForumTopicId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PostTableMap::translateFieldName('ForumTopicId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->forum_topic_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PostTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PostTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -600,7 +640,7 @@ abstract class Post implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = PostTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = PostTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Forum\\Post'), 0, $e);
@@ -834,6 +874,9 @@ abstract class Post implements ActiveRecordInterface
         if ($this->isColumnModified(PostTableMap::COL_TEXT)) {
             $modifiedColumns[':p' . $index++]  = '`text`';
         }
+        if ($this->isColumnModified(PostTableMap::COL_TEXT_HTML)) {
+            $modifiedColumns[':p' . $index++]  = '`text_html`';
+        }
         if ($this->isColumnModified(PostTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = '`user_id`';
         }
@@ -859,6 +902,9 @@ abstract class Post implements ActiveRecordInterface
                         break;
                     case '`text`':
                         $stmt->bindValue($identifier, $this->text, PDO::PARAM_STR);
+                        break;
+                    case '`text_html`':
+                        $stmt->bindValue($identifier, $this->text_html, PDO::PARAM_STR);
                         break;
                     case '`user_id`':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
@@ -938,12 +984,15 @@ abstract class Post implements ActiveRecordInterface
                 return $this->getText();
                 break;
             case 2:
-                return $this->getUserId();
+                return $this->getTextHtml();
                 break;
             case 3:
-                return $this->getForumTopicId();
+                return $this->getUserId();
                 break;
             case 4:
+                return $this->getForumTopicId();
+                break;
+            case 5:
                 return $this->getDate();
                 break;
             default:
@@ -978,12 +1027,13 @@ abstract class Post implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getText(),
-            $keys[2] => $this->getUserId(),
-            $keys[3] => $this->getForumTopicId(),
-            $keys[4] => $this->getDate(),
+            $keys[2] => $this->getTextHtml(),
+            $keys[3] => $this->getUserId(),
+            $keys[4] => $this->getForumTopicId(),
+            $keys[5] => $this->getDate(),
         );
-        if ($result[$keys[4]] instanceof \DateTimeInterface) {
-            $result[$keys[4]] = $result[$keys[4]]->format('c');
+        if ($result[$keys[5]] instanceof \DateTimeInterface) {
+            $result[$keys[5]] = $result[$keys[5]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1063,12 +1113,15 @@ abstract class Post implements ActiveRecordInterface
                 $this->setText($value);
                 break;
             case 2:
-                $this->setUserId($value);
+                $this->setTextHtml($value);
                 break;
             case 3:
-                $this->setForumTopicId($value);
+                $this->setUserId($value);
                 break;
             case 4:
+                $this->setForumTopicId($value);
+                break;
+            case 5:
                 $this->setDate($value);
                 break;
         } // switch()
@@ -1104,13 +1157,16 @@ abstract class Post implements ActiveRecordInterface
             $this->setText($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setUserId($arr[$keys[2]]);
+            $this->setTextHtml($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setForumTopicId($arr[$keys[3]]);
+            $this->setUserId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setDate($arr[$keys[4]]);
+            $this->setForumTopicId($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setDate($arr[$keys[5]]);
         }
     }
 
@@ -1158,6 +1214,9 @@ abstract class Post implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PostTableMap::COL_TEXT)) {
             $criteria->add(PostTableMap::COL_TEXT, $this->text);
+        }
+        if ($this->isColumnModified(PostTableMap::COL_TEXT_HTML)) {
+            $criteria->add(PostTableMap::COL_TEXT_HTML, $this->text_html);
         }
         if ($this->isColumnModified(PostTableMap::COL_USER_ID)) {
             $criteria->add(PostTableMap::COL_USER_ID, $this->user_id);
@@ -1255,6 +1314,7 @@ abstract class Post implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setText($this->getText());
+        $copyObj->setTextHtml($this->getTextHtml());
         $copyObj->setUserId($this->getUserId());
         $copyObj->setForumTopicId($this->getForumTopicId());
         $copyObj->setDate($this->getDate());
@@ -1403,6 +1463,7 @@ abstract class Post implements ActiveRecordInterface
         }
         $this->id = null;
         $this->text = null;
+        $this->text_html = null;
         $this->user_id = null;
         $this->forum_topic_id = null;
         $this->date = null;

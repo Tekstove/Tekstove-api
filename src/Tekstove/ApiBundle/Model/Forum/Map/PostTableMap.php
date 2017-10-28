@@ -59,7 +59,7 @@ class PostTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 5;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class PostTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 5;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the id field
@@ -80,6 +80,11 @@ class PostTableMap extends TableMap
      * the column name for the text field
      */
     const COL_TEXT = 'forum_post.text';
+
+    /**
+     * the column name for the text_html field
+     */
+    const COL_TEXT_HTML = 'forum_post.text_html';
 
     /**
      * the column name for the user_id field
@@ -108,11 +113,11 @@ class PostTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Text', 'UserId', 'ForumTopicId', 'Date', ),
-        self::TYPE_CAMELNAME     => array('id', 'text', 'userId', 'forumTopicId', 'date', ),
-        self::TYPE_COLNAME       => array(PostTableMap::COL_ID, PostTableMap::COL_TEXT, PostTableMap::COL_USER_ID, PostTableMap::COL_FORUM_TOPIC_ID, PostTableMap::COL_DATE, ),
-        self::TYPE_FIELDNAME     => array('id', 'text', 'user_id', 'forum_topic_id', 'date', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('Id', 'Text', 'TextHtml', 'UserId', 'ForumTopicId', 'Date', ),
+        self::TYPE_CAMELNAME     => array('id', 'text', 'textHtml', 'userId', 'forumTopicId', 'date', ),
+        self::TYPE_COLNAME       => array(PostTableMap::COL_ID, PostTableMap::COL_TEXT, PostTableMap::COL_TEXT_HTML, PostTableMap::COL_USER_ID, PostTableMap::COL_FORUM_TOPIC_ID, PostTableMap::COL_DATE, ),
+        self::TYPE_FIELDNAME     => array('id', 'text', 'text_html', 'user_id', 'forum_topic_id', 'date', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -122,11 +127,11 @@ class PostTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Text' => 1, 'UserId' => 2, 'ForumTopicId' => 3, 'Date' => 4, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'text' => 1, 'userId' => 2, 'forumTopicId' => 3, 'date' => 4, ),
-        self::TYPE_COLNAME       => array(PostTableMap::COL_ID => 0, PostTableMap::COL_TEXT => 1, PostTableMap::COL_USER_ID => 2, PostTableMap::COL_FORUM_TOPIC_ID => 3, PostTableMap::COL_DATE => 4, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'text' => 1, 'user_id' => 2, 'forum_topic_id' => 3, 'date' => 4, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Text' => 1, 'TextHtml' => 2, 'UserId' => 3, 'ForumTopicId' => 4, 'Date' => 5, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'text' => 1, 'textHtml' => 2, 'userId' => 3, 'forumTopicId' => 4, 'date' => 5, ),
+        self::TYPE_COLNAME       => array(PostTableMap::COL_ID => 0, PostTableMap::COL_TEXT => 1, PostTableMap::COL_TEXT_HTML => 2, PostTableMap::COL_USER_ID => 3, PostTableMap::COL_FORUM_TOPIC_ID => 4, PostTableMap::COL_DATE => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'text' => 1, 'text_html' => 2, 'user_id' => 3, 'forum_topic_id' => 4, 'date' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -148,6 +153,7 @@ class PostTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('text', 'Text', 'VARCHAR', true, 255, null);
+        $this->addColumn('text_html', 'TextHtml', 'VARCHAR', false, 255, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', false, null, null);
         $this->addForeignKey('forum_topic_id', 'ForumTopicId', 'INTEGER', 'forum_topic', 'id', true, null, null);
         $this->addColumn('date', 'Date', 'TIMESTAMP', false, null, null);
@@ -330,12 +336,14 @@ class PostTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(PostTableMap::COL_ID);
             $criteria->addSelectColumn(PostTableMap::COL_TEXT);
+            $criteria->addSelectColumn(PostTableMap::COL_TEXT_HTML);
             $criteria->addSelectColumn(PostTableMap::COL_USER_ID);
             $criteria->addSelectColumn(PostTableMap::COL_FORUM_TOPIC_ID);
             $criteria->addSelectColumn(PostTableMap::COL_DATE);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.text');
+            $criteria->addSelectColumn($alias . '.text_html');
             $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.forum_topic_id');
             $criteria->addSelectColumn($alias . '.date');

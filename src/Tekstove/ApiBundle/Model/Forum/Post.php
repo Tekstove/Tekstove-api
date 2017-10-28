@@ -52,10 +52,12 @@ class Post extends BasePost
         }
         return $this->eventDispacher;
     }
+
     public function setEventDispacher(EventDispatcherInterface $eventDispacher)
     {
         $this->eventDispacher = $eventDispacher;
     }
+
     private function notifyPreSave(Post $post)
     {
         $event = new PostEvent($post);

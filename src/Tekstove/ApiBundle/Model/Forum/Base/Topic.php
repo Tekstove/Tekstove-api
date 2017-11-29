@@ -2,6 +2,7 @@
 
 namespace Tekstove\ApiBundle\Model\Forum\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -16,6 +17,7 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -106,6 +108,13 @@ abstract class Topic implements ActiveRecordInterface
      * @var        int
      */
     protected $forum_category_id;
+
+    /**
+     * The value for the last_activity field.
+     *
+     * @var        DateTime
+     */
+    protected $last_activity;
 
     /**
      * @var        User
@@ -420,6 +429,26 @@ abstract class Topic implements ActiveRecordInterface
     }
 
     /**
+     * Get the [optionally formatted] temporal [last_activity] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getLastActivity($format = NULL)
+    {
+        if ($format === null) {
+            return $this->last_activity;
+        } else {
+            return $this->last_activity instanceof \DateTimeInterface ? $this->last_activity->format($format) : null;
+        }
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -508,6 +537,26 @@ abstract class Topic implements ActiveRecordInterface
     } // setForumCategoryId()
 
     /**
+     * Sets the value of [last_activity] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Tekstove\ApiBundle\Model\Forum\Topic The current object (for fluent API support)
+     */
+    public function setLastActivity($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->last_activity !== null || $dt !== null) {
+            if ($this->last_activity === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->last_activity->format("Y-m-d H:i:s.u")) {
+                $this->last_activity = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[TopicTableMap::COL_LAST_ACTIVITY] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setLastActivity()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -554,6 +603,12 @@ abstract class Topic implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TopicTableMap::translateFieldName('ForumCategoryId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->forum_category_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : TopicTableMap::translateFieldName('LastActivity', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->last_activity = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -562,7 +617,7 @@ abstract class Topic implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 4; // 4 = TopicTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = TopicTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\Forum\\Topic'), 0, $e);
@@ -821,6 +876,9 @@ abstract class Topic implements ActiveRecordInterface
         if ($this->isColumnModified(TopicTableMap::COL_FORUM_CATEGORY_ID)) {
             $modifiedColumns[':p' . $index++]  = '`forum_category_id`';
         }
+        if ($this->isColumnModified(TopicTableMap::COL_LAST_ACTIVITY)) {
+            $modifiedColumns[':p' . $index++]  = '`last_activity`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `forum_topic` (%s) VALUES (%s)',
@@ -843,6 +901,9 @@ abstract class Topic implements ActiveRecordInterface
                         break;
                     case '`forum_category_id`':
                         $stmt->bindValue($identifier, $this->forum_category_id, PDO::PARAM_INT);
+                        break;
+                    case '`last_activity`':
+                        $stmt->bindValue($identifier, $this->last_activity ? $this->last_activity->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -918,6 +979,9 @@ abstract class Topic implements ActiveRecordInterface
             case 3:
                 return $this->getForumCategoryId();
                 break;
+            case 4:
+                return $this->getLastActivity();
+                break;
             default:
                 return null;
                 break;
@@ -952,7 +1016,12 @@ abstract class Topic implements ActiveRecordInterface
             $keys[1] => $this->getName(),
             $keys[2] => $this->getUserId(),
             $keys[3] => $this->getForumCategoryId(),
+            $keys[4] => $this->getLastActivity(),
         );
+        if ($result[$keys[4]] instanceof \DateTimeInterface) {
+            $result[$keys[4]] = $result[$keys[4]]->format('c');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -1050,6 +1119,9 @@ abstract class Topic implements ActiveRecordInterface
             case 3:
                 $this->setForumCategoryId($value);
                 break;
+            case 4:
+                $this->setLastActivity($value);
+                break;
         } // switch()
 
         return $this;
@@ -1087,6 +1159,9 @@ abstract class Topic implements ActiveRecordInterface
         }
         if (array_key_exists($keys[3], $arr)) {
             $this->setForumCategoryId($arr[$keys[3]]);
+        }
+        if (array_key_exists($keys[4], $arr)) {
+            $this->setLastActivity($arr[$keys[4]]);
         }
     }
 
@@ -1140,6 +1215,9 @@ abstract class Topic implements ActiveRecordInterface
         }
         if ($this->isColumnModified(TopicTableMap::COL_FORUM_CATEGORY_ID)) {
             $criteria->add(TopicTableMap::COL_FORUM_CATEGORY_ID, $this->forum_category_id);
+        }
+        if ($this->isColumnModified(TopicTableMap::COL_LAST_ACTIVITY)) {
+            $criteria->add(TopicTableMap::COL_LAST_ACTIVITY, $this->last_activity);
         }
 
         return $criteria;
@@ -1230,6 +1308,7 @@ abstract class Topic implements ActiveRecordInterface
         $copyObj->setName($this->getName());
         $copyObj->setUserId($this->getUserId());
         $copyObj->setForumCategoryId($this->getForumCategoryId());
+        $copyObj->setLastActivity($this->getLastActivity());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1658,6 +1737,7 @@ abstract class Topic implements ActiveRecordInterface
         $this->name = null;
         $this->user_id = null;
         $this->forum_category_id = null;
+        $this->last_activity = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();

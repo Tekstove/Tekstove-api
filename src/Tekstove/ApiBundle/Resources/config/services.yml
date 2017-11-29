@@ -80,20 +80,21 @@ services:
 
     tekstove.event_dispacher:
         class: Tekstove\ApiBundle\EventDispatcher\EventDispacher
-        factory: ["@tekstove.event_dispacher.factory", createDispacher]
+        factory: ["@tekstove.event_dispacher.factory", registerSubscribers]
         arguments: ["@service_container"]
-
 
     tekstove.api.security.lyric_voter:
         class: Tekstove\ApiBundle\Security\Authorization\Voter\LyricVoter
         public: false
         tags:
             - { name: security.voter }
+
     tekstove.api.security.album.voter:
         class: Tekstove\ApiBundle\Security\Authorization\Voter\AlbumVoter
         public: false
         tags:
             - { name: security.voter }
+
     tekstove.api.security.chat.messave_voter:
         class: Tekstove\ApiBundle\Security\Authorization\Voter\Chat\MessageVoter
         public: false

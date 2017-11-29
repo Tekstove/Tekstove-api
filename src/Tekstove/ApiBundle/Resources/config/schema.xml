@@ -266,6 +266,7 @@
         <column name="name" type="varchar" />
         <column name="user_id" type="integer" />
         <column name="forum_category_id" type="integer" required="true" />
+        <column name="last_activity" type="timestamp"/>
         
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id" />

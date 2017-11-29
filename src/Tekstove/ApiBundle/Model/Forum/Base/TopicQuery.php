@@ -25,11 +25,13 @@ use Tekstove\ApiBundle\Model\Forum\Map\TopicTableMap;
  * @method     ChildTopicQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildTopicQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildTopicQuery orderByForumCategoryId($order = Criteria::ASC) Order by the forum_category_id column
+ * @method     ChildTopicQuery orderByLastActivity($order = Criteria::ASC) Order by the last_activity column
  *
  * @method     ChildTopicQuery groupById() Group by the id column
  * @method     ChildTopicQuery groupByName() Group by the name column
  * @method     ChildTopicQuery groupByUserId() Group by the user_id column
  * @method     ChildTopicQuery groupByForumCategoryId() Group by the forum_category_id column
+ * @method     ChildTopicQuery groupByLastActivity() Group by the last_activity column
  *
  * @method     ChildTopicQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildTopicQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -77,7 +79,8 @@ use Tekstove\ApiBundle\Model\Forum\Map\TopicTableMap;
  * @method     ChildTopic findOneById(int $id) Return the first ChildTopic filtered by the id column
  * @method     ChildTopic findOneByName(string $name) Return the first ChildTopic filtered by the name column
  * @method     ChildTopic findOneByUserId(int $user_id) Return the first ChildTopic filtered by the user_id column
- * @method     ChildTopic findOneByForumCategoryId(int $forum_category_id) Return the first ChildTopic filtered by the forum_category_id column *
+ * @method     ChildTopic findOneByForumCategoryId(int $forum_category_id) Return the first ChildTopic filtered by the forum_category_id column
+ * @method     ChildTopic findOneByLastActivity(string $last_activity) Return the first ChildTopic filtered by the last_activity column *
 
  * @method     ChildTopic requirePk($key, ConnectionInterface $con = null) Return the ChildTopic by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTopic requireOne(ConnectionInterface $con = null) Return the first ChildTopic matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -86,12 +89,14 @@ use Tekstove\ApiBundle\Model\Forum\Map\TopicTableMap;
  * @method     ChildTopic requireOneByName(string $name) Return the first ChildTopic filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTopic requireOneByUserId(int $user_id) Return the first ChildTopic filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTopic requireOneByForumCategoryId(int $forum_category_id) Return the first ChildTopic filtered by the forum_category_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildTopic requireOneByLastActivity(string $last_activity) Return the first ChildTopic filtered by the last_activity column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTopic[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildTopic objects based on current ModelCriteria
  * @method     ChildTopic[]|ObjectCollection findById(int $id) Return ChildTopic objects filtered by the id column
  * @method     ChildTopic[]|ObjectCollection findByName(string $name) Return ChildTopic objects filtered by the name column
  * @method     ChildTopic[]|ObjectCollection findByUserId(int $user_id) Return ChildTopic objects filtered by the user_id column
  * @method     ChildTopic[]|ObjectCollection findByForumCategoryId(int $forum_category_id) Return ChildTopic objects filtered by the forum_category_id column
+ * @method     ChildTopic[]|ObjectCollection findByLastActivity(string $last_activity) Return ChildTopic objects filtered by the last_activity column
  * @method     ChildTopic[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -190,7 +195,7 @@ abstract class TopicQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `name`, `user_id`, `forum_category_id` FROM `forum_topic` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `name`, `user_id`, `forum_category_id`, `last_activity` FROM `forum_topic` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -430,6 +435,49 @@ abstract class TopicQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(TopicTableMap::COL_FORUM_CATEGORY_ID, $forumCategoryId, $comparison);
+    }
+
+    /**
+     * Filter the query on the last_activity column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByLastActivity('2011-03-14'); // WHERE last_activity = '2011-03-14'
+     * $query->filterByLastActivity('now'); // WHERE last_activity = '2011-03-14'
+     * $query->filterByLastActivity(array('max' => 'yesterday')); // WHERE last_activity > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $lastActivity The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildTopicQuery The current query, for fluid interface
+     */
+    public function filterByLastActivity($lastActivity = null, $comparison = null)
+    {
+        if (is_array($lastActivity)) {
+            $useMinMax = false;
+            if (isset($lastActivity['min'])) {
+                $this->addUsingAlias(TopicTableMap::COL_LAST_ACTIVITY, $lastActivity['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($lastActivity['max'])) {
+                $this->addUsingAlias(TopicTableMap::COL_LAST_ACTIVITY, $lastActivity['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TopicTableMap::COL_LAST_ACTIVITY, $lastActivity, $comparison);
     }
 
     /**

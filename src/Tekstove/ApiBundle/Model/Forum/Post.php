@@ -38,7 +38,11 @@ class Post extends BasePost
         
         $this->notifyPreSave($this);
         
-        return parent::preSave($con);
+        $return = parent::preSave($con);
+
+        $this->notifyPreSaveCompleted($this);
+
+        return $return;
     }
     
     /**
@@ -62,6 +66,12 @@ class Post extends BasePost
     {
         $event = new PostEvent($post);
         $this->getEventDispacher()->dispatch('tekstove.forum.post.save', $event);
+    }
+
+    private function notifyPreSaveCompleted(Post $post)
+    {
+        $event = new PostEvent($post);
+        $this->getEventDispacher()->dispatch('tekstove.forum.post.save.completed', $event);
     }
     
     public function getDateTimeTimestamp()

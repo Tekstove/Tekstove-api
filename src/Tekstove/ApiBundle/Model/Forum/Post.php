@@ -23,7 +23,7 @@ class Post extends BasePost
     use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
     
     private $eventDispacher;
-    
+
     public function preSave(ConnectionInterface $con = null)
     {
         if (!$this->validate($this->validator)) {

@@ -37,12 +37,14 @@ class PostTopicLastActionSubscriber implements EventSubscriberInterface
 
         $topic = $event->getPost()->getTopic();
 
-        $topic->setLastActivity(
-            $topic->getLatestPost()->getDate()
-        );
+        // newly created topics do not have latest post
+        $latestPost = $topic->getLatestPost();
+        if (!$event->getPost()->getId() || !$latestPost) {
+                        $topic->setLastActivity(
+                new \DateTime()
+            );
 
-        // this do not work always !?
-        // @FIXME
-        $this->container->get('tekstove.forum.topic.repository')->save($topic);
+            $this->container->get('tekstove.forum.topic.repository')->save($topic);
+        }
     }
 }

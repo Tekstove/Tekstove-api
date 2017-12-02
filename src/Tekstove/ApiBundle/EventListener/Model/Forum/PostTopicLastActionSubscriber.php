@@ -5,12 +5,18 @@ namespace Tekstove\ApiBundle\EventListener\Model\Forum;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tekstove\ApiBundle\EventDispatcher\Forum\Post\PostEvent;
 use Tekstove\ApiBundle\EventDispatcher\Event;
-use Tekstove\ApiBundle\Model\Forum\TopicQuery;
 
 class PostTopicLastActionSubscriber implements EventSubscriberInterface
 {
     private $container;
 
+    /**
+     * I know that injecting the container is bad.
+     * We have circular reference here.
+     * And there are bigger issues that have to be solved.
+     *
+     * @param $container
+     */
     public function __construct($container)
     {
         $this->container = $container;
@@ -36,6 +42,7 @@ class PostTopicLastActionSubscriber implements EventSubscriberInterface
         );
 
         // this do not work always !?
+        // @FIXME
         $this->container->get('tekstove.forum.topic.repository')->save($topic);
     }
 }

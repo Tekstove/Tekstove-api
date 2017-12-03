@@ -17,7 +17,7 @@ use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricCounterSubscriber;
  */
 class EventDispacherFactory
 {
-    public static function createDispacher(ContainerInterface $container)
+    public function registerSubscribers(ContainerInterface $container)
     {
         $dispacher = $container->get('event_dispatcher');
 
@@ -45,6 +45,12 @@ class EventDispacherFactory
         );
         $dispacher->addSubscriber(
             new \Tekstove\ApiBundle\EventListener\Model\Forum\PostHtmlSubscriber($container->get('potaka.bbcode.full'))
+        );
+
+        $dispacher->addSubscriber(
+            new \Tekstove\ApiBundle\EventListener\Model\Forum\PostTopicLastActionSubscriber(
+                $container
+            )
         );
         return $dispacher;
     }

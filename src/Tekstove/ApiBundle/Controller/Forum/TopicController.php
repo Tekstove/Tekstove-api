@@ -37,7 +37,7 @@ class TopicController extends Controller
             }
             $topicQuery->filterByForumCategoryId($hiddenCategoryIds, Criteria::NOT_IN);
         }
-        $topicQuery->orderById(Criteria::DESC);
+        $topicQuery->orderByLastActivity(Criteria::DESC);
         return $this->handleData($request, $topicQuery);
     }
     

@@ -126,7 +126,7 @@
             <parameter name="titleValidationMaxLength" value="{column: title, validator: Length, options: {max: 60}}" />
         </behavior>
     </table>
-    
+
     <table name="artist_lyric" isCrossRef="true" namespace="\Tekstove\ApiBundle\Model\Artist">
         <column name="lyric_id" type="integer" primaryKey="true"/>
         <foreign-key foreignTable="lyric">

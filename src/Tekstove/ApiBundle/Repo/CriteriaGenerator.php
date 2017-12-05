@@ -97,6 +97,20 @@ class CriteriaGenerator
                     $modelCriteria->addCond($criterionName, $criterion);
 
                     break;
+                case 'FULL_TEXT':
+                    $sqlField = $this->getSqlFieldNameFromPhpName($conditionData['field'], $tableMap);
+
+                    $criterion = new \Tekstove\ApiBundle\Propel\Runtime\ActiveQuery\Criterion\FullTextCriterion(
+                        $modelCriteria,
+                        $sqlField,
+                        $conditionData['value']
+                    );
+
+                    $criterionName = uniqid();
+                    $criterionsCollectionNames[] = $criterionName;
+                    $modelCriteria->addCond($criterionName, $criterion);
+
+                    break;
                 case 'RANGE':
                     $value = $conditionData['value'];
                     if (!isset($value['min']) && !isset($value['max'])) {

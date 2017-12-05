@@ -6,22 +6,19 @@ use Propel\Runtime\ActiveQuery\Criterion\AbstractCriterion;
 use Propel\Runtime\ActiveQuery\Criteria;
 
 /**
- * Description of FullTextCriterion
+ * Criterion for MySQL/MariaDB full text search
  *
- * @author potaka
+ * @author po_taka
  */
-class FullTextCriterion  extends AbstractCriterion
+class FullTextCriterion extends AbstractCriterion
 {
-    /** flag to ignore case in comparison */
-    protected $ignoreStringCase = false;
-
     /**
      * Create a new instance.
      *
      * @param Criteria $outer      The outer class (this is an "inner" class).
      * @param string   $column     ignored
      * @param string   $value      The condition to be added to the query string
-     * @param string   $comparison One of Criteria::LIKE and Criteria::NOT_LIKE
+     * @param string   $comparison SQL MATCH modifier
      */
     public function __construct(Criteria $outer, $column, $value, $comparison = 'IN NATURAL LANGUAGE MODE')
     {

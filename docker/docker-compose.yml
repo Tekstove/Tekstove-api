@@ -10,9 +10,11 @@ services:
         links:
             - tekstove.api-redis
             - tekstove.api-sql
-        restart: always
+        restart: unless-stopped
+
     tekstove.api-redis:
         image: redis:3
+
     tekstove.api-sql:
         image: mariadb:10
         volumes:

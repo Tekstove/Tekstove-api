@@ -18,11 +18,15 @@ tekstove_api_lyric_credentials_new_lyric:
     defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:index, id: ~ }
     methods: [GET]
 
+tekstove-api_lyric_search:
+    path: "/search"
+    defaults: { _controller: TekstoveApiBundle:Lyric/Search:index }
+
 tekstove_api_lyric_get:
     path: "/{id}"
     defaults: { _controller: TekstoveApiBundle:Lyric:get }
     methods: [GET]
-    
+
 tekstove_api_lyric_post:
     path: "/"
     defaults: { _controller: TekstoveApiBundle:Lyric:post}

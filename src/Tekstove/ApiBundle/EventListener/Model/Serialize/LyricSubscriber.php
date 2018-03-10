@@ -9,16 +9,16 @@ use Potaka\BbcodeBundle\BbCode\TextToHtml;
 
 /**
  * @author po_taka
- * 
+ *
  * This handle actions after serialization
  */
-class LyricSubscriber implements EventSubscriberInterface 
+class LyricSubscriber implements EventSubscriberInterface
 {
     /**
      * @var TextToHtml
      */
     private $bbCode;
-    
+
     public function __construct(TextToHtml $bbCode) {
         // I will create bbCode with cache and I should update the code below
         $this->bbCode = $bbCode;

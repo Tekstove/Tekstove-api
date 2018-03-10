@@ -21,6 +21,12 @@ services:
         tags:
             - { name: "jms_serializer.event_subscriber" }
 
+    tekstove.api.serizlizer.lyric.bbcode:
+        class: Tekstove\ApiBundle\EventListener\Model\Serialize\LyricSubscriber
+        arguments: ["@potaka.bbcode.full"]
+        tags:
+            - { name: "jms_serializer.event_subscriber" }
+
     tekstove.api.user_provider:
         class: Tekstove\ApiBundle\Security\ApiUserProvider
 

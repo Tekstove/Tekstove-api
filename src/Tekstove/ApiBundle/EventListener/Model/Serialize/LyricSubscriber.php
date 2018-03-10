@@ -19,7 +19,8 @@ class LyricSubscriber implements EventSubscriberInterface
      */
     private $bbCode;
 
-    public function __construct(TextToHtml $bbCode) {
+    public function __construct(TextToHtml $bbCode)
+    {
         // I will create bbCode with cache and I should update the code below
         $this->bbCode = $bbCode;
     }

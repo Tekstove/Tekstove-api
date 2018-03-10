@@ -54,7 +54,7 @@ class LyricSubscriber implements EventSubscriberInterface
             $extraInfoHtml = $this->bbCode->getHtml($newLinedMessage);
         }
         
-        $visitor->addData('extraInfoHtml', $extraInfoHtml);
+        $visitor->setData('extraInfoHtml', $extraInfoHtml);
         
     }
 }

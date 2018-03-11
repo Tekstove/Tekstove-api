@@ -5,7 +5,7 @@ namespace Tekstove\ApiBundle\EventListener\Model\Serialize;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use Tekstove\ApiBundle\Model\Lyric;
-use Potaka\BbcodeBundle\BbCode\TextToHtml;
+use Potaka\BbcodeBundle\BbCode\TextToHtmlInterface;
 
 /**
  * @author po_taka
@@ -15,11 +15,11 @@ use Potaka\BbcodeBundle\BbCode\TextToHtml;
 class LyricSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var TextToHtml
+     * @var TextToHtmlInterface
      */
     private $bbCode;
 
-    public function __construct(TextToHtml $bbCode)
+    public function __construct(TextToHtmlInterface $bbCode)
     {
         // I will create bbCode with cache and I should update the code below
         $this->bbCode = $bbCode;

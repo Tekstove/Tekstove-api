@@ -21,9 +21,15 @@ services:
         tags:
             - { name: "jms_serializer.event_subscriber" }
 
+    tekstove.api.bbcode.cache:
+        class: Potaka\BbcodeBundle\BbCode\TextToHtmlCache
+        arguments: ["@potaka.bbcode.full", "@cache.app"]
+        calls:
+        - [setCachePrefix, ["bbcode."]]
+
     tekstove.api.serizlizer.lyric.bbcode:
         class: Tekstove\ApiBundle\EventListener\Model\Serialize\LyricSubscriber
-        arguments: ["@potaka.bbcode.full"]
+        arguments: ["@tekstove.api.bbcode.cache"]
         tags:
             - { name: "jms_serializer.event_subscriber" }
 

@@ -49,9 +49,7 @@ class LyricSubscriber implements EventSubscriberInterface
         $extraInfoHtml = '';
         $extraInfo = $lyric->getextraInfo();
         if ($extraInfo) {
-            $escapedMessage = htmlspecialchars($extraInfo, ENT_QUOTES);
-            $newLinedMessage = nl2br($escapedMessage);
-            $extraInfoHtml = $this->bbCode->getHtml($newLinedMessage);
+            $extraInfoHtml = $this->bbCode->getHtml($extraInfo);
         }
         
         $visitor->setData('extraInfoHtml', $extraInfoHtml);

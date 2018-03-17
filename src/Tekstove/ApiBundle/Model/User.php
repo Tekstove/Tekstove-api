@@ -11,6 +11,7 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Tekstove\ApiBundle\Model\User\Pm;
 use Tekstove\ApiBundle\Model\User\PmQuery;
 use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\Album;
 
 use Tekstove\ApiBundle\Model\Acl\EditableInterface;
 use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
@@ -135,6 +136,29 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
             }
         }
         
+        return $allowedFields;
+    }
+
+    /**
+     * @param Album $album
+     * @return array
+     */
+    public function getAllowedAlbumFields(Album $album)
+    {
+        $owner = false;
+
+        if (!$album->getId()) {
+            $owner = true;
+        } elseif ($album->getUser()->getid() === $this->getId()) {
+            $owner = true;
+        }
+
+        $allowedFields = [];
+
+        if ($owner) {
+            $allowedFields[] = 'name';
+        }
+
         return $allowedFields;
     }
 

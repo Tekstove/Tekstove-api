@@ -8,6 +8,11 @@ tekstove_api_album_credentials:
     defaults: { _controller: TekstoveApiBundle:Album\Credentials:index }
     methods: [GET]
 
+tekstove_api_album_post:
+    path: "/"
+    defaults: { _controller: TekstoveApiBundle:Album:post }
+    methods: [POST]
+
 tekstove_api_album_get:
     path: "/{id}"
     defaults: { _controller: TekstoveApiBundle:Album:get }

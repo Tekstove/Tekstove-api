@@ -3,6 +3,7 @@
 namespace Tekstove\ApiBundle\Model;
 
 use Tekstove\ApiBundle\Model\Base\AlbumQuery as BaseAlbumQuery;
+use Tekstove\ApiBundle\Model\Album;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'album' table.
@@ -16,5 +17,12 @@ use Tekstove\ApiBundle\Model\Base\AlbumQuery as BaseAlbumQuery;
  */
 class AlbumQuery extends BaseAlbumQuery
 {
+    use RepositoryTrait;
 
+    public function save(Album $album)
+    {
+//        $album->setEventDispacher($this->eventDispacher);
+//        $album->setValidator($this->validator);
+        $album->save();
+    }
 }

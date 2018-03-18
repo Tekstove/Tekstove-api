@@ -74,4 +74,42 @@ class Album extends BaseAlbum implements AutoAclSerializableInterface
 
         return $return;
     }
+
+    /**
+     * Update artists to given array of ids.
+     * Order is the same as keys in the array
+     * @param array $artistsIds
+     * @throws \Exception
+     */
+    public function setArtistsIds(array $artistsIds)
+    {
+        $albumArtistCollection = new \Propel\Runtime\Collection\Collection();
+        $artistOrder = 1;
+        foreach ($artistsIds as $artistId) {
+            $artistQuery = new \Tekstove\ApiBundle\Model\ArtistQuery();
+            $artist = $artistQuery->findOneById($artistId);
+            if ($artist === null) {
+                throw new \Exception("Can not find artist #{$artistId}");
+            }
+            $artistFound = false;
+            foreach ($this->getAlbumArtists() as $albumArtistExisting) {
+                if ($albumArtistExisting->getArtist()->getId() == $artistId) {
+                    $albumArtistExisting->setOrder($artistOrder);
+                    $albumArtistCollection->append($albumArtistExisting);
+                    $artistFound = true;
+                    break;
+                }
+            }
+
+            if (!$artistFound) {
+                $artistLyric = new AlbumArtist();
+                $artistLyric->setAlbum($this);
+                $artistLyric->setArtist($artist);
+                $artistLyric->setOrder($artistOrder);
+                $albumArtistCollection->append($artistLyric);
+            }
+            $artistOrder++;
+        }
+        $this->setAlbumArtists($albumArtistCollection);
+    }
 }

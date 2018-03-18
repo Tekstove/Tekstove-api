@@ -5,6 +5,8 @@ namespace Tekstove\ApiBundle\Controller;
 use Tekstove\ApiBundle\Controller\TekstoveAbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\AlbumQuery;
+use Tekstove\ApiBundle\Model\Album;
+use Potaka\Helper\Casing\CaseHelper;
 
 /**
  * Description of AlbumController
@@ -29,5 +31,51 @@ class AlbumController extends Controller
             $request,
             $artist
         );
+    }
+
+    public function postAction(Request $request)
+    {
+        $this->userMustBeLogged();
+
+        $this->getContext()->setGroups(['List']);
+
+        $postDataJson = $request->getContent();
+        $postData = json_decode($postDataJson, true);
+
+        $album = new Album();
+        $album->setUser($this->getUser());
+
+        $allowedFields = $this->getUser()->getAllowedAlbumFields($album);
+        $caseHelper = new CaseHelper();
+        foreach ($allowedFields as $field) {
+            $bumpyCase = $caseHelper->bumpyCase($field);
+            $camel = $caseHelper->camelCase($field);
+            $setter = 'set' . $bumpyCase;
+            if ($setter == 'setArtists') {
+                if (!isset($postData[$camel])) {
+                    $postData[$camel] = [];
+                }
+                $value = $postData[$camel];
+                $album->setArtistsIds($value);
+            } else {
+                if (!isset($postData[$camel])) {
+                    $postData[$camel] = null;
+                }
+                $value = $postData[$camel];
+                // @TODO use service!
+                $this->propelSetter($album, $value, $setter);
+            }
+        }
+
+        try {
+            $albumRepo = $this->get('tekstove.album.post.repository');
+            $albumRepo->save($album);
+
+            return $this->handleData($request, $album);
+        } catch (PostHumanReadableException $e) { // @FIXME ex type!
+            $view = $this->handleData($request, $e->getErrors());
+            $view->setStatusCode(400);
+            return $view;
+        }
     }
 }

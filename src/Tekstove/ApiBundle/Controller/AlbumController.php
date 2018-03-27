@@ -57,6 +57,20 @@ class AlbumController extends Controller
                 }
                 $value = $postData[$camel];
                 $album->setArtistsIds($value);
+            } elseif ($setter === 'setLyrics') {
+                foreach ($postData[$camel] as $artistLyricData) {
+                    $albumLyric = new \Tekstove\ApiBundle\Model\AlbumLyric();
+
+                    // @FIXME check when lyric do not exists!
+
+                    $albumLyric->setLyricId(
+                        $artistLyricData['lyric'] ?? null
+                    );
+                    $albumLyric->setName(
+                        $artistLyricData['name'] ?? null
+                    );
+                    $album->addAlbumLyric($albumLyric);
+                }
             } else {
                 if (!isset($postData[$camel])) {
                     $postData[$camel] = null;

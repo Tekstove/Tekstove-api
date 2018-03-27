@@ -159,6 +159,8 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
             $allowedFields[] = 'name';
             $allowedFields[] = 'year';
             $allowedFields[] = 'artists';
+            $allowedFields[] = 'image';
+            $allowedFields[] = 'lyrics';
         }
 
         return $allowedFields;

@@ -167,11 +167,11 @@ abstract class Lyric implements ActiveRecordInterface
     protected $cache_censor;
 
     /**
-     * The value for the manual_censore field.
+     * The value for the manual_censor field.
      *
      * @var        boolean
      */
-    protected $manual_censore;
+    protected $manual_censor;
 
     /**
      * The value for the cache_censor_updated field.
@@ -699,23 +699,23 @@ abstract class Lyric implements ActiveRecordInterface
     }
 
     /**
-     * Get the [manual_censore] column value.
+     * Get the [manual_censor] column value.
      *
      * @return boolean
      */
-    public function getmanualCensore()
+    public function getmanualCensor()
     {
-        return $this->manual_censore;
+        return $this->manual_censor;
     }
 
     /**
-     * Get the [manual_censore] column value.
+     * Get the [manual_censor] column value.
      *
      * @return boolean
      */
-    public function isManualCensore()
+    public function isManualCensor()
     {
-        return $this->getmanualCensore();
+        return $this->getmanualCensor();
     }
 
     /**
@@ -1001,7 +1001,7 @@ abstract class Lyric implements ActiveRecordInterface
     } // setcacheCensor()
 
     /**
-     * Sets the value of the [manual_censore] column.
+     * Sets the value of the [manual_censor] column.
      * Non-boolean arguments are converted using the following rules:
      *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
      *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
@@ -1010,7 +1010,7 @@ abstract class Lyric implements ActiveRecordInterface
      * @param  boolean|integer|string $v The new value
      * @return $this|\Tekstove\ApiBundle\Model\Lyric The current object (for fluent API support)
      */
-    public function setmanualCensore($v)
+    public function setmanualCensor($v)
     {
         if ($v !== null) {
             if (is_string($v)) {
@@ -1020,13 +1020,13 @@ abstract class Lyric implements ActiveRecordInterface
             }
         }
 
-        if ($this->manual_censore !== $v) {
-            $this->manual_censore = $v;
-            $this->modifiedColumns[LyricTableMap::COL_MANUAL_CENSORE] = true;
+        if ($this->manual_censor !== $v) {
+            $this->manual_censor = $v;
+            $this->modifiedColumns[LyricTableMap::COL_MANUAL_CENSOR] = true;
         }
 
         return $this;
-    } // setmanualCensore()
+    } // setmanualCensor()
 
     /**
      * Sets the value of [cache_censor_updated] column to a normalized version of the date/time value specified.
@@ -1254,8 +1254,8 @@ abstract class Lyric implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : LyricTableMap::translateFieldName('cacheCensor', TableMap::TYPE_PHPNAME, $indexType)];
             $this->cache_censor = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : LyricTableMap::translateFieldName('manualCensore', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->manual_censore = (null !== $col) ? (boolean) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : LyricTableMap::translateFieldName('manualCensor', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->manual_censor = (null !== $col) ? (boolean) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : LyricTableMap::translateFieldName('cacheCensorUpdated', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
@@ -1713,8 +1713,8 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_CENSOR)) {
             $modifiedColumns[':p' . $index++]  = '`cache_censor`';
         }
-        if ($this->isColumnModified(LyricTableMap::COL_MANUAL_CENSORE)) {
-            $modifiedColumns[':p' . $index++]  = '`manual_censore`';
+        if ($this->isColumnModified(LyricTableMap::COL_MANUAL_CENSOR)) {
+            $modifiedColumns[':p' . $index++]  = '`manual_censor`';
         }
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_CENSOR_UPDATED)) {
             $modifiedColumns[':p' . $index++]  = '`cache_censor_updated`';
@@ -1778,8 +1778,8 @@ abstract class Lyric implements ActiveRecordInterface
                     case '`cache_censor`':
                         $stmt->bindValue($identifier, (int) $this->cache_censor, PDO::PARAM_INT);
                         break;
-                    case '`manual_censore`':
-                        $stmt->bindValue($identifier, (int) $this->manual_censore, PDO::PARAM_INT);
+                    case '`manual_censor`':
+                        $stmt->bindValue($identifier, (int) $this->manual_censor, PDO::PARAM_INT);
                         break;
                     case '`cache_censor_updated`':
                         $stmt->bindValue($identifier, $this->cache_censor_updated ? $this->cache_censor_updated->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
@@ -1895,7 +1895,7 @@ abstract class Lyric implements ActiveRecordInterface
                 return $this->getcacheCensor();
                 break;
             case 9:
-                return $this->getmanualCensore();
+                return $this->getmanualCensor();
                 break;
             case 10:
                 return $this->getcacheCensorUpdated();
@@ -1960,7 +1960,7 @@ abstract class Lyric implements ActiveRecordInterface
             $keys[6] => $this->getsendBy(),
             $keys[7] => $this->getcacheTitleShort(),
             $keys[8] => $this->getcacheCensor(),
-            $keys[9] => $this->getmanualCensore(),
+            $keys[9] => $this->getmanualCensor(),
             $keys[10] => $this->getcacheCensorUpdated(),
             $keys[11] => $this->getViews(),
             $keys[12] => $this->getPopularity(),
@@ -2151,7 +2151,7 @@ abstract class Lyric implements ActiveRecordInterface
                 $this->setcacheCensor($value);
                 break;
             case 9:
-                $this->setmanualCensore($value);
+                $this->setmanualCensor($value);
                 break;
             case 10:
                 $this->setcacheCensorUpdated($value);
@@ -2231,7 +2231,7 @@ abstract class Lyric implements ActiveRecordInterface
             $this->setcacheCensor($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setmanualCensore($arr[$keys[9]]);
+            $this->setmanualCensor($arr[$keys[9]]);
         }
         if (array_key_exists($keys[10], $arr)) {
             $this->setcacheCensorUpdated($arr[$keys[10]]);
@@ -2325,8 +2325,8 @@ abstract class Lyric implements ActiveRecordInterface
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_CENSOR)) {
             $criteria->add(LyricTableMap::COL_CACHE_CENSOR, $this->cache_censor);
         }
-        if ($this->isColumnModified(LyricTableMap::COL_MANUAL_CENSORE)) {
-            $criteria->add(LyricTableMap::COL_MANUAL_CENSORE, $this->manual_censore);
+        if ($this->isColumnModified(LyricTableMap::COL_MANUAL_CENSOR)) {
+            $criteria->add(LyricTableMap::COL_MANUAL_CENSOR, $this->manual_censor);
         }
         if ($this->isColumnModified(LyricTableMap::COL_CACHE_CENSOR_UPDATED)) {
             $criteria->add(LyricTableMap::COL_CACHE_CENSOR_UPDATED, $this->cache_censor_updated);
@@ -2446,7 +2446,7 @@ abstract class Lyric implements ActiveRecordInterface
         $copyObj->setsendBy($this->getsendBy());
         $copyObj->setcacheTitleShort($this->getcacheTitleShort());
         $copyObj->setcacheCensor($this->getcacheCensor());
-        $copyObj->setmanualCensore($this->getmanualCensore());
+        $copyObj->setmanualCensor($this->getmanualCensor());
         $copyObj->setcacheCensorUpdated($this->getcacheCensorUpdated());
         $copyObj->setViews($this->getViews());
         $copyObj->setPopularity($this->getPopularity());
@@ -4601,7 +4601,7 @@ abstract class Lyric implements ActiveRecordInterface
         $this->send_by = null;
         $this->cache_title_short = null;
         $this->cache_censor = null;
-        $this->manual_censore = null;
+        $this->manual_censor = null;
         $this->cache_censor_updated = null;
         $this->views = null;
         $this->popularity = null;

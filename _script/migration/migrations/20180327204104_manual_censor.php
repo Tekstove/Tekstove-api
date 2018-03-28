@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class ManualCensore extends AbstractMigration
+class ManualCensor extends AbstractMigration
 {
     public function up()
     {
@@ -11,7 +11,7 @@ class ManualCensore extends AbstractMigration
                 ALTER TABLE
                     lyric
                 ADD
-                    manual_censore TINYINT NOT NULL DEFAULT 0
+                    manual_censor TINYINT NOT NULL DEFAULT 0
             "
         );
     }

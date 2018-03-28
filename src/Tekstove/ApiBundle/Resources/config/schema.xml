@@ -106,7 +106,7 @@
 
         <column name="cache_title_short" phpName="cacheTitleShort" type="varchar"/>
         <column name="cache_censor" phpName="cacheCensor" type="boolean" required="true"/>
-        <column name="manual_censore" phpName="manualCensore" type="boolean" required="true"/>
+        <column name="manual_censor" phpName="manualCensor" type="boolean" required="true"/>
         <column name="cache_censor_updated" phpName="cacheCensorUpdated" type="timestamp" required="true"/>
         
         <column name="views" type="integer" />

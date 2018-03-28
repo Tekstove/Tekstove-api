@@ -113,6 +113,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
             $allowedFields[] = 'videoYoutube';
             $allowedFields[] = 'videoVbox7';
             $allowedFields[] = 'videoMetacafe';
+            $allowedFields[] = 'manualCensore';
             
             // do not allow delete on new lyric
             if ($lyric->getId()) {

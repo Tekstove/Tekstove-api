@@ -41,8 +41,10 @@ class LyricCensorCacheSubscriber implements \Symfony\Component\EventDispatcher\E
             return false;
         }
         $lyric = $event->getLyric();
-        
-        if ($this->checker->isSafe($lyric->getText())) {
+
+        if ($lyric->isManualCensore()) {
+            $lyric->setcacheCensor(true);
+        } elseif ($this->checker->isSafe($lyric->getText())) {
             $lyric->setCacheCensor(false);
         } else {
             $lyric->setCacheCensor(true);

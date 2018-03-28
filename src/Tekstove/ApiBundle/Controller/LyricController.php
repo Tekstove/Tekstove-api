@@ -74,6 +74,8 @@ class LyricController extends Controller
             $lyricDataJson = $request->getContent();
             $lyricData = json_decode($lyricDataJson, true);
 
+            $this->get('logger')->error($lyricDataJson);
+
             $caseHelper = new CaseHelper();
             foreach ($allowedFields as $field) {
                 $bumpyCase = $caseHelper->bumpyCase($field);

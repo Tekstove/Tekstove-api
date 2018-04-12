@@ -10,6 +10,7 @@
         <column name="about" type="varchar" />
         <!-- should be php bool -->
         <column name="autoplay" type="smallint" />
+        <column name="tos_accepted" type="TIMESTAMP" required="true" />
         
         <behavior name="validate">
             <parameter name="requiredEmail" value="{column: mail, validator: NotBlank}" />
@@ -25,6 +26,9 @@
 
             <parameter name="avatarMaxLength" value="{column: avatar, validator: Length, options: {max: 100}}" />
             <parameter name="aboutMaxLength" value="{column: about, validator: Length, options: {max: 65000}}" />
+
+            <parameter name="tosAccepted" value="{column: tos_accepted, validator: GreaterThanOrEqual, options: {value: 'today'}}" />
+            <parameter name="tosAcceptedNotBlank" value="{column: tos_accepted, validator: NotBlank}" />
         </behavior>
     </table>
     

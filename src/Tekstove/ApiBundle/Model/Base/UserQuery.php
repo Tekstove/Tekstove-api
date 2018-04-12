@@ -36,6 +36,7 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUserQuery orderByAvatar($order = Criteria::ASC) Order by the avatar column
  * @method     ChildUserQuery orderByAbout($order = Criteria::ASC) Order by the about column
  * @method     ChildUserQuery orderByAutoplay($order = Criteria::ASC) Order by the autoplay column
+ * @method     ChildUserQuery orderByTosAccepted($order = Criteria::ASC) Order by the tos_accepted column
  *
  * @method     ChildUserQuery groupById() Group by the id column
  * @method     ChildUserQuery groupByUsername() Group by the username column
@@ -45,6 +46,7 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUserQuery groupByAvatar() Group by the avatar column
  * @method     ChildUserQuery groupByAbout() Group by the about column
  * @method     ChildUserQuery groupByAutoplay() Group by the autoplay column
+ * @method     ChildUserQuery groupByTosAccepted() Group by the tos_accepted column
  *
  * @method     ChildUserQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildUserQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -186,7 +188,8 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUser findOneByMail(string $mail) Return the first ChildUser filtered by the mail column
  * @method     ChildUser findOneByAvatar(string $avatar) Return the first ChildUser filtered by the avatar column
  * @method     ChildUser findOneByAbout(string $about) Return the first ChildUser filtered by the about column
- * @method     ChildUser findOneByAutoplay(int $autoplay) Return the first ChildUser filtered by the autoplay column *
+ * @method     ChildUser findOneByAutoplay(int $autoplay) Return the first ChildUser filtered by the autoplay column
+ * @method     ChildUser findOneByTosAccepted(string $tos_accepted) Return the first ChildUser filtered by the tos_accepted column *
 
  * @method     ChildUser requirePk($key, ConnectionInterface $con = null) Return the ChildUser by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOne(ConnectionInterface $con = null) Return the first ChildUser matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -199,6 +202,7 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUser requireOneByAvatar(string $avatar) Return the first ChildUser filtered by the avatar column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByAbout(string $about) Return the first ChildUser filtered by the about column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByAutoplay(int $autoplay) Return the first ChildUser filtered by the autoplay column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildUser requireOneByTosAccepted(string $tos_accepted) Return the first ChildUser filtered by the tos_accepted column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildUser[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildUser objects based on current ModelCriteria
  * @method     ChildUser[]|ObjectCollection findById(int $id) Return ChildUser objects filtered by the id column
@@ -209,6 +213,7 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUser[]|ObjectCollection findByAvatar(string $avatar) Return ChildUser objects filtered by the avatar column
  * @method     ChildUser[]|ObjectCollection findByAbout(string $about) Return ChildUser objects filtered by the about column
  * @method     ChildUser[]|ObjectCollection findByAutoplay(int $autoplay) Return ChildUser objects filtered by the autoplay column
+ * @method     ChildUser[]|ObjectCollection findByTosAccepted(string $tos_accepted) Return ChildUser objects filtered by the tos_accepted column
  * @method     ChildUser[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -307,7 +312,7 @@ abstract class UserQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `username`, `password`, `api_key`, `mail`, `avatar`, `about`, `autoplay` FROM `user` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `username`, `password`, `api_key`, `mail`, `avatar`, `about`, `autoplay`, `tos_accepted` FROM `user` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -627,6 +632,49 @@ abstract class UserQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UserTableMap::COL_AUTOPLAY, $autoplay, $comparison);
+    }
+
+    /**
+     * Filter the query on the tos_accepted column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByTosAccepted('2011-03-14'); // WHERE tos_accepted = '2011-03-14'
+     * $query->filterByTosAccepted('now'); // WHERE tos_accepted = '2011-03-14'
+     * $query->filterByTosAccepted(array('max' => 'yesterday')); // WHERE tos_accepted > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $tosAccepted The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByTosAccepted($tosAccepted = null, $comparison = null)
+    {
+        if (is_array($tosAccepted)) {
+            $useMinMax = false;
+            if (isset($tosAccepted['min'])) {
+                $this->addUsingAlias(UserTableMap::COL_TOS_ACCEPTED, $tosAccepted['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($tosAccepted['max'])) {
+                $this->addUsingAlias(UserTableMap::COL_TOS_ACCEPTED, $tosAccepted['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(UserTableMap::COL_TOS_ACCEPTED, $tosAccepted, $comparison);
     }
 
     /**

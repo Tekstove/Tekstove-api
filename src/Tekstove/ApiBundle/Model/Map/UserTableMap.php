@@ -128,8 +128,8 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Username', 'Password', 'apiKey', 'Mail', 'Avatar', 'About', 'Autoplay', 'TosAccepted', ),
-        self::TYPE_CAMELNAME     => array('id', 'username', 'password', 'apiKey', 'mail', 'avatar', 'about', 'autoplay', 'tosAccepted', ),
+        self::TYPE_PHPNAME       => array('Id', 'Username', 'Password', 'apiKey', 'Mail', 'Avatar', 'About', 'Autoplay', 'termsAccepted', ),
+        self::TYPE_CAMELNAME     => array('id', 'username', 'password', 'apiKey', 'mail', 'avatar', 'about', 'autoplay', 'termsAccepted', ),
         self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_USERNAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_API_KEY, UserTableMap::COL_MAIL, UserTableMap::COL_AVATAR, UserTableMap::COL_ABOUT, UserTableMap::COL_AUTOPLAY, UserTableMap::COL_TOS_ACCEPTED, ),
         self::TYPE_FIELDNAME     => array('id', 'username', 'password', 'api_key', 'mail', 'avatar', 'about', 'autoplay', 'tos_accepted', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
@@ -142,8 +142,8 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Password' => 2, 'apiKey' => 3, 'Mail' => 4, 'Avatar' => 5, 'About' => 6, 'Autoplay' => 7, 'TosAccepted' => 8, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'apiKey' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, 'tosAccepted' => 8, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Password' => 2, 'apiKey' => 3, 'Mail' => 4, 'Avatar' => 5, 'About' => 6, 'Autoplay' => 7, 'termsAccepted' => 8, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'apiKey' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, 'termsAccepted' => 8, ),
         self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_USERNAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_API_KEY => 3, UserTableMap::COL_MAIL => 4, UserTableMap::COL_AVATAR => 5, UserTableMap::COL_ABOUT => 6, UserTableMap::COL_AUTOPLAY => 7, UserTableMap::COL_TOS_ACCEPTED => 8, ),
         self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'api_key' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, 'tos_accepted' => 8, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
@@ -175,7 +175,7 @@ class UserTableMap extends TableMap
         $this->addColumn('avatar', 'Avatar', 'VARCHAR', false, 255, null);
         $this->addColumn('about', 'About', 'VARCHAR', false, 255, null);
         $this->addColumn('autoplay', 'Autoplay', 'SMALLINT', false, null, null);
-        $this->addColumn('tos_accepted', 'TosAccepted', 'TIMESTAMP', true, null, null);
+        $this->addColumn('tos_accepted', 'termsAccepted', 'TIMESTAMP', true, null, null);
     } // initialize()
 
     /**

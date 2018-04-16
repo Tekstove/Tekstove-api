@@ -36,7 +36,7 @@ class RegisterController extends TekstoveAbstractController
         /* @var $repo \Tekstove\ApiBundle\Model\User\UserRepository */
         $recaptchaSecret = $this->container->getParameter('tekstove_api.recaptcha.secret');
         
-        $requestData = \json_decode($request->getContent(), true);
+        $requestData = json_decode($request->getContent(), true);
         $userData = $requestData['user'];
         $recaptchaData = $requestData['recaptcha'];
         
@@ -50,7 +50,14 @@ class RegisterController extends TekstoveAbstractController
                 $recaptchaException->addError("recaptcha", "Validation failed");
                 throw $recaptchaException;
             }
-            
+
+            if (!empty($userData['termsAccepted'])) {
+                $exception = new UserHumanReadableException("Validation failed");
+                $exception->addError('termsAccepted', 'Not accepted');
+                throw $exception;
+            }
+
+            $user->settermsAccepted(new \DateTime());
             $user->setUsername($userData['username']);
             $user->setMail($userData['mail']);
             $user->setPassword(
@@ -62,16 +69,18 @@ class RegisterController extends TekstoveAbstractController
             $user->setapiKey(sha1(str_shuffle(uniqid())));
             $repo->save($user);
             $this->getContext()->setGroups(['Details']);
+
             return $this->handleData($request, $user);
         } catch (UserHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
+
             return $view;
         }
     }
     
     /**
-     * passwotd hashing should be changed!
+     * password hashing should be changed!
      * md5 is insecure!
      *
      * @param string $password

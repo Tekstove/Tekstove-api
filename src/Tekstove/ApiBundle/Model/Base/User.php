@@ -666,7 +666,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getTosAccepted($format = NULL)
+    public function gettermsAccepted($format = NULL)
     {
         if ($format === null) {
             return $this->tos_accepted;
@@ -842,7 +842,7 @@ abstract class User implements ActiveRecordInterface
      *               Empty strings are treated as NULL.
      * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
      */
-    public function setTosAccepted($v)
+    public function settermsAccepted($v)
     {
         $dt = PropelDateTime::newInstance($v, null, 'DateTime');
         if ($this->tos_accepted !== null || $dt !== null) {
@@ -853,7 +853,7 @@ abstract class User implements ActiveRecordInterface
         } // if either are not null
 
         return $this;
-    } // setTosAccepted()
+    } // settermsAccepted()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -915,7 +915,7 @@ abstract class User implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : UserTableMap::translateFieldName('Autoplay', TableMap::TYPE_PHPNAME, $indexType)];
             $this->autoplay = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : UserTableMap::translateFieldName('TosAccepted', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : UserTableMap::translateFieldName('termsAccepted', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -1517,7 +1517,7 @@ abstract class User implements ActiveRecordInterface
                 return $this->getAutoplay();
                 break;
             case 8:
-                return $this->getTosAccepted();
+                return $this->gettermsAccepted();
                 break;
             default:
                 return null;
@@ -1557,7 +1557,7 @@ abstract class User implements ActiveRecordInterface
             $keys[5] => $this->getAvatar(),
             $keys[6] => $this->getAbout(),
             $keys[7] => $this->getAutoplay(),
-            $keys[8] => $this->getTosAccepted(),
+            $keys[8] => $this->gettermsAccepted(),
         );
         if ($result[$keys[8]] instanceof \DateTimeInterface) {
             $result[$keys[8]] = $result[$keys[8]]->format('c');
@@ -1808,7 +1808,7 @@ abstract class User implements ActiveRecordInterface
                 $this->setAutoplay($value);
                 break;
             case 8:
-                $this->setTosAccepted($value);
+                $this->settermsAccepted($value);
                 break;
         } // switch()
 
@@ -1861,7 +1861,7 @@ abstract class User implements ActiveRecordInterface
             $this->setAutoplay($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setTosAccepted($arr[$keys[8]]);
+            $this->settermsAccepted($arr[$keys[8]]);
         }
     }
 
@@ -2024,7 +2024,7 @@ abstract class User implements ActiveRecordInterface
         $copyObj->setAvatar($this->getAvatar());
         $copyObj->setAbout($this->getAbout());
         $copyObj->setAutoplay($this->getAutoplay());
-        $copyObj->setTosAccepted($this->getTosAccepted());
+        $copyObj->settermsAccepted($this->gettermsAccepted());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of

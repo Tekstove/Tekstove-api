@@ -10,7 +10,7 @@
         <column name="about" type="varchar" />
         <!-- should be php bool -->
         <column name="autoplay" type="smallint" />
-        <column name="tos_accepted" type="TIMESTAMP" required="true" />
+        <column name="tos_accepted" type="TIMESTAMP" phpName="termsAccepted" required="true" />
         
         <behavior name="validate">
             <parameter name="requiredEmail" value="{column: mail, validator: NotBlank}" />

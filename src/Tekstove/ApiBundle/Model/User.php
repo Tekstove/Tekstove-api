@@ -186,4 +186,13 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         $unreadPmCount = $pmQUery->count();
         return $unreadPmCount;
     }
+
+    public function latestTermsAccepted(): bool
+    {
+        if ($this->gettermsAccepted()) {
+            return ture;
+        }
+
+        return false;
+    }
 }

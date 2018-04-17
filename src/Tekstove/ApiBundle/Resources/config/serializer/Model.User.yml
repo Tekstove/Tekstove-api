@@ -27,5 +27,8 @@
         getPermissionGroups:
             groups: [PermissionGroups]
             serialized_name: permissionGroups
+        latestTermsAccepted:
+            groups: [Credentials]
+            serialized_name: termsAccepted
         acl:
             groups: [Acl]

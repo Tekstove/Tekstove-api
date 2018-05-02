@@ -28,7 +28,7 @@
             groups: [PermissionGroups]
             serialized_name: permissionGroups
         latestTermsAccepted:
-            groups: [Credentials]
+            groups: [Credentials, User.TermsAccepted]
             serialized_name: termsAccepted
         acl:
             groups: [Acl]

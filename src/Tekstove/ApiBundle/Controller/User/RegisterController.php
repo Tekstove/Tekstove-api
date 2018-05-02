@@ -51,7 +51,7 @@ class RegisterController extends TekstoveAbstractController
                 throw $recaptchaException;
             }
 
-            if (!empty($userData['termsAccepted'])) {
+            if (empty($userData['termsAccepted'])) {
                 $exception = new UserHumanReadableException("Validation failed");
                 $exception->addError('termsAccepted', 'Not accepted');
                 throw $exception;

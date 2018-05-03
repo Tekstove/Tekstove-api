@@ -51,10 +51,12 @@ class UserController extends TekstoveAbstractController
             /* @var $pathPopulator \Tekstove\ApiBundle\Populator\PathPopulator */
             $pathPopulator->populateObject($pathData, $user);
             $repo->save($user);
+
             return $this->handleData($request, $user);
         } catch (UserHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
+
             return $view;
         }
     }

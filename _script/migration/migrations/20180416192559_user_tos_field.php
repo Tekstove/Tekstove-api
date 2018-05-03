@@ -9,7 +9,7 @@ class UserTosField extends AbstractMigration
         $this->query(
             "
                 ALTER TABLE user
-                ADD tos_accepted DATETIME DEFAULT null
+                ADD terms_accepted DATETIME DEFAULT null
             "
         );
     }

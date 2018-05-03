@@ -175,11 +175,11 @@ abstract class User implements ActiveRecordInterface
     protected $autoplay;
 
     /**
-     * The value for the tos_accepted field.
+     * The value for the terms_accepted field.
      *
      * @var        DateTime
      */
-    protected $tos_accepted;
+    protected $terms_accepted;
 
     /**
      * @var        ObjectCollection|Pm[] Collection to store aggregation of Pm objects.
@@ -656,7 +656,7 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
-     * Get the [optionally formatted] temporal [tos_accepted] column value.
+     * Get the [optionally formatted] temporal [terms_accepted] column value.
      *
      *
      * @param      string|null $format The date/time format string (either date()-style or strftime()-style).
@@ -669,9 +669,9 @@ abstract class User implements ActiveRecordInterface
     public function gettermsAccepted($format = NULL)
     {
         if ($format === null) {
-            return $this->tos_accepted;
+            return $this->terms_accepted;
         } else {
-            return $this->tos_accepted instanceof \DateTimeInterface ? $this->tos_accepted->format($format) : null;
+            return $this->terms_accepted instanceof \DateTimeInterface ? $this->terms_accepted->format($format) : null;
         }
     }
 
@@ -836,7 +836,7 @@ abstract class User implements ActiveRecordInterface
     } // setAutoplay()
 
     /**
-     * Sets the value of [tos_accepted] column to a normalized version of the date/time value specified.
+     * Sets the value of [terms_accepted] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
      *               Empty strings are treated as NULL.
@@ -845,10 +845,10 @@ abstract class User implements ActiveRecordInterface
     public function settermsAccepted($v)
     {
         $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->tos_accepted !== null || $dt !== null) {
-            if ($this->tos_accepted === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->tos_accepted->format("Y-m-d H:i:s.u")) {
-                $this->tos_accepted = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[UserTableMap::COL_TOS_ACCEPTED] = true;
+        if ($this->terms_accepted !== null || $dt !== null) {
+            if ($this->terms_accepted === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->terms_accepted->format("Y-m-d H:i:s.u")) {
+                $this->terms_accepted = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[UserTableMap::COL_TERMS_ACCEPTED] = true;
             }
         } // if either are not null
 
@@ -919,7 +919,7 @@ abstract class User implements ActiveRecordInterface
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
-            $this->tos_accepted = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+            $this->terms_accepted = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -1389,8 +1389,8 @@ abstract class User implements ActiveRecordInterface
         if ($this->isColumnModified(UserTableMap::COL_AUTOPLAY)) {
             $modifiedColumns[':p' . $index++]  = '`autoplay`';
         }
-        if ($this->isColumnModified(UserTableMap::COL_TOS_ACCEPTED)) {
-            $modifiedColumns[':p' . $index++]  = '`tos_accepted`';
+        if ($this->isColumnModified(UserTableMap::COL_TERMS_ACCEPTED)) {
+            $modifiedColumns[':p' . $index++]  = '`terms_accepted`';
         }
 
         $sql = sprintf(
@@ -1427,8 +1427,8 @@ abstract class User implements ActiveRecordInterface
                     case '`autoplay`':
                         $stmt->bindValue($identifier, $this->autoplay, PDO::PARAM_INT);
                         break;
-                    case '`tos_accepted`':
-                        $stmt->bindValue($identifier, $this->tos_accepted ? $this->tos_accepted->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
+                    case '`terms_accepted`':
+                        $stmt->bindValue($identifier, $this->terms_accepted ? $this->terms_accepted->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1928,8 +1928,8 @@ abstract class User implements ActiveRecordInterface
         if ($this->isColumnModified(UserTableMap::COL_AUTOPLAY)) {
             $criteria->add(UserTableMap::COL_AUTOPLAY, $this->autoplay);
         }
-        if ($this->isColumnModified(UserTableMap::COL_TOS_ACCEPTED)) {
-            $criteria->add(UserTableMap::COL_TOS_ACCEPTED, $this->tos_accepted);
+        if ($this->isColumnModified(UserTableMap::COL_TERMS_ACCEPTED)) {
+            $criteria->add(UserTableMap::COL_TERMS_ACCEPTED, $this->terms_accepted);
         }
 
         return $criteria;
@@ -5040,7 +5040,7 @@ abstract class User implements ActiveRecordInterface
         $this->avatar = null;
         $this->about = null;
         $this->autoplay = null;
-        $this->tos_accepted = null;
+        $this->terms_accepted = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -5164,8 +5164,8 @@ abstract class User implements ActiveRecordInterface
         $metadata->addPropertyConstraint('api_key', new NotBlank());
         $metadata->addPropertyConstraint('avatar', new Length(array ('max' => 100,)));
         $metadata->addPropertyConstraint('about', new Length(array ('max' => 65000,)));
-        $metadata->addPropertyConstraint('tos_accepted', new GreaterThanOrEqual(array ('value' => 'today',)));
-        $metadata->addPropertyConstraint('tos_accepted', new NotBlank());
+        $metadata->addPropertyConstraint('terms_accepted', new GreaterThanOrEqual(array ('value' => 'today',)));
+        $metadata->addPropertyConstraint('terms_accepted', new NotBlank());
     }
 
     /**

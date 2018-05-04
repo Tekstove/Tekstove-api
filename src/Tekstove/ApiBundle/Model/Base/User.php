@@ -2,6 +2,7 @@
 
 namespace Tekstove\ApiBundle\Model\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -16,11 +17,13 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 use Propel\Runtime\Validator\Constraints\Unique;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
@@ -170,6 +173,13 @@ abstract class User implements ActiveRecordInterface
      * @var        int
      */
     protected $autoplay;
+
+    /**
+     * The value for the terms_accepted field.
+     *
+     * @var        DateTime
+     */
+    protected $terms_accepted;
 
     /**
      * @var        ObjectCollection|Pm[] Collection to store aggregation of Pm objects.
@@ -646,6 +656,26 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Get the [optionally formatted] temporal [terms_accepted] column value.
+     *
+     *
+     * @param      string|null $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function gettermsAccepted($format = NULL)
+    {
+        if ($format === null) {
+            return $this->terms_accepted;
+        } else {
+            return $this->terms_accepted instanceof \DateTimeInterface ? $this->terms_accepted->format($format) : null;
+        }
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -806,6 +836,26 @@ abstract class User implements ActiveRecordInterface
     } // setAutoplay()
 
     /**
+     * Sets the value of [terms_accepted] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Tekstove\ApiBundle\Model\User The current object (for fluent API support)
+     */
+    public function settermsAccepted($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->terms_accepted !== null || $dt !== null) {
+            if ($this->terms_accepted === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->terms_accepted->format("Y-m-d H:i:s.u")) {
+                $this->terms_accepted = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[UserTableMap::COL_TERMS_ACCEPTED] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // settermsAccepted()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -864,6 +914,12 @@ abstract class User implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : UserTableMap::translateFieldName('Autoplay', TableMap::TYPE_PHPNAME, $indexType)];
             $this->autoplay = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : UserTableMap::translateFieldName('termsAccepted', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->terms_accepted = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -872,7 +928,7 @@ abstract class User implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = UserTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = UserTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tekstove\\ApiBundle\\Model\\User'), 0, $e);
@@ -1333,6 +1389,9 @@ abstract class User implements ActiveRecordInterface
         if ($this->isColumnModified(UserTableMap::COL_AUTOPLAY)) {
             $modifiedColumns[':p' . $index++]  = '`autoplay`';
         }
+        if ($this->isColumnModified(UserTableMap::COL_TERMS_ACCEPTED)) {
+            $modifiedColumns[':p' . $index++]  = '`terms_accepted`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `user` (%s) VALUES (%s)',
@@ -1367,6 +1426,9 @@ abstract class User implements ActiveRecordInterface
                         break;
                     case '`autoplay`':
                         $stmt->bindValue($identifier, $this->autoplay, PDO::PARAM_INT);
+                        break;
+                    case '`terms_accepted`':
+                        $stmt->bindValue($identifier, $this->terms_accepted ? $this->terms_accepted->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1454,6 +1516,9 @@ abstract class User implements ActiveRecordInterface
             case 7:
                 return $this->getAutoplay();
                 break;
+            case 8:
+                return $this->gettermsAccepted();
+                break;
             default:
                 return null;
                 break;
@@ -1492,7 +1557,12 @@ abstract class User implements ActiveRecordInterface
             $keys[5] => $this->getAvatar(),
             $keys[6] => $this->getAbout(),
             $keys[7] => $this->getAutoplay(),
+            $keys[8] => $this->gettermsAccepted(),
         );
+        if ($result[$keys[8]] instanceof \DateTimeInterface) {
+            $result[$keys[8]] = $result[$keys[8]]->format('c');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -1737,6 +1807,9 @@ abstract class User implements ActiveRecordInterface
             case 7:
                 $this->setAutoplay($value);
                 break;
+            case 8:
+                $this->settermsAccepted($value);
+                break;
         } // switch()
 
         return $this;
@@ -1786,6 +1859,9 @@ abstract class User implements ActiveRecordInterface
         }
         if (array_key_exists($keys[7], $arr)) {
             $this->setAutoplay($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->settermsAccepted($arr[$keys[8]]);
         }
     }
 
@@ -1851,6 +1927,9 @@ abstract class User implements ActiveRecordInterface
         }
         if ($this->isColumnModified(UserTableMap::COL_AUTOPLAY)) {
             $criteria->add(UserTableMap::COL_AUTOPLAY, $this->autoplay);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_TERMS_ACCEPTED)) {
+            $criteria->add(UserTableMap::COL_TERMS_ACCEPTED, $this->terms_accepted);
         }
 
         return $criteria;
@@ -1945,6 +2024,7 @@ abstract class User implements ActiveRecordInterface
         $copyObj->setAvatar($this->getAvatar());
         $copyObj->setAbout($this->getAbout());
         $copyObj->setAutoplay($this->getAutoplay());
+        $copyObj->settermsAccepted($this->gettermsAccepted());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -4960,6 +5040,7 @@ abstract class User implements ActiveRecordInterface
         $this->avatar = null;
         $this->about = null;
         $this->autoplay = null;
+        $this->terms_accepted = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -5083,6 +5164,8 @@ abstract class User implements ActiveRecordInterface
         $metadata->addPropertyConstraint('api_key', new NotBlank());
         $metadata->addPropertyConstraint('avatar', new Length(array ('max' => 100,)));
         $metadata->addPropertyConstraint('about', new Length(array ('max' => 65000,)));
+        $metadata->addPropertyConstraint('terms_accepted', new GreaterThanOrEqual(array ('value' => 'today',)));
+        $metadata->addPropertyConstraint('terms_accepted', new NotBlank());
     }
 
     /**

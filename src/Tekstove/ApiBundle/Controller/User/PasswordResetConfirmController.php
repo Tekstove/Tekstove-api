@@ -48,8 +48,17 @@ class PasswordResetConfirmController extends Controller
 
         $randomPassword = sha1($user->getPassword() . uniqid());
         $passwordShort = substr($randomPassword, 0, 8);
+
         $user->setPassword(md5($passwordShort));
-        $user->save();
+
+        // we do not want to validate user on password reset.
+        // If there are any issues, they will be displayed to user after login
+        // $user->save();
+        $query->update(
+            [
+                'Password' => $user->getPassword(),
+            ]
+        );
 
         $mailMessage = \Swift_Message::newInstance();
         $mailMessage->setFrom('tekstoveinfo@gmail.com');

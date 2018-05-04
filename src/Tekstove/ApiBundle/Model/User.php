@@ -170,6 +170,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         if ($user->getId() === $this->getId()) {
             $return[] = 'about';
             $return[] = 'avatar';
+            $return[] = 'termsAccepted';
         }
 
         return $return;
@@ -185,5 +186,14 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         $pmQUery->filterByRead(0);
         $unreadPmCount = $pmQUery->count();
         return $unreadPmCount;
+    }
+
+    public function latestTermsAccepted(): bool
+    {
+        if ($this->gettermsAccepted()) {
+            return true;
+        }
+
+        return false;
     }
 }

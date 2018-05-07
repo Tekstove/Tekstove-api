@@ -64,7 +64,7 @@ class UserController extends TekstoveAbstractController
     public function deleteAction($id)
     {
         $currentUser = $this->getUser();
-        if ($currentUser) {
+        if (!$currentUser) {
             throw new \Exception("User not logged in!");
         }
 
@@ -83,6 +83,7 @@ class UserController extends TekstoveAbstractController
         $user->setMail($deletedName . '@localhost.local');
         $user->setAvatar(null);
         $user->setAbout(null);
+        $user->settermsAccepted(new \DateTime()); // needed for validation
 
         // credentials
         $user->setPassword($deletedName);

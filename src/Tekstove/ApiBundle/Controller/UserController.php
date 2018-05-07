@@ -60,4 +60,36 @@ class UserController extends TekstoveAbstractController
             return $view;
         }
     }
+
+    public function deleteAction($id)
+    {
+        $currentUser = $this->getUser();
+        if ($currentUser) {
+            throw new \Exception("User not logged in!");
+        }
+
+        $userQuery = new UserQuery();
+        $user = $userQuery->findOneById($id);
+        if (!$user) {
+            throw new \Exception('User not found!');
+        }
+
+        /* @var $user \Tekstove\ApiBundle\Model\User */
+        $deletedName = 'unknown-' . $user->getId();
+
+        $user->setstatus(\Tekstove\ApiBundle\Model\User::STATUS_DELETED);
+
+        $user->setUsername($deletedName);
+        $user->setMail($deletedName . '@localhost.local');
+        $user->setAvatar(null);
+        $user->setAbout(null);
+
+        // credentials
+        $user->setPassword($deletedName);
+        $user->setapiKey(md5(uniqid($deletedName)));
+
+        $user->save();
+
+        return new \Symfony\Component\HttpFoundation\Response();
+    }
 }

@@ -37,6 +37,7 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUserQuery orderByAbout($order = Criteria::ASC) Order by the about column
  * @method     ChildUserQuery orderByAutoplay($order = Criteria::ASC) Order by the autoplay column
  * @method     ChildUserQuery orderBytermsAccepted($order = Criteria::ASC) Order by the terms_accepted column
+ * @method     ChildUserQuery orderBystatus($order = Criteria::ASC) Order by the status column
  *
  * @method     ChildUserQuery groupById() Group by the id column
  * @method     ChildUserQuery groupByUsername() Group by the username column
@@ -47,6 +48,7 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUserQuery groupByAbout() Group by the about column
  * @method     ChildUserQuery groupByAutoplay() Group by the autoplay column
  * @method     ChildUserQuery groupBytermsAccepted() Group by the terms_accepted column
+ * @method     ChildUserQuery groupBystatus() Group by the status column
  *
  * @method     ChildUserQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildUserQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -189,7 +191,8 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUser findOneByAvatar(string $avatar) Return the first ChildUser filtered by the avatar column
  * @method     ChildUser findOneByAbout(string $about) Return the first ChildUser filtered by the about column
  * @method     ChildUser findOneByAutoplay(int $autoplay) Return the first ChildUser filtered by the autoplay column
- * @method     ChildUser findOneBytermsAccepted(string $terms_accepted) Return the first ChildUser filtered by the terms_accepted column *
+ * @method     ChildUser findOneBytermsAccepted(string $terms_accepted) Return the first ChildUser filtered by the terms_accepted column
+ * @method     ChildUser findOneBystatus(int $status) Return the first ChildUser filtered by the status column *
 
  * @method     ChildUser requirePk($key, ConnectionInterface $con = null) Return the ChildUser by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOne(ConnectionInterface $con = null) Return the first ChildUser matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -203,6 +206,7 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUser requireOneByAbout(string $about) Return the first ChildUser filtered by the about column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByAutoplay(int $autoplay) Return the first ChildUser filtered by the autoplay column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneBytermsAccepted(string $terms_accepted) Return the first ChildUser filtered by the terms_accepted column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildUser requireOneBystatus(int $status) Return the first ChildUser filtered by the status column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildUser[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildUser objects based on current ModelCriteria
  * @method     ChildUser[]|ObjectCollection findById(int $id) Return ChildUser objects filtered by the id column
@@ -214,6 +218,7 @@ use Tekstove\ApiBundle\Model\User\Pm;
  * @method     ChildUser[]|ObjectCollection findByAbout(string $about) Return ChildUser objects filtered by the about column
  * @method     ChildUser[]|ObjectCollection findByAutoplay(int $autoplay) Return ChildUser objects filtered by the autoplay column
  * @method     ChildUser[]|ObjectCollection findBytermsAccepted(string $terms_accepted) Return ChildUser objects filtered by the terms_accepted column
+ * @method     ChildUser[]|ObjectCollection findBystatus(int $status) Return ChildUser objects filtered by the status column
  * @method     ChildUser[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -312,7 +317,7 @@ abstract class UserQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT `id`, `username`, `password`, `api_key`, `mail`, `avatar`, `about`, `autoplay`, `terms_accepted` FROM `user` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `username`, `password`, `api_key`, `mail`, `avatar`, `about`, `autoplay`, `terms_accepted`, `status` FROM `user` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -675,6 +680,47 @@ abstract class UserQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UserTableMap::COL_TERMS_ACCEPTED, $termsAccepted, $comparison);
+    }
+
+    /**
+     * Filter the query on the status column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBystatus(1234); // WHERE status = 1234
+     * $query->filterBystatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterBystatus(array('min' => 12)); // WHERE status > 12
+     * </code>
+     *
+     * @param     mixed $status The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function filterBystatus($status = null, $comparison = null)
+    {
+        if (is_array($status)) {
+            $useMinMax = false;
+            if (isset($status['min'])) {
+                $this->addUsingAlias(UserTableMap::COL_STATUS, $status['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($status['max'])) {
+                $this->addUsingAlias(UserTableMap::COL_STATUS, $status['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(UserTableMap::COL_STATUS, $status, $comparison);
     }
 
     /**

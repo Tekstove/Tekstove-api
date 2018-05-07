@@ -11,6 +11,7 @@
         <!-- should be php bool -->
         <column name="autoplay" type="smallint" />
         <column name="terms_accepted" type="TIMESTAMP" phpName="termsAccepted" required="true" />
+        <column name="status" phpName="status" type="INTEGER" />
         
         <behavior name="validate">
             <parameter name="requiredEmail" value="{column: mail, validator: NotBlank}" />

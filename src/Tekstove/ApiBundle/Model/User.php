@@ -27,6 +27,8 @@ use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
  */
 class User extends BaseUser implements EditableInterface, AutoAclSerializableInterface
 {
+    const STATUS_DELETED  = 2;
+
     use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
     use AclTrait;
     

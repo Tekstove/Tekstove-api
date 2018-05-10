@@ -75,19 +75,7 @@ class UserController extends TekstoveAbstractController
         }
 
         /* @var $user \Tekstove\ApiBundle\Model\User */
-        $deletedName = 'unknown-' . $user->getId();
-
-        $user->setstatus(\Tekstove\ApiBundle\Model\User::STATUS_DELETED);
-
-        $user->setUsername($deletedName);
-        $user->setMail($deletedName . '@localhost.local');
-        $user->setAvatar(null);
-        $user->setAbout(null);
-        $user->settermsAccepted(new \DateTime()); // needed for validation
-
-        // credentials
-        $user->setPassword($deletedName);
-        $user->setapiKey(md5(uniqid($deletedName)));
+        $user->impersonalize();
 
         $user->save();
 

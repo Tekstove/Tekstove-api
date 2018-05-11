@@ -6,8 +6,8 @@ use Tekstove\ApiBundle\Controller\TekstoveAbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
 use Propel\Runtime\ActiveQuery\Criteria;
-
 use Tekstove\ApiBundle\Model\UserQuery;
+use Tekstove\ApiBundle\Model\User;
 
 class LoginController extends TekstoveAbstractController
 {
@@ -22,12 +22,15 @@ class LoginController extends TekstoveAbstractController
         $password = $loginData['password'];
         // @TODO use encoder!
         $passwordHashed = md5($password);
-        
+
         $userQuery = new UserQuery();
         $userQuery->filterByUsername($username, Criteria::EQUAL);
         $userQuery->filterByPassword($passwordHashed, Criteria::EQUAL);
+        // only active users should be able to login,
+        // unfortunately only status "deleted" is used atm
+        $userQuery->filterBystatus(User::STATUS_DELETED, Criteria::ALT_NOT_EQUAL);
         $user = $userQuery->findOne();
-        
+
         return $this->handleData($request, $user);
     }
     

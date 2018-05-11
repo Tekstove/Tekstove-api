@@ -16,12 +16,12 @@ class UserController extends TekstoveAbstractController
     public function indexAction(Request $request)
     {
         $userQuery = new UserQuery();
-        
+
         $this->applyGroups($request);
-        
+
         return $this->handleData($request, $userQuery);
     }
-    
+
     /**
      * @Template()
      */
@@ -43,7 +43,7 @@ class UserController extends TekstoveAbstractController
         $userQuery = new UserQuery();
         /* @var $user \Tekstove\ApiBundle\Model\User */
         $user = $userQuery->requireOneById($id);
-        
+
         try {
             $content = $request->getContent();
             $pathData = json_decode($content, true);
@@ -76,6 +76,14 @@ class UserController extends TekstoveAbstractController
 
         /* @var $user \Tekstove\ApiBundle\Model\User */
         $user->impersonalize();
+
+        $chatQuery = new \Tekstove\ApiBundle\Model\Chat\MessageQuery();
+        $chatQuery->filterByUserId($user->getId());
+        $chatQuery->delete();
+
+        $chatOnline = new \Tekstove\ApiBundle\Model\Chat\OnlineQuery();
+        $chatOnline->filterByUserId($user->getId());
+        $chatOnline->delete();
 
         $user->save();
 

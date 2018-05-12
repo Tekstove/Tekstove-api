@@ -5225,7 +5225,7 @@ abstract class User implements ActiveRecordInterface
         $metadata->addPropertyConstraint('api_key', new NotBlank());
         $metadata->addPropertyConstraint('avatar', new Length(array ('max' => 100,)));
         $metadata->addPropertyConstraint('about', new Length(array ('max' => 65000,)));
-        $metadata->addPropertyConstraint('terms_accepted', new GreaterThanOrEqual(array ('value' => 'today',)));
+        $metadata->addPropertyConstraint('terms_accepted', new GreaterThanOrEqual(array ('value' => '2018-05-04',)));
         $metadata->addPropertyConstraint('terms_accepted', new NotBlank());
     }
 

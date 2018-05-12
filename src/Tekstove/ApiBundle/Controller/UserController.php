@@ -74,6 +74,10 @@ class UserController extends TekstoveAbstractController
             throw new \Exception('User not found!');
         }
 
+        if ($user->getId() !== $currentUser->getId()) {
+            throw new \Exception('Not allowed!');
+        }
+
         /* @var $user \Tekstove\ApiBundle\Model\User */
         $user->impersonalize();
 

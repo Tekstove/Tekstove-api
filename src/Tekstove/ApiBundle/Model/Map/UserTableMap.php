@@ -59,7 +59,7 @@ class UserTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 9;
+    const NUM_COLUMNS = 10;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class UserTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 9;
+    const NUM_HYDRATE_COLUMNS = 10;
 
     /**
      * the column name for the id field
@@ -117,6 +117,11 @@ class UserTableMap extends TableMap
     const COL_TERMS_ACCEPTED = 'user.terms_accepted';
 
     /**
+     * the column name for the status field
+     */
+    const COL_STATUS = 'user.status';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -128,11 +133,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Username', 'Password', 'apiKey', 'Mail', 'Avatar', 'About', 'Autoplay', 'termsAccepted', ),
-        self::TYPE_CAMELNAME     => array('id', 'username', 'password', 'apiKey', 'mail', 'avatar', 'about', 'autoplay', 'termsAccepted', ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_USERNAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_API_KEY, UserTableMap::COL_MAIL, UserTableMap::COL_AVATAR, UserTableMap::COL_ABOUT, UserTableMap::COL_AUTOPLAY, UserTableMap::COL_TERMS_ACCEPTED, ),
-        self::TYPE_FIELDNAME     => array('id', 'username', 'password', 'api_key', 'mail', 'avatar', 'about', 'autoplay', 'terms_accepted', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        self::TYPE_PHPNAME       => array('Id', 'Username', 'Password', 'apiKey', 'Mail', 'Avatar', 'About', 'Autoplay', 'termsAccepted', 'status', ),
+        self::TYPE_CAMELNAME     => array('id', 'username', 'password', 'apiKey', 'mail', 'avatar', 'about', 'autoplay', 'termsAccepted', 'status', ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_USERNAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_API_KEY, UserTableMap::COL_MAIL, UserTableMap::COL_AVATAR, UserTableMap::COL_ABOUT, UserTableMap::COL_AUTOPLAY, UserTableMap::COL_TERMS_ACCEPTED, UserTableMap::COL_STATUS, ),
+        self::TYPE_FIELDNAME     => array('id', 'username', 'password', 'api_key', 'mail', 'avatar', 'about', 'autoplay', 'terms_accepted', 'status', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -142,11 +147,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Password' => 2, 'apiKey' => 3, 'Mail' => 4, 'Avatar' => 5, 'About' => 6, 'Autoplay' => 7, 'termsAccepted' => 8, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'apiKey' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, 'termsAccepted' => 8, ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_USERNAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_API_KEY => 3, UserTableMap::COL_MAIL => 4, UserTableMap::COL_AVATAR => 5, UserTableMap::COL_ABOUT => 6, UserTableMap::COL_AUTOPLAY => 7, UserTableMap::COL_TERMS_ACCEPTED => 8, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'api_key' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, 'terms_accepted' => 8, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Password' => 2, 'apiKey' => 3, 'Mail' => 4, 'Avatar' => 5, 'About' => 6, 'Autoplay' => 7, 'termsAccepted' => 8, 'status' => 9, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'apiKey' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, 'termsAccepted' => 8, 'status' => 9, ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_USERNAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_API_KEY => 3, UserTableMap::COL_MAIL => 4, UserTableMap::COL_AVATAR => 5, UserTableMap::COL_ABOUT => 6, UserTableMap::COL_AUTOPLAY => 7, UserTableMap::COL_TERMS_ACCEPTED => 8, UserTableMap::COL_STATUS => 9, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'api_key' => 3, 'mail' => 4, 'avatar' => 5, 'about' => 6, 'autoplay' => 7, 'terms_accepted' => 8, 'status' => 9, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -176,6 +181,7 @@ class UserTableMap extends TableMap
         $this->addColumn('about', 'About', 'VARCHAR', false, 255, null);
         $this->addColumn('autoplay', 'Autoplay', 'SMALLINT', false, null, null);
         $this->addColumn('terms_accepted', 'termsAccepted', 'TIMESTAMP', true, null, null);
+        $this->addColumn('status', 'status', 'INTEGER', false, null, null);
     } // initialize()
 
     /**
@@ -278,7 +284,7 @@ class UserTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'validate' => array('requiredEmail' => array ('column' => 'mail','validator' => 'NotBlank',), 'validEmail' => array ('column' => 'mail','validator' => 'Email',), 'uniqueEmail' => array ('column' => 'mail','validator' => 'Unique',), 'requiredUsername' => array ('column' => 'username','validator' => 'NotBlank',), 'uniqueUsername' => array ('column' => 'username','validator' => 'Unique',), 'requiredPassword' => array ('column' => 'password','validator' => 'NotBlank',), 'requiredApiKey' => array ('column' => 'api_key','validator' => 'NotBlank',), 'avatarMaxLength' => array ('column' => 'avatar','validator' => 'Length','options' => array ('max' => 100,),), 'aboutMaxLength' => array ('column' => 'about','validator' => 'Length','options' => array ('max' => 65000,),), 'terms_accepted' => array ('column' => 'terms_accepted','validator' => 'GreaterThanOrEqual','options' => array ('value' => 'today',),), 'terms_acceptedNotBlank' => array ('column' => 'terms_accepted','validator' => 'NotBlank',), ),
+            'validate' => array('requiredEmail' => array ('column' => 'mail','validator' => 'NotBlank',), 'validEmail' => array ('column' => 'mail','validator' => 'Email',), 'uniqueEmail' => array ('column' => 'mail','validator' => 'Unique',), 'requiredUsername' => array ('column' => 'username','validator' => 'NotBlank',), 'uniqueUsername' => array ('column' => 'username','validator' => 'Unique',), 'requiredPassword' => array ('column' => 'password','validator' => 'NotBlank',), 'requiredApiKey' => array ('column' => 'api_key','validator' => 'NotBlank',), 'avatarMaxLength' => array ('column' => 'avatar','validator' => 'Length','options' => array ('max' => 100,),), 'aboutMaxLength' => array ('column' => 'about','validator' => 'Length','options' => array ('max' => 65000,),), 'terms_accepted' => array ('column' => 'terms_accepted','validator' => 'GreaterThanOrEqual','options' => array ('value' => '2018-05-04',),), 'terms_acceptedNotBlank' => array ('column' => 'terms_accepted','validator' => 'NotBlank',), ),
         );
     } // getBehaviors()
 
@@ -432,6 +438,7 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn(UserTableMap::COL_ABOUT);
             $criteria->addSelectColumn(UserTableMap::COL_AUTOPLAY);
             $criteria->addSelectColumn(UserTableMap::COL_TERMS_ACCEPTED);
+            $criteria->addSelectColumn(UserTableMap::COL_STATUS);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.username');
@@ -442,6 +449,7 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.about');
             $criteria->addSelectColumn($alias . '.autoplay');
             $criteria->addSelectColumn($alias . '.terms_accepted');
+            $criteria->addSelectColumn($alias . '.status');
         }
     }
 

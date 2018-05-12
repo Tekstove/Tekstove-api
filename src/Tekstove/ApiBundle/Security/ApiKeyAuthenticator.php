@@ -38,7 +38,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
         if ($apiKey) {
             return $apiKey;
         }
-        
+
         $apiKey = $request->headers->get('tekstove-apikey');
         
         return $apiKey;

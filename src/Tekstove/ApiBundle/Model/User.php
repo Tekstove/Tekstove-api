@@ -27,6 +27,8 @@ use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
  */
 class User extends BaseUser implements EditableInterface, AutoAclSerializableInterface
 {
+    const STATUS_DELETED  = 2;
+
     use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
     use AclTrait;
     
@@ -195,5 +197,22 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         }
 
         return false;
+    }
+
+    public function impersonalize()
+    {
+        /* @var $user \Tekstove\ApiBundle\Model\User */
+        $deletedName = 'user-' . $this->getId();
+
+        $this->setstatus(static::STATUS_DELETED);
+        $this->setUsername($deletedName);
+        $this->setMail($deletedName . '@tekstove.info');
+        $this->setAvatar(null);
+        $this->setAbout(null);
+        $this->settermsAccepted(new \DateTime()); // needed for validation
+
+        // credentials
+        $this->setPassword($deletedName);
+        $this->setapiKey(md5(uniqid($deletedName)));
     }
 }

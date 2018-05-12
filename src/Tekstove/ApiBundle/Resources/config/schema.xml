@@ -11,44 +11,45 @@
         <!-- should be php bool -->
         <column name="autoplay" type="smallint" />
         <column name="terms_accepted" type="TIMESTAMP" phpName="termsAccepted" required="true" />
-        
+        <column name="status" phpName="status" type="INTEGER" />
+
         <behavior name="validate">
             <parameter name="requiredEmail" value="{column: mail, validator: NotBlank}" />
             <parameter name="validEmail" value="{column: mail, validator: Email}" />
             <parameter name="uniqueEmail" value="{column: mail, validator: Unique}" />
-            
+
             <parameter name="requiredUsername" value="{column: username, validator: NotBlank}" />
             <parameter name="uniqueUsername" value="{column: username, validator: Unique}"/>
 
             <parameter name="requiredPassword" value="{column: password, validator: NotBlank}"/>
-            
+
             <parameter name="requiredApiKey" value="{column: api_key, validator: NotBlank}" />
 
             <parameter name="avatarMaxLength" value="{column: avatar, validator: Length, options: {max: 100}}" />
             <parameter name="aboutMaxLength" value="{column: about, validator: Length, options: {max: 65000}}" />
 
-            <parameter name="terms_accepted" value="{column: terms_accepted, validator: GreaterThanOrEqual, options: {value: 'today'}}" />
+            <parameter name="terms_accepted" value="{column: terms_accepted, validator: GreaterThanOrEqual, options: {value: '2018-05-04'}}" />
             <parameter name="terms_acceptedNotBlank" value="{column: terms_accepted, validator: NotBlank}" />
         </behavior>
     </table>
-    
+
     <table name="pm" namespace="\Tekstove\ApiBundle\Model\User">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
         <column name="user_to" type="integer" required="true" />
         <foreign-key foreignTable="user" name="userTo">
             <reference local="user_to" foreign="id" />
         </foreign-key>
-        
+
         <column name="user_from" type="integer" required="true" />
         <foreign-key foreignTable="user" name="userFrom">
             <reference local="user_from" foreign="id" />
         </foreign-key>
-        
+
          <column name="text" type="varchar" required="true" />
          <column name="title" type="varchar" required="true" />
          <column name="read" type="boolean" required="true" />
          <column name="datetime" type="TIMESTAMP" />
-         
+
         <behavior name="validate">
             <parameter name="titleValidationNotEmpty"  value="{column: title, validator: NotBlank}" />
             <parameter name="titleValidationMinLength" value="{column: title, validator: Length, options: {min: 3, max: 150}}" />
@@ -57,7 +58,7 @@
             <parameter name="textValidationMaxLength" value="{column: text, validator: Length, options: {min: 2, max: 2000}}" />
         </behavior>
     </table>
-    
+
     <table name="permission" namespace="\Tekstove\ApiBundle\Model\Acl" readonly="true">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
         <column name="name" type="varchar" />
@@ -69,10 +70,10 @@
         <column name="name" type="varchar" />
         <column name="image" type="varchar" />
     </table>
-    
+
     <table name="permission_group_permission" namespace="\Tekstove\ApiBundle\Model\Acl" readonly="true">
         <column name="group_id" type="integer" required="true" primaryKey="true" autoIncrement="false" />
-        
+
         <foreign-key foreignTable="permission_group">
             <reference local="group_id" foreign="id" />
         </foreign-key>
@@ -82,7 +83,7 @@
             <reference local="permission_id" foreign="id" />
         </foreign-key>
     </table>
-    
+
     <table name="permission_group_user" namespace="\Tekstove\ApiBundle\Model\Acl">
         <column name="user_id" type="integer" required="true" primaryKey="true" autoIncrement="false" />
         <foreign-key foreignTable="user">
@@ -94,7 +95,7 @@
             <reference local="group_id" foreign="id" />
         </foreign-key>
     </table>
-    
+
     <table name="lyric">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
         <column name="title" type="varchar" />
@@ -112,17 +113,17 @@
         <column name="cache_censor" phpName="cacheCensor" type="boolean" required="true"/>
         <column name="manual_censor" phpName="manualCensor" type="boolean" required="true"/>
         <column name="cache_censor_updated" phpName="cacheCensorUpdated" type="timestamp" required="true"/>
-        
+
         <column name="views" type="integer" />
         <column name="popularity" type="integer" />
         <column name="votes_count" type="integer" phpName="votesCount" />
-        
+
         <column name="video_youtube" type="varchar" phpName="videoYoutube" />
         <column name="video_vbox7" type="varchar" phpName="videoVbox7" />
         <column name="video_metacafe" type="varchar" phpName="videoMetacafe" />
 
         <column name="download" type="varchar" phpName="download" />
-        
+
         <behavior name="validate">
             <parameter name="textValidationNotEmpty"  value="{column: text, validator: NotBlank}" />
             <parameter name="textValidationMinLength" value="{column: text, validator: Length, options: {min: 10}}" />
@@ -131,7 +132,7 @@
             <parameter name="titleValidationMaxLength" value="{column: title, validator: Length, options: {max: 60}}" />
         </behavior>
     </table>
-    
+
     <table name="artist_lyric" isCrossRef="true" namespace="\Tekstove\ApiBundle\Model\Artist">
         <column name="lyric_id" type="integer" primaryKey="true"/>
         <foreign-key foreignTable="lyric">
@@ -143,7 +144,7 @@
         </foreign-key>
         <column name="order" type="integer" primaryKey="false"/>
     </table>
-    
+
     <table name="lyric_language" isCrossRef="true" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="lyric_id" type="integer" primaryKey="true"/>
         <column name="language_id" type="integer" primaryKey="true"/>
@@ -154,19 +155,19 @@
             <reference local="language_id" foreign="id"/>
         </foreign-key>
     </table>
-    
+
     <table name="lyric_redirect" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="deleted_id" type="integer"/>
         <column name="redirect_id" type="integer"/>
     </table>
-    
+
     <table name="lyric_translation" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
         <column name="lyric_id" type="integer"/>
         <column name="user_id" type="integer"/>
         <column name="text" type="varchar"/>
-        
-        
+
+
         <foreign-key foreignTable="lyric">
             <reference local="lyric_id" foreign="id"/>
         </foreign-key>
@@ -174,12 +175,12 @@
             <reference local="user_id" foreign="id"/>
         </foreign-key>
     </table>
-    
+
     <table name="language" readOnly="true">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="name" type="varchar" />
     </table>
-    
+
     <table name="lyric_vote" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="lyric_id" type="integer" />
@@ -191,18 +192,18 @@
             <reference local="lyric_id" foreign="id" />
         </foreign-key>
     </table>
-    
+
     <table name="lyric_top_popularity" namespace="\Tekstove\ApiBundle\Model\Lyric">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="lyric_id" type="integer" />
         <column name="popularity" type="integer" />
         <column name="date" type="DATE" />
-        
+
         <foreign-key foreignTable="lyric">
             <reference local="lyric_id" foreign="id" />
         </foreign-key>
     </table>
-    
+
     <table name="artist">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="name" type="varchar" />
@@ -212,12 +213,12 @@
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id" />
         </foreign-key>
-        
+
         <behavior name="validate">
             <parameter name="name" value="{column: name, validator: NotBlank}" />
         </behavior>
     </table>
-    
+
     <table name="album">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="name" type="varchar" />
@@ -237,12 +238,12 @@
         <foreign-key foreignTable="album">
             <reference local="album_id" foreign="id" />
         </foreign-key>
-        
+
         <foreign-key foreignTable="artist">
             <reference local="artist_id" foreign="id" />
         </foreign-key>
     </table>
-            
+
     <table name="album_lyric">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true"/>
         <column name="album_id" type="integer" required="true" />
@@ -253,39 +254,39 @@
         <foreign-key foreignTable="album">
             <reference local="album_id" foreign="id" />
         </foreign-key>
-        
+
         <foreign-key foreignTable="lyric">
             <reference local="lyric_id" foreign="id" />
         </foreign-key>
     </table>
-    
+
     <table name="forum_category" readOnly="true" namespace="\Tekstove\ApiBundle\Model\Forum" phpName="Category">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
         <column name="name" type="varchar" />
         <column name="order" type="integer" />
         <column name="hidden" type="integer" />
     </table>
-    
+
     <table name="forum_topic" namespace="\Tekstove\ApiBundle\Model\Forum" phpName="Topic">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
         <column name="name" type="varchar" />
         <column name="user_id" type="integer" />
         <column name="forum_category_id" type="integer" required="true" />
         <column name="last_activity" type="timestamp"/>
-        
+
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="forum_category">
             <reference local="forum_category_id" foreign="id" />
         </foreign-key>
-        
+
         <behavior name="validate">
             <parameter name="nameRequired" value="{column: name, validator: NotBlank}" />
             <parameter name="nameMinLength" value="{column: name, validator: Length, options: {min: 5}}" />
         </behavior>
     </table>
-    
+
     <table name="forum_post" namespace="\Tekstove\ApiBundle\Model\Forum" phpName="Post">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
         <column name="text" type="varchar" required="true" />
@@ -293,21 +294,21 @@
         <column name="user_id" type="integer" />
         <column name="forum_topic_id" type="integer" required="true" />
         <column name="date" type="timestamp" />
-        
+
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id" />
         </foreign-key>
-        
+
         <foreign-key foreignTable="forum_topic">
             <reference local="forum_topic_id" foreign="id" />
         </foreign-key>
-        
+
         <behavior name="validate">
             <parameter name="postTextRequired" value="{column: text, validator: NotBlank}" />
             <parameter name="postTextMinLength" value="{column: text, validator: Length, options: {min: 5}}" />
         </behavior>
     </table>
-    
+
     <table name="chat" namespace="\Tekstove\ApiBundle\Model\Chat" phpName="Message">
         <column name="id" type="integer" required="true" primarykey="true" autoIncrement="true" />
         <column name="id_override" type="integer" required="false" />
@@ -316,22 +317,22 @@
         <column name="ip" type="varchar" required="true" />
         <column name="date" type="timestamp" />
         <column name="username" type="varchar" />
-        
+
         <column name="user_id" type="integer" />
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id" />
         </foreign-key>
-        
+
         <behavior name="validate">
             <parameter name="messageNotEmpty"  value="{column: message, validator: NotBlank}" />
         </behavior>
     </table>
-    
+
     <table name="chat_online" namespace="\Tekstove\ApiBundle\Model\Chat" phpName="Online">
         <column name="user_id" type="integer" required="true" primarykey="true" />
         <column name="username" type="varchar" required="true" primarykey="true" />
         <column name="date" type="timestamp" />
-        
+
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id" />
         </foreign-key>

@@ -85,6 +85,14 @@ class UserController extends TekstoveAbstractController
         $chatOnline->filterByUserId($user->getId());
         $chatOnline->delete();
 
+        $lyricQuery = new \Tekstove\ApiBundle\Model\LyricQuery();
+        $lyricQuery->filterByUser($user);
+        $lyricQuery->update(
+            [
+                'sendBy' => null,
+            ]
+        );
+
         $user->save();
 
         return new \Symfony\Component\HttpFoundation\Response();

@@ -25,9 +25,9 @@ class EventDispacherFactory
         $titleCacheSubscriber = new LyricTitleCacheSubscriber();
 
         $securityTokenStorage = $container->get('security.token_storage');
-        
+
         $uploadedBySubscriber = new LyricUploadedBySubscriber($securityTokenStorage);
-       
+
         $dispacher->addSubscriber($titleCacheSubscriber);
         $dispacher->addSubscriber($uploadedBySubscriber);
         $dispacher->addSubscriber(new \Tekstove\ApiBundle\EventListener\Model\Lyric\LyricAntiSpamSubscriber());
@@ -40,7 +40,8 @@ class EventDispacherFactory
                 $container->get('tekstove.api.lyric.count.redis'),
                 $container->get('request_stack'),
                 $container->get('logger'),
-                $container->get('security.token_storage')
+                $container->get('security.token_storage'),
+                new \Potaka\IpAnonymizer\IpAnonymizer()
             )
         );
         $dispacher->addSubscriber(
@@ -74,10 +75,10 @@ class EventDispacherFactory
     protected static function createContentChecker(ContainerInterface $container)
     {
         // THIS IS UGLY!!!
-        
+
         $kernelPath = $container->get('kernel')->getRootDir();
         $dictionariesDir = $kernelPath . '/../vendor/tekstove/content-checker/Dictionaries/';
-        
+
         $checker = new \Tekstove\ContentChecker\Checker\RegExpChecker([]);
         foreach (['Bg/Data.txt', 'En/Data.txt'] as $relativeDictionaryPath) {
             $dictionaryText = trim(file_get_contents($dictionariesDir . $relativeDictionaryPath));

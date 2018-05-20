@@ -3,26 +3,21 @@
 namespace Tekstove\ApiBundle\EventListener\Model\Chat;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 use Tekstove\ApiBundle\EventDispatcher\Chat\MessageEvent;
 use Tekstove\ApiBundle\EventDispatcher\Event;
-
-use Potaka\BbcodeBundle\BbCode\TextToHtml;
+use Potaka\BbcodeBundle\BbCode\TextToHtmlInterface;
 
 /**
- * MessageHtmlSubscriber
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class MessageHtmlSubscriber implements EventSubscriberInterface
 {
-
     /**
-     * @var TextToHtml
+     * @var TextToHtmlInterface
      */
     private $bbCodeToHtml;
 
-    public function __construct(TextToHtml $textToHtml)
+    public function __construct(TextToHtmlInterface $textToHtml)
     {
         $this->bbCodeToHtml = $textToHtml;
     }
@@ -41,9 +36,7 @@ class MessageHtmlSubscriber implements EventSubscriberInterface
             return false;
         }
         $message = $event->getMessage();
-        $escapedMessage = htmlspecialchars($message->getMessage(), ENT_QUOTES);
-        $newLinedMessage = nl2br($escapedMessage);
-        $html = $this->bbCodeToHtml->getHtml($newLinedMessage);
+        $html = $this->bbCodeToHtml->getHtml($message->getMessage());
         $message->setMessageHtml($html);
     }
 }

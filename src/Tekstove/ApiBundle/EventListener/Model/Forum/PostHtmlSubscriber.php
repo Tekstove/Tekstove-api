@@ -4,17 +4,17 @@ namespace Tekstove\ApiBundle\EventListener\Model\Forum;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tekstove\ApiBundle\EventDispatcher\Forum\Post\PostEvent;
-use Potaka\BbcodeBundle\BbCode\TextToHtml;
+use Potaka\BbcodeBundle\BbCode\TextToHtmlInterface;
 use Tekstove\ApiBundle\EventDispatcher\Event;
 
 class PostHtmlSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var TextToHtml
+     * @var TextToHtmlInterface
      */
     private $bbCodeToHtml;
 
-    public function __construct(TextToHtml $textToHtml)
+    public function __construct(TextToHtmlInterface $textToHtml)
     {
         $this->bbCodeToHtml = $textToHtml;
     }
@@ -33,9 +33,7 @@ class PostHtmlSubscriber implements EventSubscriberInterface
         }
 
         $post = $event->getPost();
-        $escapedMessage = htmlspecialchars($post->getText(), ENT_QUOTES);
-        $newLinedMessage = nl2br($escapedMessage);
-        $html = $this->bbCodeToHtml->getHtml($newLinedMessage);
+        $html = $this->bbCodeToHtml->getHtml($post->getText());
 
         $post->setTextHtml($html);
     }

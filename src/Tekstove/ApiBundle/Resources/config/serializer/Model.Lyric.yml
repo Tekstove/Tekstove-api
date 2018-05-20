@@ -52,3 +52,6 @@
         isCacheCensor:
             groups: [Details]
             serialized_name: censor
+        isManualCensor:
+            groups: [ManualCensor]
+            serialized_name: manualCensor

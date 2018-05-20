@@ -16,12 +16,12 @@ class UserController extends TekstoveAbstractController
     public function indexAction(Request $request)
     {
         $userQuery = new UserQuery();
-        
+
         $this->applyGroups($request);
-        
+
         return $this->handleData($request, $userQuery);
     }
-    
+
     /**
      * @Template()
      */
@@ -43,7 +43,7 @@ class UserController extends TekstoveAbstractController
         $userQuery = new UserQuery();
         /* @var $user \Tekstove\ApiBundle\Model\User */
         $user = $userQuery->requireOneById($id);
-        
+
         try {
             $content = $request->getContent();
             $pathData = json_decode($content, true);
@@ -51,11 +51,54 @@ class UserController extends TekstoveAbstractController
             /* @var $pathPopulator \Tekstove\ApiBundle\Populator\PathPopulator */
             $pathPopulator->populateObject($pathData, $user);
             $repo->save($user);
+
             return $this->handleData($request, $user);
         } catch (UserHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
+
             return $view;
         }
+    }
+
+    public function deleteAction($id)
+    {
+        $currentUser = $this->getUser();
+        if (!$currentUser) {
+            throw new \Exception("User not logged in!");
+        }
+
+        $userQuery = new UserQuery();
+        $user = $userQuery->findOneById($id);
+        if (!$user) {
+            throw new \Exception('User not found!');
+        }
+
+        if ($user->getId() !== $currentUser->getId()) {
+            throw new \Exception('Not allowed!');
+        }
+
+        /* @var $user \Tekstove\ApiBundle\Model\User */
+        $user->impersonalize();
+
+        $chatQuery = new \Tekstove\ApiBundle\Model\Chat\MessageQuery();
+        $chatQuery->filterByUserId($user->getId());
+        $chatQuery->delete();
+
+        $chatOnline = new \Tekstove\ApiBundle\Model\Chat\OnlineQuery();
+        $chatOnline->filterByUserId($user->getId());
+        $chatOnline->delete();
+
+        $lyricQuery = new \Tekstove\ApiBundle\Model\LyricQuery();
+        $lyricQuery->filterByUser($user);
+        $lyricQuery->update(
+            [
+                'sendBy' => null,
+            ]
+        );
+
+        $user->save();
+
+        return new \Symfony\Component\HttpFoundation\Response();
     }
 }

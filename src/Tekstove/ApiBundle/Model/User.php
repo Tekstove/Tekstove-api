@@ -27,6 +27,8 @@ use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
  */
 class User extends BaseUser implements EditableInterface, AutoAclSerializableInterface
 {
+    const STATUS_DELETED  = 2;
+
     use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
     use AclTrait;
     
@@ -113,6 +115,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
             $allowedFields[] = 'videoYoutube';
             $allowedFields[] = 'videoVbox7';
             $allowedFields[] = 'videoMetacafe';
+            $allowedFields[] = 'manualCensor';
             
             // do not allow delete on new lyric
             if ($lyric->getId()) {
@@ -169,6 +172,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         if ($user->getId() === $this->getId()) {
             $return[] = 'about';
             $return[] = 'avatar';
+            $return[] = 'termsAccepted';
         }
 
         return $return;
@@ -184,5 +188,31 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         $pmQUery->filterByRead(0);
         $unreadPmCount = $pmQUery->count();
         return $unreadPmCount;
+    }
+
+    public function latestTermsAccepted(): bool
+    {
+        if ($this->gettermsAccepted()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function impersonalize()
+    {
+        /* @var $user \Tekstove\ApiBundle\Model\User */
+        $deletedName = 'user-' . $this->getId();
+
+        $this->setstatus(static::STATUS_DELETED);
+        $this->setUsername($deletedName);
+        $this->setMail($deletedName . '@tekstove.info');
+        $this->setAvatar(null);
+        $this->setAbout(null);
+        $this->settermsAccepted(new \DateTime()); // needed for validation
+
+        // credentials
+        $this->setPassword($deletedName);
+        $this->setapiKey(md5(uniqid($deletedName)));
     }
 }

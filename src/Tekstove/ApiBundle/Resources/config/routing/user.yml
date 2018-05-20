@@ -25,6 +25,11 @@ tekstove_api.user.patch:
     defaults: { _controller:  TekstoveApiBundle:User:patch}
     methods: [PATCH]
 
+tekstove_api.user.delete:
+    path: "/{id}"
+    defaults: { _controller:  TekstoveApiBundle:User:delete}
+    methods: [DELETE]
+
 tekstove_api_user_login_post:
     path: "/login/"
     defaults: { _controller: TekstoveApiBundle:User\Login:post }

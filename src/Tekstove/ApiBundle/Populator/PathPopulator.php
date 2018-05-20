@@ -65,6 +65,14 @@ class PathPopulator
                             $bumpyCase = $caseHelper->bumpyCase($field);
                             $setter = 'set' . $bumpyCase;
                             $value = $path['value'];
+                            if (stristr($bumpyCase, 'termsAccepted') !== false) {
+                                if (!$value) {
+                                    $exception = new User\Exception\UserHumanReadableException();
+                                    $exception->addError($field, 'Required');
+                                    throw $exception;
+                                }
+                            }
+                            
                             $object->{$setter}($value);
                         }
                         break;

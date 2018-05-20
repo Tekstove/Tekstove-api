@@ -13,7 +13,7 @@ framework:
     translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"
     router:
-        resource: "%kernel.root_dir%/config/routing.yml"
+        resource: '%kernel.project_dir%/app/config/routing.yml'
         strict_requirements: ~
     form:            ~
     csrf_protection: ~
@@ -23,12 +23,10 @@ framework:
         engines: ['twig']
     default_locale:  "%locale%"
     trusted_hosts:   ~
-    #                 server ip
-    trusted_proxies: [79.98.109.18, 127.0.0.1, 103.21.244.0/22, 103.22.200.0/22, 103.31.4.0/22, 104.16.0.0/12, 108.162.192.0/18, 131.0.72.0/22, 141.101.64.0/18, 162.158.0.0/15, 172.64.0.0/13, 173.245.48.0/20, 188.114.96.0/20, 190.93.240.0/20, 197.234.240.0/22, 198.41.128.0/17, 199.27.128.0/21]
     session:
         # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
         handler_id:  session.handler.native_file
-        save_path:   "%kernel.root_dir%/../var/sessions/%kernel.environment%"
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
     fragments:       ~
     http_method_override: true
     assets: ~
@@ -64,7 +62,7 @@ swiftmailer:
 fos_rest:
     view:
         view_response_listener: force
-        
+
 jms_serializer:
     metadata:
         auto_detection: true

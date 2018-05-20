@@ -6,18 +6,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricTitleCacheSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricUploadedBySubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Lyric\VideoParserSubscriber;
-use Tekstove\ApiBundle\EventListener\Model\Chat\MessageHtmlSubscriber;
 use Tekstove\ApiBundle\EventListener\Model\Chat\MessageValidateSafeTextSubscriber;
-use Tekstove\ApiBundle\EventListener\Model\Lyric\LyricCounterSubscriber;
 
 /**
- * Description of EventDispacherFactory
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class EventDispacherFactory
 {
-    public function registerSubscribers(ContainerInterface $container)
+    public function registerSubscribers(\Symfony\Component\DependencyInjection\Container $container)
     {
         $dispacher = $container->get('event_dispatcher');
 
@@ -25,26 +21,24 @@ class EventDispacherFactory
         $titleCacheSubscriber = new LyricTitleCacheSubscriber();
 
         $securityTokenStorage = $container->get('security.token_storage');
-        
+
         $uploadedBySubscriber = new LyricUploadedBySubscriber($securityTokenStorage);
-       
+
         $dispacher->addSubscriber($titleCacheSubscriber);
         $dispacher->addSubscriber($uploadedBySubscriber);
         $dispacher->addSubscriber(new \Tekstove\ApiBundle\EventListener\Model\Lyric\LyricAntiSpamSubscriber());
         $dispacher->addSubscriber(self::createContentChecker($container));
         $dispacher->addSubscriber(new VideoParserSubscriber());
-        $dispacher->addSubscriber(new MessageHtmlSubscriber($container->get('potaka.bbcode.full')));
+
+        $messageHtmlSubscriber= $container->get('app.chat.message_html_subscriber');
+        $dispacher->addSubscriber($messageHtmlSubscriber);
+
         $dispacher->addSubscriber(new MessageValidateSafeTextSubscriber(self::createChatContentChecker($container)));
         $dispacher->addSubscriber(
-            new LyricCounterSubscriber(
-                $container->get('tekstove.api.lyric.count.redis'),
-                $container->get('request_stack'),
-                $container->get('logger'),
-                $container->get('security.token_storage')
-            )
+            $container->get('app.lyric.count_subscriber')
         );
         $dispacher->addSubscriber(
-            new \Tekstove\ApiBundle\EventListener\Model\Forum\PostHtmlSubscriber($container->get('potaka.bbcode.full'))
+            $container->get('app.forum.post.html_subscriber')
         );
 
         $dispacher->addSubscriber(
@@ -74,10 +68,10 @@ class EventDispacherFactory
     protected static function createContentChecker(ContainerInterface $container)
     {
         // THIS IS UGLY!!!
-        
+
         $kernelPath = $container->get('kernel')->getRootDir();
         $dictionariesDir = $kernelPath . '/../vendor/tekstove/content-checker/Dictionaries/';
-        
+
         $checker = new \Tekstove\ContentChecker\Checker\RegExpChecker([]);
         foreach (['Bg/Data.txt', 'En/Data.txt'] as $relativeDictionaryPath) {
             $dictionaryText = trim(file_get_contents($dictionariesDir . $relativeDictionaryPath));

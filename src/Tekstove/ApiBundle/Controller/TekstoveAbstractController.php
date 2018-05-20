@@ -3,10 +3,8 @@
 namespace Tekstove\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
-use JMS\Serializer\SerializationContext;
+use FOS\RestBundle\Context\Context;
 use Symfony\Component\HttpFoundation\Request;
-
-use Propel\Runtime\ActiveQuery\Criteria;
 
 /**
  * Description of TekstoveAbstractController
@@ -19,12 +17,12 @@ class TekstoveAbstractController extends FOSRestController
     
     private $context;
     /**
-     * @return SerializationContext
+     * @return Context
      */
     protected function getContext()
     {
         if ($this->context === null) {
-            $this->context = SerializationContext::create();
+            $this->context = new Context();
             $this->context->setSerializeNull(true);
         }
 
@@ -51,7 +49,7 @@ class TekstoveAbstractController extends FOSRestController
         }
         
          $view = $this->view($data, 200);
-         $view->setSerializationContext($this->getContext());
+         $view->setContext($this->getContext());
          return $view;
     }
     

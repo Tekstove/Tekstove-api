@@ -7,10 +7,9 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Tekstove\ApiBundle\EventDispatcher\Event;
 use Predis\Client;
 use Psr\Log\LoggerInterface;
+use Potaka\IpAnonymizer\IpAnonymizer;
 
 /**
- * Description of LyricCounterSubscriber
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
@@ -19,13 +18,15 @@ class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\Event
     private $redisClient;
     private $requestStack;
     private $tokenStorage;
+    private $ipAnonymizer;
 
-    public function __construct(Client $redisClient, RequestStack $requestStack, LoggerInterface $logger, TokenStorageInterface $tokenStorage)
+    public function __construct(Client $redisClient, RequestStack $requestStack, LoggerInterface $logger, TokenStorageInterface $tokenStorage, IpAnonymizer $ipAnonymizer)
     {
         $this->redisClient = $redisClient;
         $this->requestStack = $requestStack;
         $this->logger = $logger;
         $this->tokenStorage = $tokenStorage;
+        $this->ipAnonymizer = $ipAnonymizer;
     }
 
     public static function getSubscribedEvents()
@@ -46,7 +47,9 @@ class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\Event
         if ($user instanceof \Tekstove\ApiBundle\Model\User) {
             $viewKey = 'u' . $user->getId();
         } else {
-            $viewKey = $this->requestStack->getCurrentRequest()->getClientIp();
+            $viewKey = $this->ipAnonymizer->anonymize(
+                $this->requestStack->getCurrentRequest()->getClientIp()
+            );
         }
 
         try {

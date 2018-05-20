@@ -9,17 +9,24 @@ services:
         arguments: ["@security.authorization_checker"]
         tags:
             - { name: "jms_serializer.event_subscriber" }
-    
+        public: true
+
     tekstove.api.http_kernel.cors_subscriber:
         class: Tekstove\ApiBundle\EventListener\HttpKernel\CorsSubscriber
         tags:
             - { name: kernel.event_subscriber }
-    
+
     tekstove.api.serializer.chat.message_subscriber:
         class: Tekstove\ApiBundle\EventListener\Model\Serialize\Chat\MessageSubscriber
         arguments: ["@security.authorization_checker"]
         tags:
             - { name: "jms_serializer.event_subscriber" }
+        public: true
+
+    app.chat.message_html_subscriber:
+        class: Tekstove\ApiBundle\EventListener\Model\Chat\MessageHtmlSubscriber
+        arguments: ["@tekstove.api.bbcode.cache"]
+        public: true
 
     tekstove.api.bbcode.cache:
         class: Potaka\BbcodeBundle\BbCode\TextToHtmlCache
@@ -32,6 +39,7 @@ services:
         arguments: ["@tekstove.api.bbcode.cache"]
         tags:
             - { name: "jms_serializer.event_subscriber" }
+        public: true
 
     tekstove.api.user_provider:
         class: Tekstove\ApiBundle\Security\ApiUserProvider
@@ -39,19 +47,21 @@ services:
     tekstove.api.apikey_authenticator:
         class:  Tekstove\ApiBundle\Security\ApiKeyAuthenticator
         public: false
-        
+
     tekstove.lyric.repository:
         class: Tekstove\ApiBundle\Model\LyricQuery
         calls:
             - [setEventDispacher, ["@tekstove.event_dispacher"]]
             - [setValidator, ["@validator"]]
-            
+        public: true
+
     tekstove.user.repository:
         class: Tekstove\ApiBundle\Model\UserQuery
         calls:
             - [setEventDispacher, ["@tekstove.event_dispacher"]]
             - [setValidator, ["@validator"]]
-    
+        public: true
+
     tekstove.user.pm.repository:
         class: Tekstove\ApiBundle\Model\User\PmQuery
         calls:
@@ -63,25 +73,34 @@ services:
         calls:
             - [setEventDispacher, ["@tekstove.event_dispacher"]]
             - [setValidator, ["@validator"]]
+        public: true
 
     tekstove.forum.post.repository:
         class: Tekstove\ApiBundle\Model\Forum\PostQuery
         calls:
             - [setEventDispacher, ["@tekstove.event_dispacher"]]
             - [setValidator, ["@validator"]]
-        
+        public: true
+
+    app.forum.post.html_subscriber:
+        class: Tekstove\ApiBundle\EventListener\Model\Forum\PostHtmlSubscriber
+        arguments: ["@tekstove.api.bbcode.cache"]
+        public: true
+
     tekstove.chat.message.repository:
         class: Tekstove\ApiBundle\Model\Chat\MessageQuery
         calls:
             - [setEventDispacher, ["@tekstove.event_dispacher"]]
             - [setValidator, ["@validator"]]
-            
+        public: true
+
     tekstove.artist.repository:
         class: Tekstove\ApiBundle\Model\ArtistQuery
         calls:
             - [setEventDispacher, ["@tekstove.event_dispacher"]]
             - [setValidator, ["@validator"]]
-            
+        public: true
+
     tekstove.api.populator.patch:
         class: Tekstove\ApiBundle\Populator\PathPopulator
         arguments: ["@security.token_storage"]
@@ -94,6 +113,7 @@ services:
         class: Tekstove\ApiBundle\EventDispatcher\EventDispacher
         factory: ["@tekstove.event_dispacher.factory", registerSubscribers]
         arguments: ["@service_container"]
+        public: true
 
     tekstove.api.security.lyric_voter:
         class: Tekstove\ApiBundle\Security\Authorization\Voter\LyricVoter
@@ -121,7 +141,7 @@ services:
         public: false
         tags:
             - { name: security.voter }
-            
+
     tekstove.api.security.artist.voeter:
         class: Tekstove\ApiBundle\Security\Authorization\Voter\ArtistVoter
         public: false
@@ -131,6 +151,15 @@ services:
     tekstove.api.lyric.count.redis:
         class: Predis\Client
         arguments: [{ host: "%tekstove_api.lyric.votes.redis.host%", port: "%tekstove_api.lyric.votes.redis.port%"}]
+        public: true
+
+    app.lyric.count_subscriber:
+        class: Tekstove\ApiBundle\EventListener\Model\Lyric\LyricCounterSubscriber
+        arguments: ["@tekstove.api.lyric.count.redis", "@request_stack", "@logger", "@security.token_storage", "@app.ip_anonymizer"]
+        public: true
+
+    app.ip_anonymizer:
+        class: Potaka\IpAnonymizer\IpAnonymizer
 
     tekstove.api.ban.redis:
         class: Predis\Client

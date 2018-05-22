@@ -40,7 +40,7 @@ class AlbumController extends Controller
         $postDataJson = $request->getContent();
         $postData = json_decode($postDataJson, true);
 
-        $album = new Album([]);
+        $album = new Album();
         $album->setUser($this->getUser());
 
         $allowedFields = $this->getUser()->getAllowedAlbumFields($album);
@@ -64,7 +64,8 @@ class AlbumController extends Controller
                     new \Symfony\Component\Validator\Constraints\NotBlank(),
                     new \Symfony\Component\Validator\Constraints\Length(
                         [
-                            'max' => 5,
+                            'max' => 40,
+                            'min' => 1,
                         ]
                     ),
                 ],

@@ -105,7 +105,6 @@ class AlbumController extends Controller
         // @validate insert data?
 
         try {
-
             foreach ($insertData as $field => $value) {
                 $bumpyCase = $caseHelper->bumpyCase($field);
                 $setter = 'set' . $bumpyCase;
@@ -139,6 +138,81 @@ class AlbumController extends Controller
             $albumRepo = $this->get('tekstove.album.post.repository');
             $albumRepo->save($album);
 
+            return $this->handleData($request, $album);
+        } catch (\Tekstove\ApiBundle\Model\Forum\Post\PostHumanReadableException $e) { // @FIXME ex type!
+            $view = $this->handleData($request, $e->getErrors());
+            $view->setStatusCode(400);
+            return $view;
+        }
+    }
+
+    public function patchAction(Request $request, $id)
+    {
+        $this->getContext()
+                ->setGroups(['List']);
+
+        $repo = $this->get('tekstove.album.post.repository');
+        /* @var $repo AlbumQuery */
+
+        $album = $repo->findOneById($id);
+
+        try {
+            if ($this->getUser()) {
+                $user = $this->getUser();
+            } else {
+                $user = new User();
+            }
+
+            $allowedFields = $user->getAllowedAlbumFields($album);
+
+            $caseHelper = new CaseHelper();
+            $content = $request->getContent();
+            $pathData = json_decode($content, true);
+
+            // @FIXME validate path data
+
+            foreach ($allowedFields as $field) {
+                foreach ($pathData as $path) {
+                    switch ($path['op']) {
+                        case 'replace':
+                            if ($path['path'] === '/' . $field) {
+                                $bumpyCase = $caseHelper->bumpyCase($field);
+                                $setter = 'set' . $bumpyCase;
+                                $value = $path['value'];
+
+                                if ($field === 'lyrics') {
+                                    $album->setAlbumLyrics(new \Propel\Runtime\Collection\Collection([]));
+                                    foreach ($value as $lyricPathData) {
+                                        $albumLyric = new \Tekstove\ApiBundle\Model\AlbumLyric();
+
+                                        $lyricId = $lyricPathData['lyric'] ?? null;
+                                        if ($lyricId) {
+                                            $lyricQuery = new \Tekstove\ApiBundle\Model\LyricQuery();
+                                            $matchedLyric = $lyricQuery->findOneById($lyricId);
+                                            if (!$matchedLyric) {
+                                                $ex = new \Tekstove\ApiBundle\Model\Forum\Post\PostHumanReadableException(); // @FIXME type!
+                                                $ex->addError('lyrics', 'lyric ' . $lyricId . ' not found!');
+                                                throw $ex;
+                                            }
+                                        }
+                                        $albumLyric->setLyricId($lyricId);
+                                        $albumLyric->setName(
+                                            $lyricPathData['name'] ?? null
+                                        );
+                                        $album->addAlbumLyric($albumLyric);
+                                    }
+
+                                } else {
+                                    $album->{$setter}($value);
+                                }
+                            }
+                            break;
+                        default:
+                            throw new \Exception('not implemented `op`');
+                    }
+                }
+            }
+            $repo->save($album);
             return $this->handleData($request, $album);
         } catch (\Tekstove\ApiBundle\Model\Forum\Post\PostHumanReadableException $e) { // @FIXME ex type!
             $view = $this->handleData($request, $e->getErrors());

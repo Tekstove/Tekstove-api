@@ -13,6 +13,11 @@ tekstove_api_album_post:
     defaults: { _controller: TekstoveApiBundle:Album:post }
     methods: [POST]
 
+tekstove_api_album_patch:
+    path: "/{id}"
+    defaults: { _controller: TekstoveApiBundle:Album:patch }
+    methods: [PATCH]
+
 tekstove_api_album_get:
     path: "/{id}"
     defaults: { _controller: TekstoveApiBundle:Album:get }

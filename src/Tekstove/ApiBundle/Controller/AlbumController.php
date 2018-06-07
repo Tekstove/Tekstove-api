@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\AlbumQuery;
 use Tekstove\ApiBundle\Model\Album;
 use Potaka\Helper\Casing\CaseHelper;
+use Tekstove\ApiBundle\TekstoveApiBundle\Model\Album\Exception\AlbumHumanReadableException;
 
 /**
  * @author po_taka <angel.koilov@gmail.com>
@@ -31,6 +32,60 @@ class AlbumController extends Controller
         );
     }
 
+    private function getValidationConstrain($type)
+    {
+        // @TODO validation will be service
+        // @TODO and there will be groups like `insert` and `update`
+
+        if ($type === 'new') {
+            $constraintsCollection = \Symfony\Component\Validator\Constraints\Required::class;
+        } elseif ($type === 'update') {
+            $constraintsCollection = \Symfony\Component\Validator\Constraints\Optional::class;
+        } else {
+            throw new \Exception('no no no');
+        }
+
+        $nameValidations = [
+            new $constraintsCollection(
+                [
+                    new \Symfony\Component\Validator\Constraints\Type("string"),
+                    new \Symfony\Component\Validator\Constraints\NotNull(),
+                    new \Symfony\Component\Validator\Constraints\NotIdenticalTo(''),
+                    new \Symfony\Component\Validator\Constraints\Length(
+                        [
+                            'max' => 40,
+                            'min' => 1,
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        $yearValidations = [
+            new $constraintsCollection(
+                [
+                    new \Symfony\Component\Validator\Constraints\Range(
+                        [
+                            'min' => 500,
+                            'max' => 3000, // I'm planning refactoring in next 980 years
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        $constraint = new \Symfony\Component\Validator\Constraints\Collection(
+            [
+                'fields' => [
+                    'name' => $nameValidations,
+                    'year' => $yearValidations,
+                ],
+            ]
+        );
+
+        return $constraint;
+    }
+
     public function postAction(Request $request)
     {
         $this->userMustBeLogged();
@@ -46,7 +101,6 @@ class AlbumController extends Controller
         $allowedFields = $this->getUser()->getAllowedAlbumFields($album);
         $caseHelper = new CaseHelper();
 
-
         $insertData = [];
 
         foreach ($postData as $key => $value) {
@@ -55,34 +109,8 @@ class AlbumController extends Controller
             }
         }
 
-        //@TODO validation will be service
-        // @TODO and there will be groups like `insert` and `update`
         $validator = $this->get('validator');
-        $constraint = new \Symfony\Component\Validator\Constraints\Collection(
-            [
-                'name' => [
-                    new \Symfony\Component\Validator\Constraints\NotBlank(),
-                    new \Symfony\Component\Validator\Constraints\Length(
-                        [
-                            'max' => 40,
-                            'min' => 1,
-                        ]
-                    ),
-                ],
-                'year' => [
-                    new \Symfony\Component\Validator\Constraints\Optional(
-                        [
-                            new \Symfony\Component\Validator\Constraints\Range(
-                                [
-                                    'min' => 500,
-                                    'max' => 3000, // I'm planning refactoring in next 980 years
-                                ]
-                            ),
-                        ]
-                    ),
-                ],
-            ]
-        );
+        $constraint = $this->getValidationConstrain('update'); // @FIXME
 
         $constraint->allowExtraFields = true;
 
@@ -91,7 +119,7 @@ class AlbumController extends Controller
             $errors = [];
             foreach ($violations as $error) {
                 $errors[] = [
-                    'element' => trim($error->getPropertyPath(), '[]'), // @TODO why path is [name]
+                    'element' => $error->getPropertyPath(),
                     'message' => $error->getMessage(),
                 ];
             }
@@ -100,9 +128,6 @@ class AlbumController extends Controller
             $view->setStatusCode(400);
             return $view;
         }
-
-
-        // @validate insert data?
 
         try {
             foreach ($insertData as $field => $value) {
@@ -167,54 +192,71 @@ class AlbumController extends Controller
 
             $caseHelper = new CaseHelper();
             $content = $request->getContent();
-            $pathData = json_decode($content, true);
+            $requestPathData = json_decode($content, true);
 
-            // @FIXME validate path data
-
+            $updateData = [];
             foreach ($allowedFields as $field) {
-                foreach ($pathData as $path) {
+                foreach ($requestPathData as $path) {
                     switch ($path['op']) {
                         case 'replace':
                             if ($path['path'] === '/' . $field) {
-                                $bumpyCase = $caseHelper->bumpyCase($field);
-                                $setter = 'set' . $bumpyCase;
-                                $value = $path['value'];
-
-                                if ($field === 'lyrics') {
-                                    $album->setAlbumLyrics(new \Propel\Runtime\Collection\Collection([]));
-                                    foreach ($value as $lyricPathData) {
-                                        $albumLyric = new \Tekstove\ApiBundle\Model\AlbumLyric();
-
-                                        $lyricId = $lyricPathData['lyric'] ?? null;
-                                        if ($lyricId) {
-                                            $lyricQuery = new \Tekstove\ApiBundle\Model\LyricQuery();
-                                            $matchedLyric = $lyricQuery->findOneById($lyricId);
-                                            if (!$matchedLyric) {
-                                                $ex = new \Tekstove\ApiBundle\Model\Forum\Post\PostHumanReadableException(); // @FIXME type!
-                                                $ex->addError('lyrics', 'lyric ' . $lyricId . ' not found!');
-                                                throw $ex;
-                                            }
-                                        }
-                                        $albumLyric->setLyricId($lyricId);
-                                        $albumLyric->setName(
-                                            $lyricPathData['name'] ?? null
-                                        );
-                                        $album->addAlbumLyric($albumLyric);
-                                    }
-
-                                } else {
-                                    $album->{$setter}($value);
-                                }
+                                $updateData[$field] = $path['value'];
                             }
-                            break;
-                        default:
-                            throw new \Exception('not implemented `op`');
                     }
                 }
             }
+
+            $validator = $this->get('validator');
+            $constraint = $this->getValidationConstrain('update'); // @FIXME
+            $constraint->allowExtraFields = true;
+
+            $violations = $validator->validate($updateData, $constraint, ['Default']);
+            if ($violations->count()) {
+                $errors = [];
+                foreach ($violations as $error) {
+                    $errors[] = [
+                        'element' => trim($error->getPropertyPath(), '[]'), // @TODO why path is [name]
+                        'message' => $error->getMessage(),
+                    ];
+                }
+
+                $view = $this->handleData($request, $errors);
+                $view->setStatusCode(400);
+                return $view;
+            }
+
+            foreach ($updateData as $field => $value) {
+                $bumpyCase = $caseHelper->bumpyCase($field);
+                $setter = 'set' . $bumpyCase;
+
+                if ($field === 'lyrics') {
+                    $album->setAlbumLyrics(new \Propel\Runtime\Collection\Collection([]));
+                    foreach ($value as $lyricPathData) {
+                        $albumLyric = new \Tekstove\ApiBundle\Model\AlbumLyric();
+                        $lyricId = $lyricPathData['lyric'] ?? null;
+                        if ($lyricId) {
+                            $lyricQuery = new \Tekstove\ApiBundle\Model\LyricQuery();
+                            $matchedLyric = $lyricQuery->findOneById($lyricId);
+                            if (!$matchedLyric) {
+                                $ex = new AlbumHumanReadableException();
+                                $ex->addError('lyrics', 'lyric ' . $lyricId . ' not found!');
+                                throw $ex;
+                            }
+                        }
+                        $albumLyric->setLyricId($lyricId);
+                        $albumLyric->setName(
+                            $lyricPathData['name'] ?? null
+                        );
+                        $album->addAlbumLyric($albumLyric);
+                    }
+                } else {
+                    $album->{$setter}($value);
+                }
+            }
+
             $repo->save($album);
             return $this->handleData($request, $album);
-        } catch (\Tekstove\ApiBundle\Model\Forum\Post\PostHumanReadableException $e) { // @FIXME ex type!
+        } catch (AlbumHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
             return $view;

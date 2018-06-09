@@ -34,9 +34,6 @@ class AlbumController extends Controller
 
     private function getValidationConstrain($type)
     {
-        // @TODO validation will be service
-        // @TODO and there will be groups like `insert` and `update`
-
         if ($type === 'new') {
             $constraintsCollection = \Symfony\Component\Validator\Constraints\Required::class;
         } elseif ($type === 'update') {
@@ -46,42 +43,52 @@ class AlbumController extends Controller
         }
 
         $nameValidations = [
-            new $constraintsCollection(
-                [
-                    new \Symfony\Component\Validator\Constraints\Type("string"),
-                    new \Symfony\Component\Validator\Constraints\NotNull(),
-                    new \Symfony\Component\Validator\Constraints\NotIdenticalTo(''),
-                    new \Symfony\Component\Validator\Constraints\Length(
-                        [
-                            'max' => 40,
-                            'min' => 1,
-                        ]
-                    ),
-                ]
-            ),
+            new $constraintsCollection([
+                new \Symfony\Component\Validator\Constraints\Type("string"),
+                new \Symfony\Component\Validator\Constraints\NotNull(),
+                new \Symfony\Component\Validator\Constraints\NotIdenticalTo(''),
+                new \Symfony\Component\Validator\Constraints\Length([
+                        'max' => 40,
+                        'min' => 1,
+                ]),
+            ]),
         ];
 
         $yearValidations = [
-            new $constraintsCollection(
-                [
-                    new \Symfony\Component\Validator\Constraints\Range(
-                        [
-                            'min' => 500,
-                            'max' => 3000, // I'm planning refactoring in next 980 years
-                        ]
-                    ),
-                ]
-            ),
+            new $constraintsCollection([
+                new \Symfony\Component\Validator\Constraints\Range([
+                    'min' => 500,
+                    'max' => 3000, // I'm planning refactoring in next 980 years
+                ]),
+            ]),
         ];
 
-        $constraint = new \Symfony\Component\Validator\Constraints\Collection(
-            [
-                'fields' => [
-                    'name' => $nameValidations,
-                    'year' => $yearValidations,
-                ],
-            ]
-        );
+        $albumLyricValidationsCollection = new \Symfony\Component\Validator\Constraints\Collection([
+            'name' => [
+                new \Symfony\Component\Validator\Constraints\Length([
+                    'min' => 0,
+                    'max' => 25,
+                ]),
+            ],
+        ]);
+
+        $albumLyricValidationsCollection->allowExtraFields = true;
+
+        $albumLyricValidations = [
+            new \Symfony\Component\Validator\Constraints\Optional([
+                new \Symfony\Component\Validator\Constraints\All([
+                    $albumLyricValidationsCollection,
+                ])
+            ])
+        ];
+
+        $constraint = new \Symfony\Component\Validator\Constraints\Collection([
+            'fields' => [
+                'name' => $nameValidations,
+                'year' => $yearValidations,
+                'lyrics' => $albumLyricValidations,
+            ],
+        ]);
 
         return $constraint;
     }
@@ -110,7 +117,7 @@ class AlbumController extends Controller
         }
 
         $validator = $this->get('validator');
-        $constraint = $this->getValidationConstrain('update'); // @FIXME
+        $constraint = $this->getValidationConstrain('update');
 
         $constraint->allowExtraFields = true;
 
@@ -136,6 +143,7 @@ class AlbumController extends Controller
                 if ($field == 'artists') {
                     $album->setArtistsIds($value);
                 } elseif ($field === 'lyrics') {
+                    $order = 1;
                     foreach ($value as $artistLyricData) {
                         $albumLyric = new \Tekstove\ApiBundle\Model\AlbumLyric();
 
@@ -144,7 +152,7 @@ class AlbumController extends Controller
                             $lyricQuery = new \Tekstove\ApiBundle\Model\LyricQuery();
                             $matchedLyric = $lyricQuery->findOneById($lyricId);
                             if (!$matchedLyric) {
-                                $ex = new \Tekstove\ApiBundle\Model\Forum\Post\PostHumanReadableException(); // @FIXME type!
+                                $ex = new AlbumHumanReadableException();
                                 $ex->addError('lyrics', 'lyric ' . $lyricId . ' not found!');
                                 throw $ex;
                             }
@@ -153,7 +161,9 @@ class AlbumController extends Controller
                         $albumLyric->setName(
                             $artistLyricData['name'] ?? null
                         );
+                        $albumLyric->setOrder($order);
                         $album->addAlbumLyric($albumLyric);
+                        $order++;
                     }
                 } else {
                     $this->propelSetter($album, $value, $setter);
@@ -164,9 +174,10 @@ class AlbumController extends Controller
             $albumRepo->save($album);
 
             return $this->handleData($request, $album);
-        } catch (\Tekstove\ApiBundle\Model\Forum\Post\PostHumanReadableException $e) { // @FIXME ex type!
+        } catch (AlbumHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
+
             return $view;
         }
     }
@@ -207,7 +218,7 @@ class AlbumController extends Controller
             }
 
             $validator = $this->get('validator');
-            $constraint = $this->getValidationConstrain('update'); // @FIXME
+            $constraint = $this->getValidationConstrain('update');
             $constraint->allowExtraFields = true;
 
             $violations = $validator->validate($updateData, $constraint, ['Default']);
@@ -215,7 +226,7 @@ class AlbumController extends Controller
                 $errors = [];
                 foreach ($violations as $error) {
                     $errors[] = [
-                        'element' => trim($error->getPropertyPath(), '[]'), // @TODO why path is [name]
+                        'element' => preg_replace('/^\[([^\[]+)\]/', '$1', $error->getPropertyPath()), // we are validating array, path have []
                         'message' => $error->getMessage(),
                     ];
                 }
@@ -249,16 +260,26 @@ class AlbumController extends Controller
                         );
                         $album->addAlbumLyric($albumLyric);
                     }
+                } elseif ($field === 'artists') {
+                    try {
+                        $album->setArtistsIds($value);
+                    } catch (\Exception $e) {
+                        $ex = new AlbumHumanReadableException();
+                        $ex->addError('artists', $e->getMessage());
+                        throw $ex;
+                    }
                 } else {
                     $album->{$setter}($value);
                 }
             }
 
             $repo->save($album);
+
             return $this->handleData($request, $album);
         } catch (AlbumHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);
+
             return $view;
         }
     }

@@ -155,6 +155,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
 
         $owner = false;
 
+        // temporary allow all users to send albums!
         if (!$album->getId()) {
             $owner = true;
         } elseif ($album->getUser()->getid() === $this->getId()) {

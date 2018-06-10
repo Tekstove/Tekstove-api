@@ -21,8 +21,6 @@ class AlbumQuery extends BaseAlbumQuery
 
     public function save(Album $album)
     {
-//        $album->setEventDispacher($this->eventDispacher);
-//        $album->setValidator($this->validator);
         $album->save();
     }
 }

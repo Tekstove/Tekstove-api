@@ -11,6 +11,7 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Tekstove\ApiBundle\Model\User\Pm;
 use Tekstove\ApiBundle\Model\User\PmQuery;
 use Tekstove\ApiBundle\Model\Lyric;
+use Tekstove\ApiBundle\Model\Album;
 
 use Tekstove\ApiBundle\Model\Acl\EditableInterface;
 use Tekstove\ApiBundle\Model\Acl\AutoAclSerializableInterface;
@@ -31,7 +32,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
 
     use \Tekstove\ApiBundle\Validator\ValidationAwareTrait;
     use AclTrait;
-    
+
     public function preSave(ConnectionInterface $con = null)
     {
         if (!$this->validate($this->validator)) {
@@ -43,10 +44,10 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
             }
             throw $exception;
         }
-        
+
         return parent::preSave($con);
     }
-    
+
     /**
      * Return array
      * [permissioName] => permissionValue
@@ -64,7 +65,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         }
         return $return;
     }
-    
+
     /**
      * @return Acl\PermissionGroup[]
      */
@@ -74,10 +75,10 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         foreach ($this->getPermissionGroupUsers() as $permissionGroup) {
             $return[$permissionGroup->getGroupId()] = $permissionGroup->getPermissionGroup();
         }
-        
+
         return $return;
     }
-    
+
     public function getPermission($name)
     {
         $permissions = $this->getPermissions();
@@ -85,7 +86,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
             return $permissions[$name];
         }
     }
-    
+
     /**
      * @param Lyric $lyric
      * @return array
@@ -98,13 +99,13 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         if ($this->getId() && $lyric->getsendBy() === $this->getId()) {
             $owner = true;
         }
-        
+
         if (!$lyric->getId()) {
             $owner = true;
         }
-        
+
         $permissions = $this->getPermissions();
-        
+
         if ($owner || array_key_exists(Permission::LYRIC_EDIT_BASIC, $permissions)) {
             $allowedFields[] = 'title';
             $allowedFields[] = 'artists';
@@ -116,28 +117,61 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
             $allowedFields[] = 'videoVbox7';
             $allowedFields[] = 'videoMetacafe';
             $allowedFields[] = 'manualCensor';
-            
+
             // do not allow delete on new lyric
             if ($lyric->getId()) {
                 $allowedFields[] = 'delete';
             }
         }
-        
+
         if ($lyric->getId() && array_key_exists(Permission::LYRIC_EDIT_DELETE, $permissions)) {
             $allowedFields[] = 'delete';
         }
-        
+
         if (array_key_exists(Permission::LYRIC_EDIT_DOWNLOAD, $permissions)) {
             $allowedFields[] = 'download';
         }
-        
+
         if ($lyric->isForbidden()) {
             $hasTextField = array_search('text', $allowedFields);
             if (false !== $hasTextField) {
                 unset($allowedFields[$hasTextField]);
             }
         }
-        
+
+        return $allowedFields;
+    }
+
+    /**
+     * @param Album $album
+     * @return array
+     */
+    public function getAllowedAlbumFields(Album $album)
+    {
+        // anon. user
+        if (!$this->getId()) {
+            return [];
+        }
+
+        $owner = false;
+
+        // temporary allow all users to send albums!
+        if (!$album->getId()) {
+            $owner = true;
+        } elseif ($album->getUser()->getid() === $this->getId()) {
+            $owner = true;
+        }
+
+        $allowedFields = [];
+
+        if ($owner) {
+            $allowedFields[] = 'name';
+            $allowedFields[] = 'year';
+            $allowedFields[] = 'artists';
+            $allowedFields[] = 'image';
+            $allowedFields[] = 'lyrics';
+        }
+
         return $allowedFields;
     }
 
@@ -161,7 +195,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
         if ($pm->getUserTo() === $this->getId()) {
             $return['read'] = 'read';
         }
-        
+
         return $return;
     }
 
@@ -177,7 +211,7 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
 
         return $return;
     }
-    
+
     /**
      * @return integer
      */

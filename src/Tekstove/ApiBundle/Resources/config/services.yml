@@ -127,6 +127,10 @@ services:
         tags:
             - { name: security.voter }
 
+    tekstove.album.post.repository:
+        class: Tekstove\ApiBundle\Model\AlbumQuery
+        public: true
+
     tekstove.api.security.chat.messave_voter:
         class: Tekstove\ApiBundle\Security\Authorization\Voter\Chat\MessageVoter
         public: false

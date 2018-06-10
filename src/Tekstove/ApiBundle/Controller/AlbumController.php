@@ -32,7 +32,7 @@ class AlbumController extends Controller
         );
     }
 
-    private function getValidationConstrain($type)
+    private function getValidationConstraint($type)
     {
         if ($type === 'new') {
             $constraintsCollection = \Symfony\Component\Validator\Constraints\Required::class;
@@ -117,7 +117,7 @@ class AlbumController extends Controller
         }
 
         $validator = $this->get('validator');
-        $constraint = $this->getValidationConstrain('update');
+        $constraint = $this->getValidationConstraint('update');
 
         $constraint->allowExtraFields = true;
 
@@ -218,7 +218,7 @@ class AlbumController extends Controller
             }
 
             $validator = $this->get('validator');
-            $constraint = $this->getValidationConstrain('update');
+            $constraint = $this->getValidationConstraint('update');
             $constraint->allowExtraFields = true;
 
             $violations = $validator->validate($updateData, $constraint, ['Default']);
@@ -242,6 +242,7 @@ class AlbumController extends Controller
 
                 if ($field === 'lyrics') {
                     $album->setAlbumLyrics(new \Propel\Runtime\Collection\Collection([]));
+                    $order = 1;
                     foreach ($value as $lyricPathData) {
                         $albumLyric = new \Tekstove\ApiBundle\Model\AlbumLyric();
                         $lyricId = $lyricPathData['lyric'] ?? null;
@@ -258,7 +259,11 @@ class AlbumController extends Controller
                         $albumLyric->setName(
                             $lyricPathData['name'] ?? null
                         );
+                        $albumLyric->setOrder($order);
+
                         $album->addAlbumLyric($albumLyric);
+
+                        $order++;
                     }
                 } elseif ($field === 'artists') {
                     try {

@@ -43,7 +43,7 @@ class LyricController extends Controller
                     ]
                 );
 
-                $view->getResponse()->setStatusCode(404);
+                $view->setStatusCode(404);
 
                 return $view;
             }
@@ -102,18 +102,18 @@ class LyricController extends Controller
             return $view;
         }
     }
-    
+
     public function patchAction(Request $request, $id)
     {
         $this->getContext()
                 ->setGroups(['List']);
-        
+
         $repo = $this->get('tekstove.lyric.repository');
         /* @var $repo \Tekstove\ApiBundle\Model\Lyric\LyricRepository */
         $lyricQuery = new LyricQuery();
         /* @var $lyric Lyric */
         $lyric = $lyricQuery->findOneById($id);
-        
+
         try {
             if ($this->getUser()) {
                 $user = $this->getUser();
@@ -122,7 +122,7 @@ class LyricController extends Controller
             }
 
             $allowedFields = $user->getAllowedLyricFields($lyric);
-            
+
             $caseHelper = new CaseHelper();
             $content = $request->getContent();
             $pathData = json_decode($content, true);
@@ -159,16 +159,16 @@ class LyricController extends Controller
             return $view;
         }
     }
-    
+
     public function deleteAction(Request $request, $id)
     {
         $this->getContext()
                 ->setGroups(['Details']);
-        
+
         $lyricQuery = new LyricQuery();
         /* @var $lyric Lyric */
         $lyric = $lyricQuery->findOneById($id);
-        
+
         try {
             if ($this->getUser()) {
                 $user = $this->getUser();

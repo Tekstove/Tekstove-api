@@ -122,7 +122,20 @@ class CriteriaGeneratorTest extends MockeryTestCase
         );
     }
 
-    public function testGetSqlFieldNameFromPhpNamePhpAndSqlNameMatch()
+    private function getColumnMapMock($returnedField)
+    {
+        $mockBuilder = $this->getMockBuilder(\Propel\Runtime\Map\ColumnMap::class);
+        $mockBuilder->disableOriginalConstructor();
+        $mockBuilder->setMethods(['getName']);
+        $mock = $mockBuilder->getMock();
+        $mock->expects($this->once())
+                ->method('getName')
+                ->willReturn($returnedField);
+
+        return $mock;
+    }
+
+        public function testGetSqlFieldNameFromPhpNamePhpAndSqlNameMatch()
     {
         $generator = new CriteriaGenerator();
         $tableMapMockBuilder = $this->getMockBuilder(TableMap::class);
@@ -141,7 +154,7 @@ class CriteriaGeneratorTest extends MockeryTestCase
 
         $tableMapMock->expects($this->once())
                      ->method('getColumnByPhpName')
-                     ->willReturn('titleCache');
+                     ->willReturn($this->getColumnMapMock('titleCache'));
 
         $sqlField = $generator->getSqlFieldNameFromPhpName('titleCache', $tableMapMock);
         $this->assertSame('titleCache', $sqlField);
@@ -160,12 +173,12 @@ class CriteriaGeneratorTest extends MockeryTestCase
             ->times(1)
             ->with('TitleCache')
             ->andReturn(true);
-        
+
 
         $tableMapMock->shouldReceive('getColumnByPhpName')
                 ->times(1)
                 ->with('TitleCache')
-                ->andReturn('titleCache');
+                ->andReturn($this->getColumnMapMock('titleCache'));
 
         $sqlField = $generator->getSqlFieldNameFromPhpName('titleCache', $tableMapMock);
         $this->assertSame('titleCache', $sqlField);

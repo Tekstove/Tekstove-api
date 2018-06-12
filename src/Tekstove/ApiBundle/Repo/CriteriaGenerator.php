@@ -160,7 +160,7 @@ class CriteriaGenerator
      *
      * @throws \Exception
      */
-    public function getSqlFieldNameFromPhpName($name, TableMap $tableMap)
+    public function getSqlFieldNameFromPhpName($name, TableMap $tableMap): string
     {
         // propel generate property names with upper 1st letter
         if ($tableMap->hasColumnByPhpName($name)) {
@@ -171,6 +171,6 @@ class CriteriaGenerator
             throw new FieldNameNotFound("Unknown field {$name}");
         }
 
-        return $sqlField;
+        return $sqlField->getName();
     }
 }

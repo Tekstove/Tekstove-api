@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 class TekstoveAbstractController extends FOSRestController
 {
     private $itemsPerPage = 10;
-    
+
     private $context;
     /**
      * @return Context
@@ -28,7 +28,7 @@ class TekstoveAbstractController extends FOSRestController
 
         return $this->context;
     }
-    
+
     /**
      * @param Request $request
      * @param type $data
@@ -41,24 +41,24 @@ class TekstoveAbstractController extends FOSRestController
         $data = $this->applyOrders($request, $data);
         $data = $this->propelQueryToPagination($request, $data);
         $data = $this->paginationToArray($data);
-        
+
         if (!is_array($data)) {
             $data = [
                 'item' => $data,
             ];
         }
-        
+
          $view = $this->view($data, 200);
          $view->setContext($this->getContext());
          return $view;
     }
-    
+
     protected function applyPaginationOptions(Request $request)
     {
         $limit = $request->get('limit', 10);
         $this->setItemsPerPage($limit);
     }
-    
+
     public function setItemsPerPage($itemsPerPage)
     {
         $this->itemsPerPage = $itemsPerPage;
@@ -68,30 +68,30 @@ class TekstoveAbstractController extends FOSRestController
     {
         return $request->get('groups');
     }
-    
+
     protected function applyGroups(Request $request)
     {
         $groups = $this->getGroups($request);
         if (empty($groups)) {
             throw new \Exception("Groups can't be empty");
         }
-        
+
         foreach ($groups as $group) {
             if ($group === 'Credentials') {
                 throw new \Exception('Credentials group can\'t be set!');
             }
         }
-        
+
         $this->getContext()
                 ->setGroups($groups);
     }
-    
+
     protected function applyFilters(Request $request, $data)
     {
         if (!$data instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {
             return $data;
         }
-        
+
         $filters = $request->get('filters', null);
 
         if ($filters) {
@@ -113,14 +113,14 @@ class TekstoveAbstractController extends FOSRestController
         if (!$data instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {
             return $data;
         }
-        
+
         $sortData = $request->get('order', []);
-        
+
         if (!empty($sortData)) {
             // delete default order
             $data->clearOrderByColumns();
         }
-        
+
         foreach ($sortData as $order) {
             $field = $order['field'];
             $direction = $order['direction'];
@@ -129,7 +129,7 @@ class TekstoveAbstractController extends FOSRestController
             $orderMethod = 'orderBy' . ($field);
             $data->{$orderMethod}($direction);
         }
-        
+
         return $data;
     }
 
@@ -139,17 +139,17 @@ class TekstoveAbstractController extends FOSRestController
         if (!$query instanceof \Propel\Runtime\ActiveQuery\ModelCriteria) {
             return $query;
         }
-        
+
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
             $this->itemsPerPage
         );
-        
+
         return $pagination;
     }
-    
+
     protected function paginationToArray($pagination)
     {
         if (!$pagination instanceof \Knp\Component\Pager\Pagination\AbstractPagination) {
@@ -164,22 +164,22 @@ class TekstoveAbstractController extends FOSRestController
                 'totalItemCount' => $pagination->getTotalItemCount(),
             ],
         ];
-        
+
         return $data;
     }
 
     protected function propelSetter($object, $values, $setter)
     {
         // @TODO @FIXME
-        
+
         if ($setter == 'setTopic') {
             $topicQ = new \Tekstove\ApiBundle\Model\Forum\TopicQuery();
             $topic = $topicQ->findOneById($values);
             $object->setTopic($topic);
             return true;
         }
-        
-        
+
+
         if (!is_array($values)) {
             // @TODO use property accessor!
             $getter = preg_replace('/^set/', 'get', $setter);
@@ -191,16 +191,16 @@ class TekstoveAbstractController extends FOSRestController
             }
             return true;
         }
-        
+
         $relectionClass = new \ReflectionClass($object);
-        
+
         $mappClass = $relectionClass->getNamespaceName() . '\\Map\\' . $relectionClass->getShortName() . 'TableMap';
         $tableMap = $mappClass::getTableMap();
         /* @var $tableMap \Propel\Runtime\Map\TableMap */
-        
+
         $setterWithoutSet = preg_replace('/^set([A-Z])/', '$1', $setter);
         $setterSingular = preg_replace('/s$/', '', $setterWithoutSet);
-        
+
         $relation = $tableMap->getRelation($setterSingular);
         /* @var $relation \Propel\Runtime\Map\RelationMap */
         $foreignClass = $relation->getLocalTable()->getClassName();
@@ -208,15 +208,15 @@ class TekstoveAbstractController extends FOSRestController
         if (count($primaryKeys) > 1) {
             throw new \Exception("Not implemented for composite PK");
         }
-        
+
         $primaryKey = current($primaryKeys);
         /* @var $primaryKey \Propel\Runtime\Map\ColumnMap */
         $idName = $primaryKey->getPhpName();
-        
+
         $foreignClassQuery = $foreignClass . 'Query';
         $foreignQuery = new $foreignClassQuery();
         /* @var $foreignQuery \Propel\Runtime\ActiveQuery\ModelCriteria */
-        
+
         $itemsToMap = new \Propel\Runtime\Collection\ArrayCollection();
         foreach ($values as $value) {
             $foreignQuery = new $foreignClassQuery();
@@ -227,10 +227,10 @@ class TekstoveAbstractController extends FOSRestController
             }
             $itemsToMap->append($mapObject);
         }
-        
+
         $object->$setter($itemsToMap);
     }
-    
+
     protected function userMustBeLogged()
     {
         $securityChecker = $this->get('security.authorization_checker');

@@ -16,12 +16,17 @@ class ArtistController extends Controller
         $artistQuery = new ArtistQuery();
         return $this->handleData($request, $artistQuery);
     }
-    
+
     public function getAction(Request $request, $id)
     {
         $this->applyGroups($request);
         $artistQuery = new ArtistQuery();
         $artist = $artistQuery->findOneById($id);
+
+        if (!$artist) {
+            throw $this->createNotFoundException("Artist not found");
+        }
+
         return $this->handleData(
             $request,
             $artist
@@ -36,7 +41,7 @@ class ArtistController extends Controller
         $repo = $this->get('tekstove.artist.repository');
         /* @var $repo \Tekstove\ApiBundle\Model\ArtistQuery */
         $artist = $repo->findOneById($id);
-        
+
         try {
             if (!$this->getUser()) {
                 throw new \RuntimeException('User must be logged!');

@@ -1,6 +1,7 @@
 language: php
 php:
   - 7.1
+  - 7.2
   - nightly
 
 before_script:
@@ -13,7 +14,7 @@ script:
     - Test/codeSniffer/vendor/bin/phpcs --standard=Test/codeSniffer/phpcs.xml src/
     - cp app/config/parameters.yml.dist app/config/parameters.yml
     - composer install --prefer-dist
-    - vendor/bin/phpunit -c Test/Phpunit/phpunit.xml --no-coverage 
+    - vendor/bin/phpunit -c Test/Phpunit/phpunit.xml --no-coverage
 
 matrix:
     allow_failures:
@@ -21,5 +22,5 @@ matrix:
 
 notifications:
     on_success: never
-    on_failure: always
-    on_change: always
+    on_failure: never
+    on_change: never

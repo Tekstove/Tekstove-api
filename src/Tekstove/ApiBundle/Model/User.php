@@ -160,6 +160,9 @@ class User extends BaseUser implements EditableInterface, AutoAclSerializableInt
             $owner = true;
         } elseif ($album->getUser()->getid() === $this->getId()) {
             $owner = true;
+        } elseif ($this->getPermission(Permission::ALBUM_EDIT)) {
+            // probably we should use the voters here!
+            $owner = true;
         }
 
         $allowedFields = [];

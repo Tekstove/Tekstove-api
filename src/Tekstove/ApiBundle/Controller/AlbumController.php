@@ -67,7 +67,7 @@ class AlbumController extends Controller
             'name' => [
                 new \Symfony\Component\Validator\Constraints\Length([
                     'min' => 0,
-                    'max' => 25,
+                    'max' => 60,
                 ]),
             ],
         ]);

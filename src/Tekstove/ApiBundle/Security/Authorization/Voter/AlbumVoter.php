@@ -5,6 +5,7 @@ namespace Tekstove\ApiBundle\Security\Authorization\Voter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Tekstove\ApiBundle\Model\Album;
+use Tekstove\ApiBundle\Model\Acl\Permission;
 
 use Tekstove\ApiBundle\Model\User;
 
@@ -20,7 +21,7 @@ class AlbumVoter extends Voter
         if (!$subject instanceof Album) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -36,10 +37,14 @@ class AlbumVoter extends Voter
         if (! $user instanceof User) {
             return null;
         }
-        
+
         switch ($attribute) {
             case 'edit':
                 if ($user->getId() == $album->getSendBy()) {
+                    return true;
+                }
+
+                if ($user->getPermission(Permission::ALBUM_EDIT)) {
                     return true;
                 }
         }

@@ -1,4 +1,34 @@
-tekstove_api:
-    resource: "@TekstoveApiBundle/Resources/config/routing.yml"
-    prefix:   /
+tekstove_api_album_routing:
+    resource: "routing/album.yml"
+    prefix:   /albums
     defaults: { _format: json }
+
+tekstove_api_artist_routing:
+    resource: "routing/artist.yml"
+    prefix:   /artists
+    defaults: { _format: json }
+
+tekstove_api_chat_routing:
+    resource: "routing/chat.yml"
+    prefix:   /chat
+    defaults: { _format: json }
+
+tekstove_api_forum_routing:
+    resource: "routing/forum.yml"
+    prefix:   /forum
+    defaults: { _format: json }
+
+tekstove_api_lyric_routing:
+    resource: "routing/lyric.yml"
+    prefix:   /lyrics
+    defaults: { _format: json }
+
+tekstove_api_user_routing:
+    resource: "routing/user.yml"
+    prefix:   /users
+    defaults: { _format: json }
+
+tekstove_api_languages:
+    path: /languages
+    defaults: { _controller: TekstoveApiBundle:Language\Languages:index, _format: json }
+    methods: [GET]

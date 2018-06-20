@@ -1,6 +1,6 @@
 <?php
 
-namespace Tekstove\ApiBundle\HttpFoundation;
+namespace App\HttpFoundation;
 
 use Symfony\Component\HttpFoundation\Request;
 

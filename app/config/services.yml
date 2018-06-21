@@ -16,8 +16,8 @@ services:
             - { name: "jms_serializer.event_subscriber" }
         public: true
 
-    tekstove.api.http_kernel.cors_subscriber:
-        class: Tekstove\ApiBundle\EventListener\HttpKernel\CorsSubscriber
+    app.http_kernel.cors_subscriber:
+        class: App\EventListener\HttpKernel\CorsSubscriber
         tags:
             - { name: kernel.event_subscriber }
 

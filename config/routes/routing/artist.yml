@@ -1,0 +1,19 @@
+tekstove_api_artist:
+    path: "/"
+    defaults: { _controller: App\Controller\AlbumController::indexAction }
+    methods: [GET]
+
+tekstove_api_artist.get:
+    path: "/{id}"
+    defaults: { _controller: TekstoveApiBundle:Artist:get }
+    methods: [GET]
+
+tekstove_api_artist.patch:
+    path: "/{id}"
+    defaults: { _controller: TekstoveApiBundle:Artist:patch }
+    methods: [PATCH]
+
+tekstove_api_artist_credentials:
+    path: "/credentials/{id}"
+    defaults: { _controller: TekstoveApiBundle:Artist\Credentials:index }
+    methods: [GET]

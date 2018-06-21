@@ -56,7 +56,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Tekstove\\ApiBundle\\": "src/Tekstove/ApiBundle/"
+            "Tekstove\\ApiBundle\\": "src/Tekstove/ApiBundle/",
+            "App\\": "src/"
         },
         "classmap": [
             "app/AppKernel.php",

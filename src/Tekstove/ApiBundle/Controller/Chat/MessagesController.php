@@ -43,7 +43,7 @@ class MessagesController extends Controller
 
         $message = new Message();
         $messageData = json_decode($request->getContent(), true);
-        
+
         $message->setMessage($messageData['message']);
         $ips = $request->getClientIps();
         $message->setIp(implode('~', $ips));
@@ -53,7 +53,7 @@ class MessagesController extends Controller
             $message->setUsername($this->getUser()->getUsername());
         } else {
             // anonymous user
-            $userName = (new \Tekstove\ApiBundle\HttpFoundation\RequestIdentificator())->identify($request);
+            $userName = (new \App\HttpFoundation\RequestIdentificator())->identify($request);
             $message->setUsername($userName);
         }
 

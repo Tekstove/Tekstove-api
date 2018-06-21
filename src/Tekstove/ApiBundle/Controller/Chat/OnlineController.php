@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\Chat\OnlineQuery;
 use Tekstove\ApiBundle\Model\Chat\Online;
 use Propel\Runtime\ActiveQuery\Criteria;
+use App\HttpFoundation\RequestIdentificator;
 
 /**
  * Description of Online
@@ -55,7 +56,7 @@ class OnlineController extends Controller
             }
         } else {
             // anonymous user
-            $userName = (new \Tekstove\ApiBundle\HttpFoundation\RequestIdentificator())->identify($request);
+            $userName = (new RequestIdentificator())->identify($request);
             $anonymousUserQuery = clone $onlineQuery;
             $anonymousUserQuery->filterByUserId(null);
             $anonymousUserQuery->filterByUsername($userName);

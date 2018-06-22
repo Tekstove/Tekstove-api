@@ -49,9 +49,9 @@ class TekstoveAbstractController extends FOSRestController
             ];
         }
 
-         $view = $this->view($data, 200);
-         $view->setContext($this->getContext());
-         return $view;
+        $view = $this->view($data, 200);
+        $view->setContext($this->getContext());
+        return $this->handleView($view);
     }
 
     protected function applyPaginationOptions(Request $request)

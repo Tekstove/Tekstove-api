@@ -2,6 +2,26 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    database_host: "%env(APP_SQL_HOST)%"
+    database_name:
+propel:
+    database:
+        connections:
+            default:
+                user: "%env(APP_SQL_USER)%"
+                adapter: mysql
+                dsn: "mysql:host=%env(APP_SQL_HOST)%;dbname=%env(APP_SQL_DB_NAME)%"
+                password: "%env(APP_SQL_PASSWORD)%"
+                settings:
+                   charset: UTF8
+
+jms_serializer:
+    metadata:
+        auto_detection: true
+        debug: "%kernel.debug%"
+    visitors:
+        json:
+            options: [JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE]
 
 services:
     # default configuration for services in *this* file

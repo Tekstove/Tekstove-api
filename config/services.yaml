@@ -19,6 +19,11 @@ jms_serializer:
     metadata:
         auto_detection: true
         debug: "%kernel.debug%"
+        directories:
+            test:
+                namespace_prefix: 'Tekstove\ApiBundle\Model'
+                path: "%kernel.project_dir%/config/serializer"
+                name: asdasd
     visitors:
         json:
             options: [JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE]

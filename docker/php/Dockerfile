@@ -16,8 +16,9 @@ RUN a2enmod actions fastcgi rewrite
 RUN wget "https://getcomposer.org/download/1.4.2/composer.phar" -q -O /bin/composer && chmod +x /bin/composer
 
 RUN a2enmod proxy_http ssl suexec
-COPY tekstove-api.conf /etc/apache2/sites-available/tekstove-api.conf
-COPY tekstove-api-ssl.conf /etc/apache2/sites-available/tekstove-api-ssl.conf
+COPY apache-api.conf /etc/apache2/sites-available/tekstove-api.conf
+COPY apache-api-ssl.conf /etc/apache2/sites-available/tekstove-api-ssl.conf
+COPY apache-shared.conf /etc/apache2/sites-available/tekstove-shared.conf
 RUN  a2dissite 000-default && a2ensite tekstove-api && a2ensite tekstove-api-ssl
 RUN openssl req -x509 -nodes -days 365 -subj "/C=BG/" -new -newkey rsa:2048 -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt
 RUN sed 's/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/' /etc/php/7.1/cgi/php.ini > /etc/php/7.1/cgi/php.ini

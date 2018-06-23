@@ -2,7 +2,7 @@ version: '2'
 
 services:
     tekstove.api-web:
-        image: tekstoveinfo/api.web:latest
+        build: ./php
         volumes:
             - ../:/var/www/tekstove-api
         ports:

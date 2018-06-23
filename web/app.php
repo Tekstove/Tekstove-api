@@ -1,16 +1,7 @@
 <?php
 
-// @FIXME fix this file!
-
-use Symfony\Component\HttpFoundation\Request;
-
-/** @var \Composer\Autoload\ClassLoader $loader */
-$loader = require __DIR__.'/../app/autoload.php';
-include_once __DIR__.'/../var/bootstrap.php.cache';
-
-// see https://github.com/Tekstove/Tekstove/issues/80
-Request::setTrustedHeaderName(Request::HEADER_FORWARDED, null);
-Request::setTrustedProxies(
+$_SERVER['TRUSTED_PROXIES'] = implode(
+    ',',
     [
         "79.98.109.18",
         "127.0.0.1",
@@ -32,6 +23,8 @@ Request::setTrustedProxies(
     ]
 );
 
+require __DIR__ . '/../public/index.php';
+
 // I know this is ugly...but...sry...
 function errorToException($errNumber, $errMsg, $errFile, $errLine)
 {
@@ -45,13 +38,3 @@ function errorToException($errNumber, $errMsg, $errFile, $errLine)
 }
 
 set_error_handler('errorToException');
-
-$kernel = new AppKernel('prod', false);
-//$kernel = new AppCache($kernel);
-
-// When using the HttpCache, you need to call the method in your front controller instead of relying on the configuration parameter
-//Request::enableHttpMethodParameterOverride();
-$request = Request::createFromGlobals();
-$response = $kernel->handle($request);
-$response->send();
-$kernel->terminate($request, $response);

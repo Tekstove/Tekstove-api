@@ -4,13 +4,10 @@ namespace App\Controller\User;
 
 use App\Controller\TekstoveAbstractController as Controller;
 
-use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\User\Exception\UserHumanReadableException;
 
 /**
- * Description of PasswordResetConfirmController
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class PasswordResetConfirmController extends Controller
@@ -60,13 +57,13 @@ class PasswordResetConfirmController extends Controller
             ]
         );
 
-        $mailMessage = \Swift_Message::newInstance();
+        $mailMessage = new \Swift_Message();
         $mailMessage->setFrom('tekstoveinfo@gmail.com');
         $mailMessage->setSubject('Нова парола');
         $mailMessage->setTo($user->getMail());
         $mailMessage->setBody(
             $this->renderView(
-                '@tekstoveApiBundle/user/mailPasswordConfirm.html.twig',
+                'user/mailPasswordConfirm.html.twig',
                 [
                     'user' => $user,
                     'password' => $passwordShort,

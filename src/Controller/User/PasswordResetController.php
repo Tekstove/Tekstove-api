@@ -9,8 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\User\Exception\UserHumanReadableException;
 
 /**
- * Description of PasswordResetController
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class PasswordResetController extends Controller
@@ -35,13 +33,13 @@ class PasswordResetController extends Controller
         $key = $user->getId() . 'f' . sha1($user->getPassword() . $user->getMail() . $user->getApiKey());
         $linkParsed = str_replace('::key::', $key, $linkTemplate);
 
-        $mailMessage = \Swift_Message::newInstance();
+        $mailMessage = new \Swift_Message();
         $mailMessage->setFrom('tekstoveinfo@gmail.com');
         $mailMessage->setSubject('Заявка за нова парола');
         $mailMessage->setTo($mail);
         $mailMessage->setBody(
             $this->renderView(
-                '@tekstoveApiBundle/user/mailPasswordReset.html.twig',
+                'user/mailPasswordReset.html.twig',
                 [
                     'user' => $user,
                     'link' => $linkParsed,

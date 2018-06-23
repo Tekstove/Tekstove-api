@@ -12,7 +12,7 @@ class TekstoveProcessViewsCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('tekstove:process:views')
+            ->setName('tekstoveApi:process:views')
             ->setDescription('...')
         ;
     }

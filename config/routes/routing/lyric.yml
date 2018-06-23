@@ -1,6 +1,6 @@
 tekstove_api_lyric.popularity.top.index:
     path: "/popularity/history"
-    defaults: { _controller: TekstoveApiBundle:Lyric/TopPopularity:indexAction }
+    defaults: { _controller: App\Controller\Lyric\TopPopularityController:indexAction }
     methods: [GET]
 
 tekstove_api_lyric:

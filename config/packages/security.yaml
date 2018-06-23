@@ -1,13 +1,19 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory: { memory: ~ }
+        tekstove.api.user_provider:
+            id: tekstove.api.user_provider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            anonymous: true
+        secured_area:
+            pattern: ^/
+            stateless: true
+            anonymous: ~
+            simple_preauth:
+                authenticator: tekstove.api.apikey_authenticator
+                provider: tekstove.api.user_provider
 
             # activate different ways to authenticate
 

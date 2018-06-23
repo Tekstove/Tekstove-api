@@ -17,7 +17,7 @@ class RegisterController extends TekstoveAbstractController
 {
     public function indexAction(Request $request)
     {
-        $recaptchaKey = $this->container->getParameter('tekstove_api.recaptcha.key');
+        $recaptchaKey = $this->container->getParameter('app.recaptcha.key');
 
         $request->request->set('groups', ['unused']);
         $returnData = [
@@ -34,7 +34,7 @@ class RegisterController extends TekstoveAbstractController
     {
         $repo = $this->get('tekstove.user.repository');
         /* @var $repo \Tekstove\ApiBundle\Model\User\UserRepository */
-        $recaptchaSecret = $this->container->getParameter('tekstove_api.recaptcha.secret');
+        $recaptchaSecret = $this->container->getParameter('app.recaptcha.secret');
 
         $requestData = json_decode($request->getContent(), true);
         $userData = $requestData['user'];

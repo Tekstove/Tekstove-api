@@ -2,8 +2,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    database_host: "%env(APP_SQL_HOST)%"
-    database_name:
+    app.recaptcha.key: "%env(APP_RECAPTCHA_KEY)%"
+    app.recaptcha.secret: "%env(APP_RECAPTCHA_SECRET)%"
 propel:
     database:
         connections:

@@ -30,5 +30,5 @@ tekstove_api_user_routing:
 
 tekstove_api_languages:
     path: /languages
-    defaults: { _controller: TekstoveApiBundle:Language\Languages:index, _format: json }
+    defaults: { _controller: App\Controller\Language\LanguagesController:indexAction, _format: json }
     methods: [GET]

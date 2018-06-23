@@ -12,11 +12,11 @@ return [
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
     Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class => ['all' => true],
     Potaka\BbcodeBundle\PotakaBbcodeBundle::class => ['all' => true],
-    \FOS\RestBundle\FOSRestBundle::class => ['all' => true],
+    FOS\RestBundle\FOSRestBundle::class => ['all' => true],
     Potaka\KnpPaginatorAdapterPropel2Bundle\PotakaKnpPaginatorAdapterPropel2Bundle::class => ['all' => true],
     JMS\SerializerBundle\JMSSerializerBundle::class => ['all' => true],
     Propel\Bundle\PropelBundle\PropelBundle::class => ['all' => true],
-
-    // @REMOVE this!
-//    Tekstove\ApiBundle\TekstoveApiBundle::class => ['all' => true],
+    Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle::class => ['all' => true],
+    Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],
+    Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
 ];

@@ -10,12 +10,12 @@ tekstove_api_lyric:
 
 tekstove_api_lyric_credentials:
     path: "/credentials/{id}"
-    defaults: { _controller: TekstoveApiBundle:Lyric\Credentials:indexAction }
+    defaults: { _controller: TekstoveApiBundle:Lyric\CredentialsController:indexAction }
     methods: [GET]
 
 tekstove_api_lyric_credentials_new_lyric:
     path: "/credentials/"
-    defaults: { _controller: App\Controller\Lyric\Credentials:indexAction, id: ~ }
+    defaults: { _controller: App\Controller\Lyric\CredentialsController:indexAction, id: ~ }
     methods: [GET]
 
 tekstove_api_lyric_get:

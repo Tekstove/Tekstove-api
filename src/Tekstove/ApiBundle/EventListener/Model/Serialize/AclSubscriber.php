@@ -18,12 +18,12 @@ use Tekstove\ApiBundle\Model\Acl\EditableInterface;
 class AclSubscriber implements EventSubscriberInterface
 {
     private $authorizationChecker = null;
-    
+
     public function __construct(AuthorizationCheckerInterface $authChecker)
     {
         $this->authorizationChecker = $authChecker;
     }
-    
+
     public static function getSubscribedEvents()
     {
         return [
@@ -92,14 +92,14 @@ class AclSubscriber implements EventSubscriberInterface
         }
 
         $objectClass = get_class($object);
-        
+
         $visitor = $event->getVisitor();
         $context = $event->getContext();
-        
+
         $propertyMetadata = $context->getmetadataFactory()
                                         ->getMetadataForClass($objectClass)
                                             ->propertyMetadata;
-        
+
         $aclMetaData = $propertyMetadata['acl'];
 
         $exclusionStrategy = $context->getExclusionStrategy();

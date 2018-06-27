@@ -12,9 +12,6 @@
 /app/scripts/migrations/phinx.yml
 
 
-/Test/codeSniffer/vendor
-/Test/Phpunit/codeCoverageLog
-
 ###> symfony/framework-bundle ###
 /.env
 /public/bundles/

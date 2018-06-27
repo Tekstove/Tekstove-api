@@ -6,7 +6,7 @@
     </testsuites>
     <filter>
         <blacklist>
-            <directory>../../Test</directory>
+            <directory>../../tests</directory>
         </blacklist>
         <whitelist>
             <directory>../../src</directory>

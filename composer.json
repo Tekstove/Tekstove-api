@@ -62,9 +62,6 @@
         "classmap": []
     },
     "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
     },
     "scripts": {
         "auto-scripts": {

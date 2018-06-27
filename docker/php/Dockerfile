@@ -38,4 +38,4 @@ CMD if [ ! -d "/var/www/tekstove-api/var/cache" ] ; \
     fi ; \
     chmod 777 -R /var/www/tekstove-api/var/* && \
     /etc/init.d/apache2 restart && \
-    tail -f /var/log/apache2/error.log
+    tail -F /var/log/apache2/error.log -F /var/www/tekstove-api/var/log/dev.log

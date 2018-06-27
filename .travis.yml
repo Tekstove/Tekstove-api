@@ -8,7 +8,7 @@ before_script:
   - phpenv rehash
 
 script:
-    - composer install -d Test/codeSniffer/
+    - composer install -d tests/codeSniffer/
     - tests/codeSniffer/vendor/bin/phpcs --standard=tests/codeSniffer/phpcs.xml src/
     - composer install --prefer-dist
     - vendor/bin/phpunit -c tests/phpunit/phpunit.xml --no-coverage

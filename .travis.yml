@@ -6,14 +6,12 @@ php:
 
 before_script:
   - phpenv rehash
-#  - mv app/config/parameters_travis.yml app/config/parameters.yml
-#  - mysql -e 'create database tekstove_lyric;'
 
 script:
-    - composer install -d Test/codeSniffer/
-    - Test/codeSniffer/vendor/bin/phpcs --standard=Test/codeSniffer/phpcs.xml src/
+    - composer install -d tests/codeSniffer/
+    - tests/codeSniffer/vendor/bin/phpcs --standard=tests/codeSniffer/phpcs.xml src/
     - composer install --prefer-dist
-    - vendor/bin/phpunit -c Test/Phpunit/phpunit.xml --no-coverage
+    - vendor/bin/phpunit -c tests/phpunit/phpunit.xml --no-coverage
 
 matrix:
     allow_failures:

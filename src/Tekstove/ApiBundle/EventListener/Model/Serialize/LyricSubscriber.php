@@ -39,20 +39,19 @@ class LyricSubscriber implements EventSubscriberInterface
     public function onPostSerialize(ObjectEvent $event)
     {
         $lyric = $event->getObject();
-        
+
         if (!$lyric instanceof Lyric) {
             return false;
         }
-        
+
         $visitor = $event->getVisitor();
-        
+
         $extraInfoHtml = '';
         $extraInfo = $lyric->getextraInfo();
         if ($extraInfo) {
             $extraInfoHtml = $this->bbCode->getHtml($extraInfo);
         }
-        
+
         $visitor->setData('extraInfoHtml', $extraInfoHtml);
-        
     }
 }

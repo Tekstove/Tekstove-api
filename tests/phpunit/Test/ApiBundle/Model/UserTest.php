@@ -2,6 +2,7 @@
 
 namespace Test\ApiBundle\Model;
 
+use PHPUnit\Framework\TestCase;
 use Tekstove\ApiBundle\Model\User;
 use Tekstove\ApiBundle\Model\Lyric;
 use Tekstove\ApiBundle\Model\Acl\Permission;
@@ -10,7 +11,7 @@ use Tekstove\ApiBundle\Model\Acl\Permission;
  * UserTest
  */
 
-class UserTest extends \PHPUnit_Framework_TestCase
+class UserTest extends TestCase
 {
     /**
      * Anonymous user try to edit existing lyric
@@ -23,7 +24,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $allowedFields = $user->getAllowedLyricFields($lyric);
         $this->assertEmpty($allowedFields);
     }
-    
+
     public function testGetAllowedFieldsDownload()
     {
         $userMockBuilder = $this->getMockBuilder(User::class);

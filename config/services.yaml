@@ -220,8 +220,8 @@ services:
         class: Predis\Client
         arguments: [{ host: "%env(APP_BAN_REDIS_HOST)%", port: "%env(APP_BAN_REDIS_PORT)%"}]
 
-    tekstove.api.kernel.ban.subscriber:
-        class: Tekstove\ApiBundle\EventListener\Kernel\BanSystemListener
+    app.kernel.ban.subscriber:
+        class: App\EventListener\Kernel\BanSystemListener
         arguments: ["@request_stack", "@tekstove.api.security.ban_system"]
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
@@ -229,3 +229,4 @@ services:
     tekstove.api.security.ban_system:
         class: Tekstove\ApiBundle\Security\BanSystem
         arguments: ["@tekstove.api.ban.redis", "@request_stack"]
+        public: true

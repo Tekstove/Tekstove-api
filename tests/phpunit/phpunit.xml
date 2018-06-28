@@ -5,14 +5,11 @@
         </testsuite>
     </testsuites>
     <filter>
-        <blacklist>
-            <directory>../../tests</directory>
-        </blacklist>
         <whitelist>
             <directory>../../src</directory>
         </whitelist>
     </filter>
     <logging>
-        <log type="coverage-html" target="codeCoverageLog" charset="UTF-8" highlight="true"/>
+        <log type="coverage-html" target="codeCoverageLog" />
     </logging>
 </phpunit>

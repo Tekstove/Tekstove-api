@@ -98,6 +98,12 @@
     "nikic/php-parser": {
         "version": "v4.0.2"
     },
+    "phar-io/manifest": {
+        "version": "1.0.1"
+    },
+    "phar-io/version": {
+        "version": "1.0.1"
+    },
     "phpcollection/phpcollection": {
         "version": "0.5.0"
     },
@@ -139,9 +145,6 @@
             "version": "4.7",
             "ref": "c276fa48d4713de91eb410289b3b1834acb7e403"
         }
-    },
-    "phpunit/phpunit-mock-objects": {
-        "version": "3.4.4"
     },
     "potaka/bbcode": {
         "version": "0.2.1"
@@ -202,6 +205,9 @@
     },
     "sebastian/object-enumerator": {
         "version": "2.0.1"
+    },
+    "sebastian/object-reflector": {
+        "version": "1.1.1"
     },
     "sebastian/recursion-context": {
         "version": "2.0.0"
@@ -436,6 +442,9 @@
     },
     "tekstove/url-video-parser": {
         "version": "1.0.1"
+    },
+    "theseer/tokenizer": {
+        "version": "1.1.0"
     },
     "twig/twig": {
         "version": "v2.4.8"

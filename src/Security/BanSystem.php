@@ -1,6 +1,6 @@
 <?php
 
-namespace Tekstove\ApiBundle\Security;
+namespace App\Security;
 
 use Predis\Client;
 use Symfony\Component\HttpFoundation\RequestStack;

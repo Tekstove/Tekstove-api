@@ -53,11 +53,11 @@ class CriteriaGeneratorTest extends MockeryTestCase
                           ->wilLReturn($tableMock);
 
         $modelCriteriaMock->expects($this->once())
-                          ->method('addCond')
-                          ->with(
-                                $this->anything(),
-                                $this->equalTo($criterionMock)
-                            );
+            ->method('addCond')
+            ->with(
+                $this->anything(),
+                $this->equalTo($criterionMock)
+            );
 
         $modelCriteriaMock->expects($this->once())
                           ->method('combine');
@@ -96,10 +96,10 @@ class CriteriaGeneratorTest extends MockeryTestCase
         $modelCriteria->shouldReceive('getNewCriterion')
                       ->once()
                       ->with(
-                            'title',
-                            null,
-                            \Propel\Runtime\ActiveQuery\Criteria::ISNOTNULL
-                        );
+                          'title',
+                          null,
+                          \Propel\Runtime\ActiveQuery\Criteria::ISNOTNULL
+                      );
 
         $modelCriteria->shouldReceive('addCond')
                       ->once();
@@ -135,7 +135,7 @@ class CriteriaGeneratorTest extends MockeryTestCase
         return $mock;
     }
 
-        public function testGetSqlFieldNameFromPhpNamePhpAndSqlNameMatch()
+    public function testGetSqlFieldNameFromPhpNamePhpAndSqlNameMatch()
     {
         $generator = new CriteriaGenerator();
         $tableMapMockBuilder = $this->getMockBuilder(TableMap::class);

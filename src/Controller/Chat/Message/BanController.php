@@ -42,7 +42,7 @@ class BanController extends Controller
             throw $accessDenied;
         }
 
-        $banSystem = $this->get('tekstove.api.security.ban_system');
+        $banSystem = $this->get('app.security.ban_system');
         /* @var $banSystem \Tekstove\ApiBundle\Security\BanSystem */
 
         $banMinutesInSeconds = $minutes * 60;

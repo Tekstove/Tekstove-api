@@ -4,7 +4,7 @@ namespace App\EventListener\Kernel;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Tekstove\ApiBundle\Security\BanSystem;
+use App\Security\BanSystem;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

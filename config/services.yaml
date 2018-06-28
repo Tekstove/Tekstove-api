@@ -222,11 +222,11 @@ services:
 
     app.kernel.ban.subscriber:
         class: App\EventListener\Kernel\BanSystemListener
-        arguments: ["@request_stack", "@tekstove.api.security.ban_system"]
+        arguments: ["@request_stack", "@app.security.ban_system"]
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
-    tekstove.api.security.ban_system:
-        class: Tekstove\ApiBundle\Security\BanSystem
+    app.security.ban_system:
+        class: App\Security\BanSystem
         arguments: ["@tekstove.api.ban.redis", "@request_stack"]
         public: true

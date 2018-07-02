@@ -42,40 +42,40 @@ tekstove_api_user_login_get:
 
 tekstove_api_user_credentials_list:
     path: "/credentials/"
-    defaults: { _controller: App\Controller\UserCredentialsController:indexAction }
+    defaults: { _controller: App\Controller\UserCredentialsController::indexAction }
     methods: [GET]
 
 tekstove_api_user_credentials:
     path: "/credentials/{id}"
-    defaults: { _controller: App\Controller\UserCredentialsController:getAction }
+    defaults: { _controller: App\Controller\UserCredentialsController::getAction }
     methods: [GET]
 
 tekstove_api.user.pm.index:
     path: "/pm/"
-    defaults: { _controller: App\Controller\User\PmController:indexAction }
+    defaults: { _controller: App\Controller\User\PmController::indexAction }
     methods: [GET]
 
 tekstove_api.user.pm.get:
     path: "/pm/{id}"
-    defaults: { _controller: App\Controller\User\PmController:getAction }
+    defaults: { _controller: App\Controller\User\PmController::getAction }
     methods: [GET]
 
 tekstove_api.user.pm.patch:
     path: "/pm/{id}"
-    defaults: { _controller:  App\Controller\User\PmController:patchAction }
+    defaults: { _controller:  App\Controller\User\PmController::patchAction }
     methods: [PATCH]
 
 tekstove_api.user.pm.post:
     path: "/pm/"
-    defaults: { _controller:  App\Controller\User\PmController:postAction }
+    defaults: { _controller:  App\Controller\User\PmController::postAction }
     methods: [POST]
 
 tekstove_api.user.password_reset.request:
     path: "/password-reset/request"
-    defaults: { _controller:  App\Controller\User\PasswordResetController:postAction }
+    defaults: { _controller:  App\Controller\User\PasswordResetController::postAction }
     methods: [POST]
 
 tekstove_api.user.password_reset.confirm:
     path: "/password-reset/confirm"
-    defaults: { _controller:  App\Controller\User\PasswordResetConfirmController:postAction }
+    defaults: { _controller:  App\Controller\User\PasswordResetConfirmController::postAction }
     methods: [POST]

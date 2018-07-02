@@ -1,43 +1,43 @@
 tekstove_api_user:
     path: "/"
-    defaults: { _controller: App\Controller\UserController:indexAction }
+    defaults: { _controller: App\Controller\UserController::indexAction }
     methods: [GET]
 
 tekstove_api_user_register_index:
     path: "/register/"
-    defaults: { _controller: App\Controller\User\RegisterController:indexAction }
+    defaults: { _controller: App\Controller\User\RegisterController::indexAction }
     methods: [GET]
 
 tekstove_api_user_register_post:
     path: "/register/"
-    defaults: { _controller: App\Controller\User\RegisterController:postAction }
+    defaults: { _controller: App\Controller\User\RegisterController::postAction }
     methods: [POST]
 
 tekstove_api_user_get:
     path: "/{id}"
-    defaults: { _controller: App\Controller\UserController:getAction }
+    defaults: { _controller: App\Controller\UserController::getAction }
     methods: [GET]
     requirements:
         id:  \d+
 
 tekstove_api.user.patch:
     path: "/{id}"
-    defaults: { _controller:  App\Controller\UserController:patchAction }
+    defaults: { _controller:  App\Controller\UserController::patchAction }
     methods: [PATCH]
 
 tekstove_api.user.delete:
     path: "/{id}"
-    defaults: { _controller:  App\Controller\UserController:deleteAction }
+    defaults: { _controller:  App\Controller\UserController::deleteAction }
     methods: [DELETE]
 
 tekstove_api_user_login_post:
     path: "/login/"
-    defaults: { _controller: App\Controller\User\LoginController:postAction }
+    defaults: { _controller: App\Controller\User\LoginController::postAction }
     methods: [POST]
 
 tekstove_api_user_login_get:
     path: "/login"
-    defaults: { _controller: App\Controller\User\LoginController:getAction }
+    defaults: { _controller: App\Controller\User\LoginController::getAction }
     methods: [GET]
 
 tekstove_api_user_credentials_list:

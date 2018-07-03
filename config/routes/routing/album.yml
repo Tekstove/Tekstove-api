@@ -1,29 +1,29 @@
 tekstove_api_album_credentials_new_albums:
     path: "/credentials"
-    defaults: { _controller: App\Controller\Album\CredentialsController:indexAction, id: ~ }
+    defaults: { _controller: App\Controller\Album\CredentialsController::indexAction, id: ~ }
     methods: [GET]
 
 tekstove_api_album_credentials:
     path: "/credentials/{id}"
-    defaults: { _controller: App\Controller\Album\CredentialsController:indexAction }
+    defaults: { _controller: App\Controller\Album\CredentialsController::indexAction }
     methods: [GET]
 
 tekstove_api_album_post:
     path: "/"
-    defaults: { _controller: App\Controller\AlbumController:postAction }
+    defaults: { _controller: App\Controller\AlbumController::postAction }
     methods: [POST]
 
 tekstove_api_album_patch:
     path: "/{id}"
-    defaults: { _controller: App\Controller\AlbumController:patchAction }
+    defaults: { _controller: App\Controller\AlbumController::patchAction }
     methods: [PATCH]
 
 tekstove_api_album_get:
     path: "/{id}"
-    defaults: { _controller: App\Controller\AlbumController:getAction }
+    defaults: { _controller: App\Controller\AlbumController::getAction }
     methods: [GET]
 
 tekstove_api_album_index:
     path: "/"
-    defaults: { _controller: App\Controller\AlbumController:indexAction }
+    defaults: { _controller: App\Controller\AlbumController::indexAction }
     methods: [GET]

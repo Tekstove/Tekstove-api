@@ -5,15 +5,15 @@ tekstove_api_artist:
 
 tekstove_api_artist.get:
     path: "/{id}"
-    defaults: { _controller: App\Controller\ArtistController:getAction }
+    defaults: { _controller: App\Controller\ArtistController::getAction }
     methods: [GET]
 
 tekstove_api_artist.patch:
     path: "/{id}"
-    defaults: { _controller: App\Controller\ArtistController:patchAction }
+    defaults: { _controller: App\Controller\ArtistController::patchAction }
     methods: [PATCH]
 
 tekstove_api_artist_credentials:
     path: "/credentials/{id}"
-    defaults: { _controller: App\Controller\Artist\CredentialsController:indexAction }
+    defaults: { _controller: App\Controller\Artist\CredentialsController::indexAction }
     methods: [GET]

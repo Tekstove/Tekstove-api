@@ -1,29 +1,29 @@
 tekstove_api_chat_messages_index:
     path: "/messages"
-    defaults: { _controller: App\Controller\Chat\MessagesController:indexAction }
+    defaults: { _controller: App\Controller\Chat\MessagesController::indexAction }
     methods: [GET]
 
 tekstove_api_chat_message_censore_post:
     path: "/messages/censore"
-    defaults: { _controller: App\Controller\Chat\Message\CensoreController:postAction }
+    defaults: { _controller: App\Controller\Chat\Message\CensoreController::postAction }
     methods: [POST]
 
 tekstove_api_message_ban_post:
     path: "/messages/ban"
-    defaults: { _controller: App\Controller\Chat\Message\BanController:postAction }
+    defaults: { _controller: App\Controller\Chat\Message\BanController::postAction }
     methods: [POST]
 
 tekstove_api_chat_messages_post:
     path: "/messages"
-    defaults: { _controller: App\Controller\Chat\MessagesController:postAction }
+    defaults: { _controller: App\Controller\Chat\MessagesController::postAction }
     methods: [POST]
 
 tekstove_api_chat_online_index:
     path: "/online"
-    defaults: { _controller: App\Controller\Chat\OnlineController:indexAction }
+    defaults: { _controller: App\Controller\Chat\OnlineController::indexAction }
     methods: [GET]
 
 tekstove_api_chat_online_post:
     path: "/online"
-    defaults: { _controller: App\Controller\Chat\OnlineController:postAction }
+    defaults: { _controller: App\Controller\Chat\OnlineController::postAction }
     methods: [POST]

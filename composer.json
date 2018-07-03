@@ -24,7 +24,7 @@
 
         "propel/propel": "dev-master",
         "propel/propel-bundle": "4.0.*-dev",
-        "friendsofsymfony/rest-bundle": "~2.3.1",
+        "friendsofsymfony/rest-bundle": "^2.3.1",
         "jms/serializer-bundle": "~2.4.0",
         "predis/predis": "^1.1.1",
         "potaka/knp-paginator-propel2bundle": "0.* || 1.*",

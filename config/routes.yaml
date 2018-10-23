@@ -23,6 +23,11 @@ tekstove_api_lyric_routing:
     prefix:   /lyrics
     defaults: { _format: json }
 
+tekstove_api_v4_lyric_routing:
+    resource: "routes/routing/v4/lyric.yml"
+    prefix:   /v4/lyrics
+    defaults: { _format: json }
+
 tekstove_api_user_routing:
     resource: "routes/routing/user.yml"
     prefix:   /users
@@ -32,3 +37,4 @@ tekstove_api_languages:
     path: /languages
     defaults: { _controller: App\Controller\Language\LanguagesController::indexAction, _format: json }
     methods: [GET]
+

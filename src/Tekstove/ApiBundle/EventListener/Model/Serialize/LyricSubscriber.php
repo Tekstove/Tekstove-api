@@ -53,5 +53,13 @@ class LyricSubscriber implements EventSubscriberInterface
         }
 
         $visitor->setData('extraInfoHtml', $extraInfoHtml);
+
+        $textError = ">>> грешка" . PHP_EOL;
+        $textError .= "Нямаме права да ви покажем текства :(" . PHP_EOL;
+        $textError .= "Ако сте собственик на текста, моля пишете ни на tekstove.info@gmail.com за съгласие";
+        $visitor->setData(
+            'text',
+            $textError
+        );
     }
 }

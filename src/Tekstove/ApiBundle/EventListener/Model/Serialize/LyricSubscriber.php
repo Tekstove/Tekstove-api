@@ -57,6 +57,8 @@ class LyricSubscriber implements EventSubscriberInterface
         $textError = ">>> грешка" . PHP_EOL;
         $textError .= "Нямаме права да ви покажем текства :(" . PHP_EOL;
         $textError .= "Ако сте собственик на текста, моля пишете ни на tekstove.info@gmail.com за съгласие";
+        $textError .= "Собственици на текса са музикалната компания издала песента, изпълнителите и текстописецът.";
+        $textError .= "Без разрешение от тях, нямаме право да покажем текста!";
         $visitor->setData(
             'text',
             $textError

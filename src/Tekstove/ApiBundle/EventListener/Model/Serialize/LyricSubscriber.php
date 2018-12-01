@@ -54,9 +54,20 @@ class LyricSubscriber implements EventSubscriberInterface
 
         $visitor->setData('extraInfoHtml', $extraInfoHtml);
 
+        $allowedLyrivs = [
+            68126, // official fb page https://www.facebook.com/venelinstefanow/ on 1 Dec 2018
+        ];
+
+        if (in_array($lyric->getId(), $allowedLyrivs)) {
+            return true;
+        }
+
+
         $textError = ">>> грешка" . PHP_EOL;
         $textError .= "Нямаме права да ви покажем текства :(" . PHP_EOL;
         $textError .= "Ако сте собственик на текста, моля пишете ни на tekstove.info@gmail.com за съгласие";
+        $textError .= "Собственици на текса са музикалната компания издала песента, изпълнителите и текстописецът.";
+        $textError .= "Без разрешение от тях, нямаме право да покажем текста!";
         $visitor->setData(
             'text',
             $textError

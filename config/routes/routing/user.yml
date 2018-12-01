@@ -31,7 +31,7 @@ tekstove_api.user.delete:
     methods: [DELETE]
 
 tekstove_api_user_login_post:
-    path: "/login/"
+    path: "/login"
     defaults: { _controller: App\Controller\User\LoginController::postAction }
     methods: [POST]
 

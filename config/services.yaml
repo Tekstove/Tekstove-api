@@ -230,3 +230,21 @@ services:
         class: App\Security\BanSystem
         arguments: ["@tekstove.api.ban.redis", "@request_stack"]
         public: true
+
+
+    app.api_serializer.normalizer.datetime:
+        class: Symfony\Component\Serializer\Normalizer\DateTimeNormalizer
+
+    app.api_serializer.normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+
+    app.api_serializer.encoder.json:
+        class: Symfony\Component\Serializer\Encoder\JsonEncoder
+
+    app.api_serializer:
+        class: Symfony\Component\Serializer\Serializer
+        arguments:
+            - ["@app.api_serializer.normalizer", "@app.api_serializer.normalizer.datetime"]
+            - ["@app.api_serializer.encoder.json"]
+        autowire: true
+        decorates: Symfony\Component\Serializer\SerializerInterface

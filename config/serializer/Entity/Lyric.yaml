@@ -1,0 +1,6 @@
+App\Entity\Lyric\Lyric:
+  attributes:
+    id:
+      groups: ['g1', 'g2']
+    sendDate:
+      groups: ['g1']

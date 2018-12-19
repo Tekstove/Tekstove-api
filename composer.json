@@ -35,7 +35,8 @@
         "tekstove/url-video-parser": "^1.0.1",
         "potaka/ip-anonymizer": "^2.0",
         "symfony/orm-pack": "^1.0",
-        "symfony/translation": "^4.1"
+        "symfony/translation": "^4.1",
+        "symfony/serializer": "^4.1"
     },
     "require-dev": {
         "symfony/debug-pack": "*",

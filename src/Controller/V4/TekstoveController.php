@@ -3,17 +3,18 @@
 namespace App\Controller\V4;
 
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\SerializerInterface;
+use FOS\RestBundle\Context\Context;
 
-class TekstoveController extends AbstractController
+class TekstoveController extends FOSRestController
 {
     private $serializer;
     private $groups;
+    private $context;
 
-    public function __construct(SerializerInterface $serializer, RequestStack $r)
+    public function __construct(\JMS\Serializer\SerializerInterface $serializer, RequestStack $r)
     {
         $this->serializer = $serializer;
         $groups = $r->getCurrentRequest()->query->get('groups');
@@ -33,20 +34,27 @@ class TekstoveController extends AbstractController
      */
     public function handleData($data): Response
     {
-        if (is_object($data)) {
-            $viewData = $this->serializer->serialize(
-                [
-                    'item' => $data
-                ],
-                'json',
-                [
-                    'groups' => $this->groups,
-                ]
-            );
-        } else {
-            throw new \RuntimeException("Not implemented");
+        if (!is_array($data)) {
+            $data = [
+                'item' => $data,
+            ];
         }
 
-        return new Response($viewData);
+        $view = $this->view($data, 200);
+        $view->setContext($this->getContext());
+        return $this->handleView($view);
+    }
+
+    /**
+     * @return Context
+     */
+    protected function getContext()
+    {
+        if ($this->context === null) {
+            $this->context = new Context();
+            $this->context->setSerializeNull(true);
+        }
+
+        return $this->context;
     }
 }

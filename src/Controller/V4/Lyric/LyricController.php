@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LyricController extends TekstoveController
 {
-    public function view(string $id): Response
+    public function viewAction(string $id): Response
     {
         $repo = $this->getDoctrine()->getRepository(Lyric::class);
         $entity = $repo->findOneBy(['id' => $id]);

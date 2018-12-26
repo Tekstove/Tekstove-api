@@ -10,7 +10,14 @@ RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt
 RUN echo "deb http://ftp.bg.debian.org/debian/ jessie main contrib non-free" >> /etc/apt/sources.list
 RUN echo "deb-src http://ftp.bg.debian.org/debian/ jessie main contrib non-free" >> /etc/apt/sources.list
 RUN apt-get update \
-    && apt-get install -y php7.1-cgi php7.1-xml php7.1-mysql php7.1-mbstring git unzip curl apache2 libapache2-mod-fastcgi apache2-mpm-worker apache2-suexec libapache2-mod-fcgid
+    && apt-get install -y \
+        php7.1-cgi \
+        php7.1-xml \
+        php7.1-mysql \
+        php7.1-mbstring \
+        git unzip curl \
+        apache2 libapache2-mod-fastcgi apache2-mpm-worker apache2-suexec libapache2-mod-fcgid
+
 RUN a2enmod actions fastcgi rewrite
 
 RUN wget "https://getcomposer.org/download/1.4.2/composer.phar" -q -O /bin/composer && chmod +x /bin/composer

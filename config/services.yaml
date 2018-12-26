@@ -244,7 +244,7 @@ services:
     app.api_serializer:
         class: Symfony\Component\Serializer\Serializer
         arguments:
-            - ["@app.api_serializer.normalizer", "@app.api_serializer.normalizer.datetime"]
+            - ["@app.api_serializer.normalizer.datetime", "@app.api_serializer.normalizer"]
             - ["@app.api_serializer.encoder.json"]
         autowire: true
         decorates: Symfony\Component\Serializer\SerializerInterface

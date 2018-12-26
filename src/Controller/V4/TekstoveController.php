@@ -2,7 +2,8 @@
 
 namespace App\Controller\V4;
 
-
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ORM\QueryBuilder;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +12,6 @@ use FOS\RestBundle\Context\Context;
 class TekstoveController extends FOSRestController
 {
     private $serializer;
-    private $groups;
     private $context;
 
     public function __construct(\JMS\Serializer\SerializerInterface $serializer, RequestStack $r)
@@ -23,8 +23,17 @@ class TekstoveController extends FOSRestController
 
     protected function setGroups(array $groups)
     {
+        if (empty($groups)) {
+            throw new \RuntimeException('Groups can\'t by empty');
+        }
+
         // @FIXME remove snsitive data!
-        array_walk($groups, function (&$item) { $item = strtolower($item); });
+        array_walk(
+            $groups,
+            function (string &$item) {
+                $item = strtolower($item);
+            }
+        );
         $this->getContext()->setGroups($groups);
     }
 
@@ -34,6 +43,23 @@ class TekstoveController extends FOSRestController
      */
     public function handleData($data): Response
     {
+        if (is_string($data)) {
+            $repo = $this->getDoctrine()->getRepository($data);
+            $qb = $repo->createQueryBuilder('d');
+            /* @var $qb QueryBuilder */
+
+            // @FIXME hardcoded filters
+            $qb->andWhere(
+                $qb->expr()->andX(
+                    $qb->expr()->gte('d.id', 50)
+                )
+            );
+
+            $qb->setMaxResults(10); // @FIXME max result dynamic
+            $entities = $qb->getQuery()->getResult();
+            $data = $entities;
+        }
+
         if (!is_array($data)) {
             $data = [
                 'item' => $data,

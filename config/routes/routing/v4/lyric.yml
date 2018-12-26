@@ -1,4 +1,9 @@
 app.lyric.get:
     path: "/{id}"
-    defaults: { _controller: App\Controller\V4\Lyric\LyricController::viewAction }
+    defaults: { _controller: App\Controller\V4\Lyric\LyricController::getAction }
+    methods: [GET]
+
+app.lyric.index:
+    path: "/"
+    defaults: { _controller: App\Controller\V4\Lyric\LyricController::indexAction }
     methods: [GET]

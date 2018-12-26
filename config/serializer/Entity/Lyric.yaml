@@ -8,3 +8,7 @@ App\Entity\Lyric\Lyric:
       groups: ['details']
     text:
       groups: ['details']
+    forbidden:
+      groups: ['list', 'details']
+    artistLyrics:
+      groups: ['details']

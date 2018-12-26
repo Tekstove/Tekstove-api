@@ -4,11 +4,11 @@ namespace App\Controller\V4\Lyric;
 
 use App\Controller\V4\TekstoveController;
 use App\Entity\Lyric\Lyric;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class LyricController extends TekstoveController
 {
-    public function view(SerializerInterface $serializer, string $id)
+    public function view(string $id): Response
     {
         $repo = $this->getDoctrine()->getRepository(Lyric::class);
         $entity = $repo->findOneBy(['id' => $id]);

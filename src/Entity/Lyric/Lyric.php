@@ -2,6 +2,8 @@
 
 namespace App\Entity\Lyric;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -30,6 +32,17 @@ class Lyric
      * @ORM\Column(type="string")
      */
     private $text;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Lyric\ArtistLyric", mappedBy="lyric")
+     * @var ArtistLyric[]
+     */
+    private $artistLyrics;
+
+    public function __construct()
+    {
+        $this->artistLyrics = new ArrayCollection();
+    }
 
     /**
      * @return int
@@ -61,5 +74,24 @@ class Lyric
     public function getText(): string
     {
         return $this->text;
+    }
+
+    /**
+     * @return ArtistLyric[]
+     */
+    public function getArtistLyrics(): Collection
+    {
+        return $this->artistLyrics;
+    }
+
+    public function isForbidden(): bool
+    {
+        foreach ($this->artistLyrics as $artistLytic) {
+            if ($artistLytic->getArtist()->isForbidden()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -1,0 +1,10 @@
+"App\\Entity\\Artist\\Artist":
+  exclusion_policy: all
+  exclude: false
+  read_only: true
+  virtual_properties:
+    getId:
+      serialized_name: id
+      groups: ['list', 'details']
+#    name:
+#      groups: ['list', 'details']

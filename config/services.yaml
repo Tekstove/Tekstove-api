@@ -20,10 +20,14 @@ jms_serializer:
         auto_detection: true
         debug: "%kernel.debug%"
         directories:
-            test:
+            apiBundle:
                 namespace_prefix: 'Tekstove\ApiBundle\Model'
                 path: "%kernel.project_dir%/config/serializer"
-                name: asdasd
+                name: apiBundle
+            app:
+                namespace_prefix: 'App\Entity'
+                path: '%kernel.project_dir%/config/serializer\entity'
+                name: app
     visitors:
         json:
             options: [JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE]

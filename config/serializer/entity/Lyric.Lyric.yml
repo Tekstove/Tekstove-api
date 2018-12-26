@@ -1,0 +1,11 @@
+"App\\Entity\\Lyric\\Lyric":
+  exclusion_policy: all
+  exclude: false
+  read_only: true
+  virtual_properties:
+    getId:
+      groups: ['list', 'details']
+      serialized_name: id
+    getArtistLyrics:
+      groups: ['list', 'details']
+      serialized_name: artistLyrics

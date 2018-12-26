@@ -25,7 +25,7 @@ class TekstoveController extends FOSRestController
     {
         // @FIXME remove snsitive data!
         array_walk($groups, function (&$item) { $item = strtolower($item); });
-        $this->groups = $groups;
+        $this->getContext()->setGroups($groups);
     }
 
     /**

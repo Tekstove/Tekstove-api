@@ -1,4 +1,0 @@
-App\Entity\Lyric\ArtistLyric:
-  attributes:
-    artist:
-      groups: ['details']

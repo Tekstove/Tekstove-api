@@ -1,6 +1,0 @@
-App\Entity\Artist\Artist:
-  attributes:
-    id:
-      groups: ['list', 'details']
-    name:
-      groups: ['list', 'details']

@@ -34,6 +34,16 @@ class Lyric
     private $text;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    private $textBg;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $extraInfo;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Lyric\ArtistLyric", mappedBy="lyric")
      * @var ArtistLyric[]
      */
@@ -76,8 +86,18 @@ class Lyric
         return $this->text;
     }
 
+    public function getTextBg()
+    {
+        return $this->textBg;
+    }
+
+    public function getextraInfo()
+    {
+        return $this->extraInfo;
+    }
+
     /**
-     * @return ArtistLyric[]
+     * @return ArtistLyric[]|Collection
      */
     public function getArtistLyrics(): Collection
     {

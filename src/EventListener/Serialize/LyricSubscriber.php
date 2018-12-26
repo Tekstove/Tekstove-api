@@ -1,6 +1,6 @@
 <?php
 
-namespace Tekstove\ApiBundle\EventListener\Model\Serialize;
+namespace App\EventListener\Serialize;
 
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
@@ -40,7 +40,7 @@ class LyricSubscriber implements EventSubscriberInterface
     {
         $lyric = $event->getObject();
 
-        if (!$lyric instanceof Lyric) {
+        if (!$lyric instanceof Lyric && !$lyric instanceof \App\Entity\Lyric\Lyric) {
             return false;
         }
 

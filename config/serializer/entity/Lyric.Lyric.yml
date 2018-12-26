@@ -9,3 +9,9 @@
     getArtistLyrics:
       groups: ['list', 'details']
       serialized_name: artistLyrics
+    getText:
+      groups: ['details']
+      serialized_name: text
+    getTextBg:
+      groups: ['details']
+      serialized_name: textBg

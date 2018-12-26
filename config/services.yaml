@@ -54,6 +54,7 @@ services:
         tags: ['controller.service_arguments']
 
     JMS\Serializer\SerializerInterface: '@jms_serializer'
+    Potaka\BbcodeBundle\BbCode\TextToHtmlInterface: "@tekstove.api.bbcode.cache"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -93,8 +94,7 @@ services:
         - [setCachePrefix, ["bbcode."]]
 
     tekstove.api.serizlizer.lyric.bbcode:
-        class: Tekstove\ApiBundle\EventListener\Model\Serialize\LyricSubscriber
-        arguments: ["@tekstove.api.bbcode.cache"]
+        class: App\EventListener\Serialize\LyricSubscriber
         tags:
             - { name: "jms_serializer.event_subscriber" }
         public: true

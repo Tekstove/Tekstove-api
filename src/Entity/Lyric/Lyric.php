@@ -22,11 +22,29 @@ class Lyric
     private $sendDate;
 
     /**
-     * @return mixed
+     * @ORM\Column(type="string")
+     */
+    private $title;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $text;
+
+    /**
+     * @return int
      */
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @return striong|null
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
     }
 
     /**
@@ -35,5 +53,13 @@ class Lyric
     public function getSendDate()
     {
         return $this->sendDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getText(): string
+    {
+        return $this->text;
     }
 }

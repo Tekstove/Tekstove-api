@@ -1,6 +1,10 @@
 App\Entity\Lyric\Lyric:
   attributes:
     id:
-      groups: ['g1', 'g2']
+      groups: ['list']
+    title:
+      groups: ['list']
     sendDate:
-      groups: ['g1']
+      groups: ['details']
+    text:
+      groups: ['details']

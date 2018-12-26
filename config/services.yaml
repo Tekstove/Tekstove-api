@@ -234,12 +234,21 @@ services:
 
     app.api_serializer.normalizer.datetime:
         class: Symfony\Component\Serializer\Normalizer\DateTimeNormalizer
+        arguments:
+          - datetime_format: U
 
     app.api_serializer.normalizer:
         class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
 
     app.api_serializer.encoder.json:
         class: Symfony\Component\Serializer\Encoder\JsonEncoder
+        arguments:
+            - "@app.api_serializer.encoer.json_implementation"
+
+    app.api_serializer.encoer.json_implementation:
+        class: Symfony\Component\Serializer\Encoder\JsonEncode
+        arguments:
+              - json_encode_options: 101000000 # JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
 
     app.api_serializer:
         class: Symfony\Component\Serializer\Serializer

@@ -42,3 +42,6 @@
     getLanguages:
       groups: ['details']
       serialized_name: languages
+    getSendBy:
+      groups: ['details']
+      serialized_name: sendBy

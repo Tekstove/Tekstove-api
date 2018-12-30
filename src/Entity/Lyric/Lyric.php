@@ -74,6 +74,12 @@ class Lyric
     private $cacheCensor;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User")
+     * @ORM\JoinColumn(name="send_by")
+     */
+    private $sendBy;
+
+    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Language")
      */
     private $languages;
@@ -199,6 +205,14 @@ class Lyric
     public function getLanguages()
     {
         return $this->languages;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSendBy()
+    {
+        return $this->sendBy;
     }
 
     public function isForbidden(): bool

@@ -1,0 +1,11 @@
+"App\\Entity\\User\\User":
+  exclusion_policy: all
+  exclude: false
+  read_only: true
+  virtual_properties:
+    getId:
+      groups: ['list', 'details']
+      serialized_name: id
+    getUsername:
+      groups: ['list', 'details']
+      serialized_name: username

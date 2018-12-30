@@ -140,6 +140,14 @@ class Lyric
     }
 
     /**
+     * @param mixed $extraInfo
+     */
+    public function setExtraInfo($extraInfo): void
+    {
+        $this->extraInfo = $extraInfo;
+    }
+
+    /**
      * @return mixed
      */
     public function getViews(): int
@@ -224,6 +232,14 @@ class Lyric
             }
         }
 
-        return false;
+        $allowedLyrivs = [
+            68126, // official fb page https://www.facebook.com/venelinstefanow/ on 1 Dec 2018
+        ];
+
+        if (in_array($this->getId(), $allowedLyrivs)) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -3,13 +3,13 @@
 namespace Test\ApiBundle\Model\Serialize;
 
 use PHPUnit\Framework\TestCase;
-use Tekstove\ApiBundle\EventListener\Model\Serialize\LyricSubscriber;
+use App\EventListener\Serialize\LyricSubscriber;
 use Potaka\BbcodeBundle\BbCode\TextToHtml;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
-use Tekstove\ApiBundle\Model\Lyric;
+use App\Entity\Lyric\Lyric;
 
 /**
- * @author potaka
+ * @author po_taka <angel.koilov@gmail.com>
  */
 class LyricSubscriberTest extends TestCase
 {
@@ -19,10 +19,17 @@ class LyricSubscriberTest extends TestCase
         $bbCodeMockBuilder->disableOriginalConstructor();
         $bbCodeMockBuilder->setMethods(['getHtml']);
         $bbCodeMock = $bbCodeMockBuilder->getMock();
-        $bbCodeMock->expects($this->once())->method('getHtml')->with('someInfo')->willReturn('formattedText');
+        $bbCodeMock->expects($this->once())
+            ->method('getHtml')
+            ->with('someInfo')
+            ->willReturn('formattedText');
 
         $subscriber = new LyricSubscriber($bbCodeMock);
-        $lyric = new Lyric();
+        $lyricMockBuilder = $this->getMockBuilder(Lyric::class);
+        $lyricMockBuilder->setMethods(['getId']);
+        $lyric = $lyricMockBuilder->getMock();
+        // 68126 is allowed to be shown
+        $lyric->expects($this->any())->method('getId')->willReturn(68126);
         $lyric->setExtraInfo('someInfo');
 
         $visitorMockBuilder = $this->getMockBuilder(\JMS\Serializer\JsonSerializationVisitor::class);
@@ -53,7 +60,11 @@ class LyricSubscriberTest extends TestCase
         $bbCodeMock->expects($this->never())->method('getHtml');
 
         $subscriber = new LyricSubscriber($bbCodeMock);
-        $lyric = new Lyric();
+        $lyricMockBuilder = $this->getMockBuilder(Lyric::class);
+        $lyricMockBuilder->setMethods(['getId']);
+        $lyric = $lyricMockBuilder->getMock();
+        // 68126 is allowed to be shown
+        $lyric->expects($this->any())->method('getId')->willReturn(68126);
         $lyric->setExtraInfo(null);
 
         $visitorMockBuilder = $this->getMockBuilder(\JMS\Serializer\JsonSerializationVisitor::class);

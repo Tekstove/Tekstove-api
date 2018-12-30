@@ -64,6 +64,21 @@ class Lyric
     private $extraInfo;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $manualCensor;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $cacheCensor;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Language")
+     */
+    private $languages;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Lyric\ArtistLyric", mappedBy="lyric")
      * @var ArtistLyric[]
      */
@@ -72,6 +87,7 @@ class Lyric
     public function __construct()
     {
         $this->artistLyrics = new ArrayCollection();
+        $this->languages = new ArrayCollection();
     }
 
     /**
@@ -149,11 +165,40 @@ class Lyric
     }
 
     /**
+     * @return mixed
+     */
+    public function isManualCensored()
+    {
+        return $this->manualCensor;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isCacheCensored()
+    {
+        return $this->cacheCensor;
+    }
+
+    public function isCensored()
+    {
+        return $this->isManualCensored() || $this->isCacheCensored();
+    }
+
+    /**
      * @return ArtistLyric[]|Collection
      */
     public function getArtistLyrics(): Collection
     {
         return $this->artistLyrics;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLanguages()
+    {
+        return $this->languages;
     }
 
     public function isForbidden(): bool

@@ -1,0 +1,11 @@
+"App\\Entity\\Language":
+  exclusion_policy: all
+  exclude: false
+  read_only: true
+  virtual_properties:
+    getId:
+      groups: ['list', 'details']
+      serialized_name: id
+    getName:
+      groups: ['list', 'details']
+      serialized_name: name

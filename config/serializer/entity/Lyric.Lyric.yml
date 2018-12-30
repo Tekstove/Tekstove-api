@@ -30,3 +30,15 @@
     getExtraInfo:
       groups: ['details']
       serialized_name: extraInfo
+    isManualCensored:
+      groups: ['details']
+      serialized_name: manualCensor
+    isCensored:
+      groups: ['details']
+      serialized_name: censor
+    isForbidden:
+      groups: ['details']
+      serialized_name: forbidden
+    getLanguages:
+      groups: ['details']
+      serialized_name: languages

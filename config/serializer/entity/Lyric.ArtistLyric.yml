@@ -6,3 +6,6 @@
     getArtist:
       groups: ['details']
       serialized_name: artist
+    getORder:
+      groups: ['details']
+      serialized_name: order

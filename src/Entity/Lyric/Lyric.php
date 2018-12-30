@@ -39,6 +39,26 @@ class Lyric
     private $textBg;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $views;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $popularity;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $videoYoutube;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $videoVbox7;
+
+    /**
      * @ORM\Column(type="string")
      */
     private $extraInfo;
@@ -94,6 +114,38 @@ class Lyric
     public function getextraInfo()
     {
         return $this->extraInfo;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getViews()
+    {
+        return $this->views;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPopularity()
+    {
+        return $this->popularity;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVideoYoutube()
+    {
+        return $this->videoYoutube;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVideoVbox7()
+    {
+        return $this->videoVbox7;
     }
 
     /**

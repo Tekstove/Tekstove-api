@@ -6,12 +6,27 @@
     getId:
       groups: ['list', 'details']
       serialized_name: id
+    getTitle:
+      groups: ['list', 'details']
+      serialized_name: title
     getArtistLyrics:
       groups: ['list', 'details']
-      serialized_name: artistLyrics
+      serialized_name: artists
     getText:
       groups: ['details']
       serialized_name: text
     getTextBg:
       groups: ['details']
       serialized_name: textBg
+    getViews:
+      groups: ['details']
+      serialized_name: views
+    getPopularity:
+      groups: ['details']
+      serialized_name: popularity
+    getVideoVbox7:
+      groups: ['details']
+      serialized_name: videoVbox7
+    getExtraInfo:
+      groups: ['details']
+      serialized_name: extraInfo

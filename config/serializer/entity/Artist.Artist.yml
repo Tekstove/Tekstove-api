@@ -6,5 +6,6 @@
     getId:
       serialized_name: id
       groups: ['list', 'details']
-#    name:
-#      groups: ['list', 'details']
+    getName:
+      serialized_name: name
+      groups: ['list', 'details']

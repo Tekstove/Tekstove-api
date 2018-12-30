@@ -23,10 +23,31 @@ class ArtistLyric
     private $lyric;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $order;
+
+    /**
      * @return mixed
      */
     public function getArtist(): Artist
     {
         return $this->artist;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order): void
+    {
+        $this->order = $order;
     }
 }

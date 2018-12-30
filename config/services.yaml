@@ -20,10 +20,14 @@ jms_serializer:
         auto_detection: true
         debug: "%kernel.debug%"
         directories:
-            test:
+            apiBundle:
                 namespace_prefix: 'Tekstove\ApiBundle\Model'
                 path: "%kernel.project_dir%/config/serializer"
-                name: asdasd
+                name: apiBundle
+            app:
+                namespace_prefix: 'App\Entity'
+                path: '%kernel.project_dir%/config/serializer\entity'
+                name: app
     visitors:
         json:
             options: [JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE]
@@ -48,6 +52,9 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    JMS\Serializer\SerializerInterface: '@jms_serializer'
+    Potaka\BbcodeBundle\BbCode\TextToHtmlInterface: "@tekstove.api.bbcode.cache"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -87,8 +94,7 @@ services:
         - [setCachePrefix, ["bbcode."]]
 
     tekstove.api.serizlizer.lyric.bbcode:
-        class: Tekstove\ApiBundle\EventListener\Model\Serialize\LyricSubscriber
-        arguments: ["@tekstove.api.bbcode.cache"]
+        class: App\EventListener\Serialize\LyricSubscriber
         tags:
             - { name: "jms_serializer.event_subscriber" }
         public: true

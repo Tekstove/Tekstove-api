@@ -1,6 +1,6 @@
 <?php
 
-namespace Tekstove\ApiBundle\EventListener\Model\Serialize;
+namespace App\EventListener\Serialize;
 
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
@@ -21,7 +21,6 @@ class LyricSubscriber implements EventSubscriberInterface
 
     public function __construct(TextToHtmlInterface $bbCode)
     {
-        // I will create bbCode with cache and I should update the code below
         $this->bbCode = $bbCode;
     }
 
@@ -40,7 +39,7 @@ class LyricSubscriber implements EventSubscriberInterface
     {
         $lyric = $event->getObject();
 
-        if (!$lyric instanceof Lyric) {
+        if (!$lyric instanceof Lyric && !$lyric instanceof \App\Entity\Lyric\Lyric) {
             return false;
         }
 
@@ -54,23 +53,26 @@ class LyricSubscriber implements EventSubscriberInterface
 
         $visitor->setData('extraInfoHtml', $extraInfoHtml);
 
-        $allowedLyrivs = [
-            68126, // official fb page https://www.facebook.com/venelinstefanow/ on 1 Dec 2018
-        ];
-
-        if (in_array($lyric->getId(), $allowedLyrivs)) {
-            return true;
-        }
-
-
         $textError = ">>> грешка" . PHP_EOL;
         $textError .= "Нямаме права да ви покажем текства :(" . PHP_EOL;
         $textError .= "Ако сте собственик на текста, моля пишете ни на tekstove.info@gmail.com за съгласие";
         $textError .= "Собственици на текса са музикалната компания издала песента, изпълнителите и текстописецът.";
         $textError .= "Без разрешение от тях, нямаме право да покажем текста!";
-        $visitor->setData(
-            'text',
-            $textError
-        );
+
+        if ($lyric instanceof \App\Entity\Lyric\Lyric) {
+            if ($lyric->isForbidden()) {
+                $visitor->setData('text', $textError);
+            }
+        } elseif ($lyric instanceof Lyric) {
+            $allowedLyrivs = [
+                68126, // official fb page https://www.facebook.com/venelinstefanow/ on 1 Dec 2018
+            ];
+
+            if (in_array($lyric->getId(), $allowedLyrivs)) {
+                return true;
+            }
+
+            $visitor->setData('text', $textError);
+        }
     }
 }

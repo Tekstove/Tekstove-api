@@ -2,20 +2,25 @@
 
 namespace App\Controller\V4;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Context\Context;
+use JMS\Serializer\SerializerInterface;
 
 class TekstoveController extends FOSRestController
 {
     private $serializer;
+
+    /**
+     * Serialization context
+     * @var Context
+     */
     private $context;
 
-    public function __construct(\JMS\Serializer\SerializerInterface $serializer, RequestStack $r)
+    public function __construct(SerializerInterface $serializer, RequestStack $r)
     {
         $this->serializer = $serializer;
         $groups = $r->getCurrentRequest()->query->get('groups');
@@ -77,7 +82,7 @@ class TekstoveController extends FOSRestController
     /**
      * @return Context
      */
-    protected function getContext()
+    protected function getContext(): Context
     {
         if ($this->context === null) {
             $this->context = new Context();

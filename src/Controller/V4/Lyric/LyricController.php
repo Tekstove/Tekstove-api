@@ -10,7 +10,8 @@ class LyricController extends TekstoveController
 {
     public function indexAction(): Response
     {
-        return $this->handleData(Lyric::class);
+        $repo = $this->getDoctrine()->getRepository(Lyric::class);
+        return $this->handleRepository($repo);
     }
 
     public function getAction(string $id): Response
@@ -25,6 +26,6 @@ class LyricController extends TekstoveController
 
         // @TODO add view event
 
-        return $this->handleData($entity);
+        return $this->handleEntity($entity);
     }
 }

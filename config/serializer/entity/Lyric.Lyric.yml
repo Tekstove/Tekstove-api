@@ -10,7 +10,7 @@
       groups: ['list', 'details']
       serialized_name: title
     getArtistLyrics:
-      groups: ['list', 'details']
+      groups: ['details']
       serialized_name: artists
     getText:
       groups: ['details']

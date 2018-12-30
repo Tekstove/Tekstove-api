@@ -2,6 +2,7 @@
 
 namespace App\Entity\Lyric;
 
+use App\Entity\Language;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -41,12 +42,12 @@ class Lyric
     /**
      * @ORM\Column(type="integer")
      */
-    private $views;
+    private $views = 0;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $popularity;
+    private $popularity = 0;
 
     /**
      * @ORM\Column(type="string")
@@ -141,7 +142,7 @@ class Lyric
     /**
      * @return mixed
      */
-    public function getViews()
+    public function getViews(): int
     {
         return $this->views;
     }
@@ -200,9 +201,9 @@ class Lyric
     }
 
     /**
-     * @return mixed
+     * @return Language[]|Collection
      */
-    public function getLanguages()
+    public function getLanguages(): Collection
     {
         return $this->languages;
     }

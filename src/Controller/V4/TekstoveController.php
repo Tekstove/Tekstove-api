@@ -3,6 +3,7 @@
 namespace App\Controller\V4;
 
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -27,7 +28,7 @@ class TekstoveController extends FOSRestController
             throw new \RuntimeException('Groups can\'t by empty');
         }
 
-        // @FIXME remove snsitive data!
+        // here we should remove groups allowing personal data serialization
         array_walk(
             $groups,
             function (string &$item) {
@@ -38,37 +39,39 @@ class TekstoveController extends FOSRestController
     }
 
     /**
-     * @param mixed $data
+     * @param array $data
      * @return Response
      */
-    public function handleData($data): Response
+    public function handleArray(array $data): Response
     {
-        if (is_string($data)) {
-            $repo = $this->getDoctrine()->getRepository($data);
-            $qb = $repo->createQueryBuilder('d');
-            /* @var $qb QueryBuilder */
-
-            // @FIXME hardcoded filters
-            $qb->andWhere(
-                $qb->expr()->andX(
-                    $qb->expr()->gte('d.id', 50)
-                )
-            );
-
-            $qb->setMaxResults(10); // @FIXME max result dynamic
-            $entities = $qb->getQuery()->getResult();
-            $data = $entities;
-        }
-
-        if (!is_array($data)) {
-            $data = [
-                'item' => $data,
-            ];
-        }
-
         $view = $this->view($data, 200);
         $view->setContext($this->getContext());
         return $this->handleView($view);
+    }
+
+    public function handleRepository(EntityRepository $repo): Response
+    {
+        $qb = $repo->createQueryBuilder('d');
+        /* @var $qb QueryBuilder */
+
+        // filters goes here
+
+        // pagination should be dynamic
+        $qb->setMaxResults(10);
+
+        $entities = $qb->getQuery()->getResult();
+        $data = ['items' => $entities];
+
+        return $this->handleArray($data);
+    }
+
+    public function handleEntity($entity): Response
+    {
+        $data = [
+            'item' => $entity,
+        ];
+
+        return $this->handleArray($data);
     }
 
     /**

@@ -43,5 +43,9 @@
       groups: ['details']
       serialized_name: languages
     getSendBy:
-      groups: ['details']
+      groups: ['lyric.sendBy']
       serialized_name: sendBy
+    getSendDate:
+      groups: ['details']
+      serialized_name: sendDate
+      type: DateTime<'U'>

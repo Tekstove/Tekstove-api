@@ -2,6 +2,7 @@
 
 namespace Tekstove\ApiBundle\EventListener\Model\Lyric;
 
+use App\EventDispatcher\Lyric\LyricEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Tekstove\ApiBundle\EventDispatcher\Event;
@@ -38,10 +39,13 @@ class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\Event
 
     public function viewEvent(Event $event)
     {
-        if (!$event instanceof \Tekstove\ApiBundle\EventDispatcher\Lyric\LyricEvent) {
+        if ($event instanceof \Tekstove\ApiBundle\EventDispatcher\Lyric\LyricEvent) {
+            $lyricId = $event->getLyric()->getId();
+        } elseif ($event instanceof LyricEvent) {
+            $lyricId = $event->getLyric()->getId();
+        } else {
             return false;
         }
-        $lyric = $event->getLyric();
 
         $user = $this->tokenStorage->getToken()->getUser();
         if ($user instanceof \Tekstove\ApiBundle\Model\User) {
@@ -54,13 +58,13 @@ class LyricCounterSubscriber implements \Symfony\Component\EventDispatcher\Event
 
         try {
             $this->redisClient->sadd(
-                'lyric.views.' . $lyric->getId(),
+                'lyric.views.' . $lyricId,
                 $viewKey
             );
 
             $this->redisClient->sadd(
                 'lyric.views',
-                $lyric->getId()
+                $lyricId
             );
         } catch (\Exception $e) {
             $this->logger->emergency('Can\'t write view', [$e]);

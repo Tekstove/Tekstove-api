@@ -4,6 +4,7 @@ namespace App\Controller\V4\Lyric;
 
 use App\Controller\V4\TekstoveController;
 use App\Entity\Lyric\Lyric;
+use App\EventDispatcher\Lyric\LyricEvent;
 use Symfony\Component\HttpFoundation\Response;
 
 class LyricController extends TekstoveController
@@ -24,7 +25,9 @@ class LyricController extends TekstoveController
             throw $this->createNotFoundException('Lyric not found');
         }
 
-        // @TODO add view event
+        $viewEvent = new LyricEvent($entity);
+        $this->get('tekstove.event_dispacher')
+                ->dispatch('tekstove.lyric.view', $viewEvent);
 
         return $this->handleEntity($entity);
     }

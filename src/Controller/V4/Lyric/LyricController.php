@@ -5,6 +5,7 @@ namespace App\Controller\V4\Lyric;
 use App\Controller\V4\TekstoveController;
 use App\Entity\Lyric\Lyric;
 use App\EventDispatcher\Lyric\LyricEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class LyricController extends TekstoveController
@@ -15,7 +16,7 @@ class LyricController extends TekstoveController
         return $this->handleRepository($repo);
     }
 
-    public function getAction(string $id): Response
+    public function getAction(EventDispatcherInterface $eventDispatcher, string $id): Response
     {
         $repo = $this->getDoctrine()->getRepository(Lyric::class);
         $entity = $repo->findOneBy(['id' => $id]);
@@ -26,8 +27,7 @@ class LyricController extends TekstoveController
         }
 
         $viewEvent = new LyricEvent($entity);
-        $this->get('tekstove.event_dispacher')
-                ->dispatch('tekstove.lyric.view', $viewEvent);
+        $eventDispatcher->dispatch('tekstove.lyric.view', $viewEvent);
 
         return $this->handleEntity($entity);
     }

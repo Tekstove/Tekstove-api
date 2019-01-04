@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: potaka
- * Date: 1/3/19
- * Time: 7:55 PM
- */
 
 namespace App\EventDispatcher\Lyric;
-
 
 use App\Entity\Lyric\Lyric;
 use Tekstove\ApiBundle\EventDispatcher\Event;

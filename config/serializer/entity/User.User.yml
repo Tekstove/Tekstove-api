@@ -4,7 +4,7 @@
   read_only: true
   virtual_properties:
     getId:
-      groups: ['list', 'details']
+      groups: ['list', 'details', 'a']
       serialized_name: id
     getUsername:
       groups: ['list', 'details']

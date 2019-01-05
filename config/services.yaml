@@ -214,10 +214,9 @@ services:
         arguments: [{ host: "%env(APP_LYRIC_VOTES_REDIS_HOST)%", port: "%env(APP_LYRIC_VOTES_REDIS_PORT)%"}]
         public: true
 
-    app.lyric.count_subscriber:
-        class: Tekstove\ApiBundle\EventListener\Model\Lyric\LyricCounterSubscriber
+    App\EventListener\Model\Lyric\LyricCounterSubscriber:
+        class: App\EventListener\Model\Lyric\LyricCounterSubscriber
         arguments: ["@tekstove.api.lyric.count.redis", "@request_stack", "@logger", "@security.token_storage", "@app.ip_anonymizer"]
-        public: true
 
     app.ip_anonymizer:
         class: Potaka\IpAnonymizer\IpAnonymizer

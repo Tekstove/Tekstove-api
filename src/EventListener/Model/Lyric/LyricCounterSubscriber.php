@@ -1,6 +1,6 @@
 <?php
 
-namespace Tekstove\ApiBundle\EventListener\Model\Lyric;
+namespace App\EventListener\Model\Lyric;
 
 use App\EventDispatcher\Lyric\LyricEvent;
 use Symfony\Component\HttpFoundation\RequestStack;

@@ -72,7 +72,11 @@ class LyricSubscriber implements EventSubscriberInterface
                 return true;
             }
 
-            $visitor->setData('text', $textError);
+            // Propel model is used for update / index
+            // Doctrine entity is used for get
+            if ($lyric instanceof \App\Entity\Lyric\Lyric) {
+                $visitor->setData('text', $textError);
+            }
         }
     }
 }

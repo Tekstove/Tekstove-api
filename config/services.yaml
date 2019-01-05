@@ -176,7 +176,7 @@ services:
         public: true
 
     tekstove.api.security.lyric_voter:
-        class: Tekstove\ApiBundle\Security\Authorization\Voter\LyricVoter
+        class: App\Security\Authorization\Voter\LyricVoter
         public: false
         tags:
             - { name: security.voter }

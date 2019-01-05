@@ -1,6 +1,6 @@
 <?php
 
-namespace Tekstove\ApiBundle\Security\Authorization\Voter;
+namespace App\Security\Authorization\Voter;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -19,11 +19,15 @@ class LyricVoter extends Voter
 
     protected function supports($attribute, $subject)
     {
-        if (!$subject instanceof Lyric) {
-            return false;
+        if ($subject instanceof Lyric) {
+            return true;
+        }
+
+        if ($subject instanceof \App\Entity\Lyric\Lyric) {
+            return true;
         }
         
-        return true;
+        return false;
     }
 
     /**
@@ -41,7 +45,18 @@ class LyricVoter extends Voter
         
         switch ($attribute) {
             case 'edit':
-                if ($user->getId() == $lyric->getsendBy()) {
+                $sendById = -1;
+                if ($lyric instanceof Lyric) {
+                    $sendById = $lyric->getsendBy();
+                } elseif ($lyric instanceof \App\Entity\Lyric\Lyric) {
+                    $lyricUser = $lyric->getSendBy();
+                    if ($lyricUser) {
+                        $sendById = $lyricUser->getId();
+                    }
+                }
+
+
+                if ($user->getId() == $sendById) {
                     return true;
                 }
                 

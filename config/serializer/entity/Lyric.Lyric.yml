@@ -49,3 +49,6 @@
       groups: ['details']
       serialized_name: sendDate
       type: DateTime<'U'>
+    acl:
+      groups: [acl]
+      serialized_name: acl

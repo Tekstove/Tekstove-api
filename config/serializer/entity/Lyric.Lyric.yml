@@ -9,7 +9,7 @@
     getTitle:
       groups: ['list', 'details']
       serialized_name: title
-    getArtistLyrics:
+    getArtists:
       groups: ['details']
       serialized_name: artists
     getText:
@@ -43,9 +43,12 @@
       groups: ['details']
       serialized_name: languages
     getSendBy:
-      groups: ['lyric.sendBy']
+      groups: ['lyric.sendby']
       serialized_name: sendBy
     getSendDate:
       groups: ['details']
       serialized_name: sendDate
       type: DateTime<'U'>
+    acl:
+      groups: [acl]
+      serialized_name: acl

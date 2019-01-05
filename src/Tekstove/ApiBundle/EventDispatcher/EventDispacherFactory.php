@@ -35,9 +35,6 @@ class EventDispacherFactory
 
         $dispacher->addSubscriber(new MessageValidateSafeTextSubscriber(self::createChatContentChecker($container)));
         $dispacher->addSubscriber(
-            $container->get('app.lyric.count_subscriber')
-        );
-        $dispacher->addSubscriber(
             $container->get('app.forum.post.html_subscriber')
         );
 

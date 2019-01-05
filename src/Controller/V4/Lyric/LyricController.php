@@ -4,6 +4,7 @@ namespace App\Controller\V4\Lyric;
 
 use App\Controller\V4\TekstoveController;
 use App\Entity\Lyric\Lyric;
+use App\Entity\Lyric\Redirect;
 use App\EventDispatcher\Lyric\LyricEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,21 @@ class LyricController extends TekstoveController
         $entity = $repo->findOneBy(['id' => $id]);
 
         if ($entity === null) {
-            // @TODO handle lyric redirect
+            $redirectRepo = $this->getDoctrine()->getRepository(Redirect::class);
+            $redirect = $redirectRepo->findOneBy(['deletedId' => $id]);
+            if ($redirect) {
+                $view = $this->handleArray(
+                    [
+                        'redirect' => [
+                            'id' => $redirect->getRedirectId(),
+                        ],
+                    ]
+                );
+
+                $view->setStatusCode(404);
+
+                return $view;
+            }
             throw $this->createNotFoundException('Lyric not found');
         }
 

@@ -4,13 +4,13 @@ namespace App\Controller\V4;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Context\Context;
 use JMS\Serializer\SerializerInterface;
 
-class TekstoveController extends FOSRestController
+class TekstoveController extends AbstractFOSRestController
 {
     private $serializer;
 

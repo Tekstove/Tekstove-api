@@ -14,6 +14,8 @@ class TekstoveController extends AbstractFOSRestController
 {
     private $serializer;
 
+    private $currentRequest;
+
     /**
      * Serialization context
      * @var Context
@@ -23,7 +25,8 @@ class TekstoveController extends AbstractFOSRestController
     public function __construct(SerializerInterface $serializer, RequestStack $r)
     {
         $this->serializer = $serializer;
-        $groups = $r->getCurrentRequest()->query->get('groups');
+        $this->currentRequest = $r->getCurrentRequest();
+        $groups = $this->currentRequest->query->get('groups');
         $this->setGroups($groups);
     }
 
@@ -62,12 +65,22 @@ class TekstoveController extends AbstractFOSRestController
         // filters goes here
 
         // pagination should be dynamic
-        $qb->setMaxResults(10);
+        $qb->setMaxResults($this->getItemsPerPage());
 
         $entities = $qb->getQuery()->getResult();
         $data = ['items' => $entities];
 
         return $this->handleArray($data);
+    }
+
+    private function getItemsPerPage($default = 10): int
+    {
+        $itemsPerPageRequest = (int)$this->currentRequest->get('limit', $default);
+        if ($itemsPerPageRequest > 0) {
+            return $itemsPerPageRequest;
+        }
+
+        return $default;
     }
 
     public function handleEntity($entity): Response

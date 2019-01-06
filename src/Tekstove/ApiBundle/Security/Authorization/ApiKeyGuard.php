@@ -61,8 +61,6 @@ class ApiKeyGuard extends AbstractGuardAuthenticator
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-
-
         $user = $userProvider->findUserByApiKey($credentials['key']);
 
         if (!$user) {

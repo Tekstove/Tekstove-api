@@ -49,6 +49,9 @@
       groups: ['details']
       serialized_name: sendDate
       type: DateTime<'U'>
+    getCacheTitleShort:
+      groups: ['list']
+      serialized_name: cacheTitleShort
     acl:
       groups: [acl]
       serialized_name: acl

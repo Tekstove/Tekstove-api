@@ -96,6 +96,11 @@ class Lyric implements AutoAclSerializableInterface
      */
     private $artistLyrics;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $cacheTitleShort;
+
     public function __construct()
     {
         $this->artistLyrics = new ArrayCollection();
@@ -240,6 +245,14 @@ class Lyric implements AutoAclSerializableInterface
     public function getSendBy()
     {
         return $this->sendBy;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheTitleShort(): string
+    {
+        return $this->cacheTitleShort;
     }
 
     public function isForbidden(): bool

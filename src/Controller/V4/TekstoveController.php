@@ -3,6 +3,7 @@
 namespace App\Controller\V4;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Knp\Component\Pager\PaginatorInterface;
@@ -99,6 +100,7 @@ class TekstoveController extends AbstractFOSRestController
         $simpleOperators = [
             '=' => 'eq',
             'like' => 'like',
+            'in' => 'in',
         ];
 
         foreach ($filterCollection as $filter) {
@@ -108,12 +110,29 @@ class TekstoveController extends AbstractFOSRestController
                 $methodName = $simpleOperators[$operator];
 
                 $paramName = uniqid('p');
-                $queryBuilder->andWhere(
-                    $queryBuilder->expr()->{$methodName}(
-                        $baseEntityName . '.' . $field,
-                        ':' . $paramName
-                    )
-                );
+
+                if (strpos($field, '.') !== false) {
+                    /*
+                     * rootEntity.Join.Column
+                     */
+                    $fieldExploded = explode('.', $field);
+                    $queryBuilder->innerJoin(
+                        $fieldExploded[0] . '.' . $fieldExploded[1],
+                        $fieldExploded[1],
+                        Join::WITH,
+                        $queryBuilder->expr()->{$methodName}(
+                            $fieldExploded[1] . '.' . $fieldExploded[2],
+                            ':' . $paramName
+                        )
+                    );
+                } else {
+                    $queryBuilder->andWhere(
+                        $queryBuilder->expr()->{$methodName}(
+                            $baseEntityName . '.' . $field,
+                            ':' . $paramName
+                        )
+                    );
+                }
 
                 $queryBuilder->setParameter($paramName, $filter['value']);
 

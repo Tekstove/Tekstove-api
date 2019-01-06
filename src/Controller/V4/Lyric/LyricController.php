@@ -7,12 +7,21 @@ use App\Entity\Lyric\Lyric;
 use App\Entity\Lyric\Redirect;
 use App\EventDispatcher\Lyric\LyricEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class LyricController extends TekstoveController
 {
-    public function indexAction(): Response
+    public function indexAction(Request $request): Response
     {
+        $filters = $request->query->get('filters', []);
+        foreach ($filters as &$filter) {
+            if ($filter['field'] == 'ArtistId') {
+                $filter['field'] = 'd.artistLyrics.artist';
+            }
+        }
+        $request->query->set('filters', $filters);
+
         $repo = $this->getDoctrine()->getRepository(Lyric::class);
         return $this->handleRepository($repo);
     }

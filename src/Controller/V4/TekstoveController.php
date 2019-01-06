@@ -3,8 +3,10 @@
 namespace App\Controller\V4;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Context\Context;
@@ -14,17 +16,23 @@ class TekstoveController extends AbstractFOSRestController
 {
     private $serializer;
 
+    private $currentRequest;
+
     /**
      * Serialization context
      * @var Context
      */
     private $context;
 
-    public function __construct(SerializerInterface $serializer, RequestStack $r)
+    private $paginator;
+
+    public function __construct(SerializerInterface $serializer, RequestStack $r, PaginatorInterface $pager)
     {
         $this->serializer = $serializer;
-        $groups = $r->getCurrentRequest()->query->get('groups');
+        $this->currentRequest = $r->getCurrentRequest();
+        $groups = $this->currentRequest->query->get('groups');
         $this->setGroups($groups);
+        $this->paginator = $pager;
     }
 
     protected function setGroups(array $groups)
@@ -59,15 +67,92 @@ class TekstoveController extends AbstractFOSRestController
         $qb = $repo->createQueryBuilder('d');
         /* @var $qb QueryBuilder */
 
-        // filters goes here
+        // Filters
+        $this->applyFilters(
+            $this->currentRequest->get('filters', []),
+            $qb,
+            'd'
+        );
 
-        // pagination should be dynamic
-        $qb->setMaxResults(10);
+        // @TODO apply orders
 
-        $entities = $qb->getQuery()->getResult();
-        $data = ['items' => $entities];
+        // Pagination
+        $pagination = $this->paginator->paginate(
+            $qb,
+            $this->currentRequest->query->getInt('page', 1),
+            $this->getItemsPerPage()
+        );
+
+        $data = [
+            'items' => $pagination->getItems(),
+            'pagination' => [
+                'currentPage' => $pagination->getCurrentPageNumber(),
+                'itemNumberPerPage' => $pagination->getItemNumberPerPage(),
+                'totalItemCount' => $pagination->getTotalItemCount(),
+            ],
+        ];
 
         return $this->handleArray($data);
+    }
+
+    private function applyFilters(array $filterCollection, QueryBuilder $queryBuilder, string $baseEntityName)
+    {
+        $simpleOperators = [
+            '=' => 'eq',
+            'like' => 'like',
+            'in' => 'in',
+        ];
+
+        foreach ($filterCollection as $filter) {
+            $operator = strtolower($filter['operator']);
+            if (in_array($operator, $simpleOperators)) {
+                $field = $filter['field'];
+                $methodName = $simpleOperators[$operator];
+
+                $paramName = uniqid('p');
+
+                if (strpos($field, '.') !== false) {
+                    /*
+                     * rootEntity.Join.Column
+                     */
+                    $fieldExploded = explode('.', $field);
+                    $queryBuilder->innerJoin(
+                        $fieldExploded[0] . '.' . $fieldExploded[1],
+                        $fieldExploded[1],
+                        Join::WITH,
+                        $queryBuilder->expr()->{$methodName}(
+                            $fieldExploded[1] . '.' . $fieldExploded[2],
+                            ':' . $paramName
+                        )
+                    );
+                } else {
+                    $queryBuilder->andWhere(
+                        $queryBuilder->expr()->{$methodName}(
+                            $baseEntityName . '.' . $field,
+                            ':' . $paramName
+                        )
+                    );
+                }
+
+                $queryBuilder->setParameter($paramName, $filter['value']);
+
+                continue;
+            }
+            switch ($operator) {
+                default:
+                    throw new \Exception("Unknown operator `{$operator}`");
+            }
+        }
+    }
+
+    private function getItemsPerPage($default = 10): int
+    {
+        $itemsPerPageRequest = (int)$this->currentRequest->get('limit', $default);
+        if ($itemsPerPageRequest > 0) {
+            return $itemsPerPageRequest;
+        }
+
+        return $default;
     }
 
     public function handleEntity($entity): Response

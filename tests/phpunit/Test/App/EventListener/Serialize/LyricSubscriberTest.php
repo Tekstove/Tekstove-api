@@ -36,9 +36,14 @@ class LyricSubscriberTest extends TestCase
         $visitorMockBuilder->disableOriginalConstructor();
         $visitorMockBuilder->setMethods(['setData']);
         $visitorMock = $visitorMockBuilder->getMock();
-        $visitorMock->expects($this->once())->method('setData')->with(
+        $visitorMock->expects($this->at(0))->method('setData')->with(
             'extraInfoHtml',
             'formattedText'
+        );
+
+        $visitorMock->expects($this->at(1))->method('setData')->with(
+            'forbidden',
+            false
         );
 
         $objectEventMockBuilder = $this->getMockBuilder(ObjectEvent::class);
@@ -71,9 +76,14 @@ class LyricSubscriberTest extends TestCase
         $visitorMockBuilder->disableOriginalConstructor();
         $visitorMockBuilder->setMethods(['setData']);
         $visitorMock = $visitorMockBuilder->getMock();
-        $visitorMock->expects($this->once())->method('setData')->with(
+        $visitorMock->expects($this->at(0))->method('setData')->with(
             'extraInfoHtml',
             ''
+        );
+
+        $visitorMock->expects($this->at(1))->method('setData')->with(
+            'forbidden',
+            false
         );
 
         $objectEventMockBuilder = $this->getMockBuilder(ObjectEvent::class);

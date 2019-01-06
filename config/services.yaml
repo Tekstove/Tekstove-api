@@ -102,9 +102,8 @@ services:
     tekstove.api.user_provider:
         class: Tekstove\ApiBundle\Security\ApiUserProvider
 
-    tekstove.api.apikey_authenticator:
-        class:  Tekstove\ApiBundle\Security\ApiKeyAuthenticator
-        public: false
+    App\Tekstove\ApiBundle\Security\Authorization\ApiKeyGuard:
+        class: App\Tekstove\ApiBundle\Security\Authorization\ApiKeyGuard
 
     tekstove.lyric.repository:
         class: Tekstove\ApiBundle\Model\LyricQuery

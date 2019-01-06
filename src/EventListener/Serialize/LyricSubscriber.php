@@ -53,29 +53,11 @@ class LyricSubscriber implements EventSubscriberInterface
 
         $visitor->setData('extraInfoHtml', $extraInfoHtml);
 
-        $textError = ">>> грешка" . PHP_EOL;
-        $textError .= "Нямаме права да ви покажем текства :(" . PHP_EOL;
-        $textError .= "Ако сте собственик на текста, моля пишете ни на tekstove.info@gmail.com за съгласие";
-        $textError .= "Собственици на текса са музикалната компания издала песента, изпълнителите и текстописецът.";
-        $textError .= "Без разрешение от тях, нямаме право да покажем текста!";
-
         if ($lyric instanceof \App\Entity\Lyric\Lyric) {
             if ($lyric->isForbidden()) {
-                $visitor->setData('text', $textError);
-            }
-        } elseif ($lyric instanceof Lyric) {
-            $allowedLyrivs = [
-                68126, // official fb page https://www.facebook.com/venelinstefanow/ on 1 Dec 2018
-            ];
-
-            if (in_array($lyric->getId(), $allowedLyrivs)) {
-                return true;
-            }
-
-            // Propel model is used for update / index
-            // Doctrine entity is used for get
-            if ($lyric instanceof \App\Entity\Lyric\Lyric) {
-                $visitor->setData('text', $textError);
+                $visitor->setData('forbidden', true);
+            } else {
+                $visitor->setData('forbidden', false);
             }
         }
     }

@@ -63,14 +63,52 @@ class TekstoveController extends AbstractFOSRestController
         /* @var $qb QueryBuilder */
 
         // filters goes here
+        $this->applyFilters(
+            $this->currentRequest->get('filters', []),
+            $qb,
+            'd'
+        );
 
-        // pagination should be dynamic
         $qb->setMaxResults($this->getItemsPerPage());
+
+        // @TODO paginate
 
         $entities = $qb->getQuery()->getResult();
         $data = ['items' => $entities];
 
         return $this->handleArray($data);
+    }
+
+    private function applyFilters(array $filterCollection, QueryBuilder $queryBuilder, string $baseEntityName)
+    {
+        $simpleOperators = [
+            '=' => 'eq',
+            'like' => 'like',
+        ];
+
+        foreach ($filterCollection as $filter) {
+            $operator = strtolower($filter['operator']);
+            if (in_array($operator, $simpleOperators)) {
+                $field = $filter['field'];
+                $methodName = $simpleOperators[$operator];
+
+                $paramName = uniqid('p');
+                $queryBuilder->andWhere(
+                    $queryBuilder->expr()->{$methodName}(
+                        $baseEntityName . '.' . $field,
+                        ':' . $paramName
+                    )
+                );
+
+                $queryBuilder->setParameter($paramName, $filter['value']);
+
+                continue;
+            }
+            switch ($operator) {
+                default:
+                    throw new \Exception("Unknown operator `{$operator}`");
+            }
+        }
     }
 
     private function getItemsPerPage($default = 10): int

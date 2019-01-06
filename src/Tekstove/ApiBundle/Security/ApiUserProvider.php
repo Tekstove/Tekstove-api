@@ -41,7 +41,22 @@ class ApiUserProvider implements UserProviderInterface
         $userQuery = UserQuery::create();
         $userQuery->filterByapiKey($key, Criteria::EQUAL);
         $user = $userQuery->findOne();
-        return $user;
+
+        $securityUser = new SecurityUser(
+            $user->getUsername(),
+            $user->getPassword(),
+            '',
+            ['ROLE_USER']
+        );
+
+        $securityUser->setapiKey($user->getapiKey());
+        $securityUser->setId($user->getId());
+        $securityUser->settermsAccepted($user->gettermsAccepted());
+        $securityUser->setMail($user->getMail());
+        $securityUser->setNew(false);
+        $securityUser->resetModified();
+
+        return $securityUser;
     }
 
     public function refreshUser(UserInterface $user)

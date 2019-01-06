@@ -7,13 +7,13 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        secured_area:
-            pattern: ^/
+        main:
             stateless: true
+            logout: ~
             anonymous: ~
-            simple_preauth:
-                authenticator: tekstove.api.apikey_authenticator
-                provider: tekstove.api.user_provider
+            guard:
+                authenticators:
+                    - App\Tekstove\ApiBundle\Security\Authorization\ApiKeyGuard
 
             # activate different ways to authenticate
 
@@ -28,3 +28,4 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+

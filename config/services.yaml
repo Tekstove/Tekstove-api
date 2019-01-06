@@ -105,10 +105,6 @@ services:
     App\Tekstove\ApiBundle\Security\Authorization\ApiKeyGuard:
         class: App\Tekstove\ApiBundle\Security\Authorization\ApiKeyGuard
 
-#    tekstove.api.apikey_authenticator:
-#        class:  Tekstove\ApiBundle\Security\ApiKeyAuthenticator
-#        public: false
-
     tekstove.lyric.repository:
         class: Tekstove\ApiBundle\Model\LyricQuery
         calls:

@@ -5,6 +5,7 @@ namespace App\Controller\V4;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Context\Context;
@@ -22,12 +23,15 @@ class TekstoveController extends AbstractFOSRestController
      */
     private $context;
 
-    public function __construct(SerializerInterface $serializer, RequestStack $r)
+    private $paginator;
+
+    public function __construct(SerializerInterface $serializer, RequestStack $r, PaginatorInterface $pager)
     {
         $this->serializer = $serializer;
         $this->currentRequest = $r->getCurrentRequest();
         $groups = $this->currentRequest->query->get('groups');
         $this->setGroups($groups);
+        $this->paginator = $pager;
     }
 
     protected function setGroups(array $groups)
@@ -62,19 +66,30 @@ class TekstoveController extends AbstractFOSRestController
         $qb = $repo->createQueryBuilder('d');
         /* @var $qb QueryBuilder */
 
-        // filters goes here
+        // Filters
         $this->applyFilters(
             $this->currentRequest->get('filters', []),
             $qb,
             'd'
         );
 
-        $qb->setMaxResults($this->getItemsPerPage());
+        // @TODO apply orders
 
-        // @TODO paginate
+        // Pagination
+        $pagination = $this->paginator->paginate(
+            $qb,
+            $this->currentRequest->query->getInt('page', 1),
+            $this->getItemsPerPage()
+        );
 
-        $entities = $qb->getQuery()->getResult();
-        $data = ['items' => $entities];
+        $data = [
+            'items' => $pagination->getItems(),
+            'pagination' => [
+                'currentPage' => $pagination->getCurrentPageNumber(),
+                'itemNumberPerPage' => $pagination->getItemNumberPerPage(),
+                'totalItemCount' => $pagination->getTotalItemCount(),
+            ],
+        ];
 
         return $this->handleArray($data);
     }

@@ -2,13 +2,17 @@
 
 namespace App\Entity\Artist;
 
+use App\Entity\AuthorizationInterface;
+use App\Entity\AuthorizationTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
  */
-class Artist
+class Artist implements AuthorizationInterface
 {
+    use AuthorizationTrait;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

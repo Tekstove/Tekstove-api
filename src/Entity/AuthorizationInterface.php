@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-
 interface AuthorizationInterface
 {
     const AUTHORIZATION_NA = 0;

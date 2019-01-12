@@ -8,11 +8,12 @@ trait AuthorizationTrait
 {
     /**
      * @ORM\Column(type="integer")
+     * Hold data if we have legal permission to show lyrics
      */
     private $authorization = AuthorizationInterface::AUTHORIZATION_NA;
 
     /**
-     * @return mixed
+     * @return int see constants in AuthorizationInterface
      */
     public function getAuthorization(): int
     {
@@ -20,7 +21,7 @@ trait AuthorizationTrait
     }
 
     /**
-     * @param mixed $authorization
+     * @param int $authorization
      */
     public function setAuthorization(int $authorization): void
     {

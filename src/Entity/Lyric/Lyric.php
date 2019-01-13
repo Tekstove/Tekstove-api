@@ -3,6 +3,7 @@
 namespace App\Entity\Lyric;
 
 use App\Entity\Artist\Artist;
+use App\Entity\AuthorizationInterface;
 use App\Entity\Language;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -257,9 +258,14 @@ class Lyric implements AutoAclSerializableInterface
 
     public function isForbidden(): bool
     {
+        $forbidden = true;
         foreach ($this->artistLyrics as $artistLytic) {
             if ($artistLytic->getArtist()->isForbidden()) {
                 return true;
+            }
+
+            if ($artistLytic->getArtist()->getAuthorization() === AuthorizationInterface::AUTHORIZATION_ALLOWED) {
+                $forbidden = false;
             }
         }
 
@@ -271,6 +277,6 @@ class Lyric implements AutoAclSerializableInterface
             return false;
         }
 
-        return true;
+        return $forbidden;
     }
 }

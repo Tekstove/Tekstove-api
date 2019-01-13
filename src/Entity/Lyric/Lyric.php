@@ -46,6 +46,11 @@ class Lyric implements AutoAclSerializableInterface
     private $textBg;
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    private $textBgAdded;
+
+    /**
      * @ORM\Column(type="integer")
      */
     private $views = 0;

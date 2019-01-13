@@ -74,7 +74,13 @@ class TekstoveController extends AbstractFOSRestController
             'd'
         );
 
-        // @TODO apply orders
+        $orders = $this->currentRequest->get('order', []);
+        foreach ($orders as $order) {
+            $field = $order['field'];
+            $direction = $order['direction'];
+
+            $qb->addOrderBy('d.' . $field, $direction);
+        }
 
         // Pagination
         $pagination = $this->paginator->paginate(
@@ -105,10 +111,10 @@ class TekstoveController extends AbstractFOSRestController
 
         foreach ($filterCollection as $filter) {
             $operator = strtolower($filter['operator']);
-            if (in_array($operator, $simpleOperators)) {
-                $field = $filter['field'];
-                $methodName = $simpleOperators[$operator];
+            $field = $filter['field'];
 
+            if (in_array($operator, $simpleOperators)) {
+                $methodName = $simpleOperators[$operator];
                 $paramName = uniqid('p');
 
                 if (strpos($field, '.') !== false) {
@@ -139,6 +145,14 @@ class TekstoveController extends AbstractFOSRestController
                 continue;
             }
             switch ($operator) {
+                case 'not_null':
+                    $queryBuilder->andWhere(
+                        $queryBuilder->expr()->isNotNull(
+                            $baseEntityName . '.' . $field
+                        )
+                    );
+
+                    break;
                 default:
                     throw new \Exception("Unknown operator `{$operator}`");
             }

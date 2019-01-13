@@ -113,7 +113,7 @@ class TekstoveController extends AbstractFOSRestController
             $operator = strtolower($filter['operator']);
             $field = $filter['field'];
 
-            if (in_array($operator, $simpleOperators)) {
+            if (array_key_exists($operator, $simpleOperators)) {
                 $methodName = $simpleOperators[$operator];
                 $paramName = uniqid('p');
 

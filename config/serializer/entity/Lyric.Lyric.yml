@@ -19,10 +19,10 @@
       groups: ['details']
       serialized_name: textBg
     getViews:
-      groups: ['details']
+      groups: ['details', 'views']
       serialized_name: views
     getPopularity:
-      groups: ['details']
+      groups: ['details', 'popularity']
       serialized_name: popularity
     getVideoVbox7:
       groups: ['details']

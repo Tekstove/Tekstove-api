@@ -16,7 +16,7 @@ class LyricController extends TekstoveController
     {
         $filters = $request->query->get('filters', []);
         foreach ($filters as &$filter) {
-            if ($filter['field'] == 'ArtistId') {
+            if ($filter['field'] == 'ArtistId' || $filter['field'] == 'artist') {
                 $filter['field'] = 'd.artistLyrics.artist';
             }
         }

@@ -28,6 +28,11 @@ tekstove_api_v4_lyric_routing:
     prefix:   /v4/lyrics
     defaults: { _format: json }
 
+tekstove_api_v4_artist_routing:
+    resource: "routes/routing/v4/artist.yml"
+    prefix:   /v4/artists
+    defaults: { _format: json }
+
 tekstove_api_user_routing:
     resource: "routes/routing/user.yml"
     prefix:   /users

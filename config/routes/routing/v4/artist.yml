@@ -1,0 +1,4 @@
+app.artist.get:
+  path: "/{id}"
+  defaults: { _controller: App\Controller\V4\Artist\ArtistController::getAction }
+  methods: [GET]

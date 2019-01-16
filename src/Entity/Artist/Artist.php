@@ -31,6 +31,11 @@ class Artist implements AuthorizationInterface
     private $forbidden;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    private $facebookPageId;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -60,5 +65,13 @@ class Artist implements AuthorizationInterface
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFacebookPageId()
+    {
+        return $this->facebookPageId;
     }
 }

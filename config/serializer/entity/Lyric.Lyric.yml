@@ -27,6 +27,9 @@
     getVideoVbox7:
       groups: ['details']
       serialized_name: videoVbox7
+    getVideoYoutube:
+      groups: ['details']
+      serialized_name: videoYoutube
     getExtraInfo:
       groups: ['details']
       serialized_name: extraInfo

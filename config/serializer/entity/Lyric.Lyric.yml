@@ -42,6 +42,9 @@
     isForbidden:
       groups: ['details']
       serialized_name: forbidden
+    getAuthorizationStatus:
+      groups: ['details']
+      serialized_name: authorizationStatus
     getLanguages:
       groups: ['details']
       serialized_name: languages

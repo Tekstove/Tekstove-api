@@ -1,5 +1,7 @@
 <?php
 
+namespace Test\App\Entity\Lyric\Lyric;
+
 use App\Entity\Artist\Artist;
 use App\Entity\Lyric\ArtistLyric;
 use App\Entity\Lyric\Lyric;

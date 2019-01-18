@@ -28,6 +28,19 @@ class ArtistLyric
     private $order;
 
     /**
+     * ArtistLyric constructor.
+     * @param $artist
+     * @param $lyric
+     * @param $order
+     */
+    public function __construct(Artist $artist, Lyric $lyric, int $order)
+    {
+        $this->artist = $artist;
+        $this->lyric = $lyric;
+        $this->order = $order;
+    }
+
+    /**
      * @return mixed
      */
     public function getArtist(): Artist

@@ -123,7 +123,7 @@ class Lyric implements AutoAclSerializableInterface
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -300,6 +300,10 @@ class Lyric implements AutoAclSerializableInterface
                 return self::AUTHORIZATION_ARTIST_FORBIDDEN;
             }
 
+            if ($artistLytic->getArtist()->getAuthorization() === Artist::AUTHORIZATION_FORBIDDEN) {
+                return self::AUTHORIZATION_ARTIST_FORBIDDEN;
+            }
+
             if ($artistLytic->getArtist()->getAuthorization() === AuthorizationInterface::AUTHORIZATION_ALLOWED) {
                 $return = self::AUTHORIZATION_ALLOWED;
             }
@@ -314,5 +318,10 @@ class Lyric implements AutoAclSerializableInterface
         }
 
         return $return;
+    }
+
+    public function addArtist(ArtistLyric $artistLyric)
+    {
+        $this->artistLyrics->add($artistLyric);
     }
 }

@@ -27,7 +27,15 @@ class ApiKeyGuard extends AbstractGuardAuthenticator
             return false;
         }
 
-        return $request->headers->get('tekstove-apikey', false);
+        if ($request->headers->get('tekstove-apikey', false)) {
+            return true;
+        }
+
+        if ($request->query->get('tekstove-apikey', false)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -39,9 +47,12 @@ class ApiKeyGuard extends AbstractGuardAuthenticator
      */
     public function getCredentials(Request $request)
     {
-        return [
-            'key' => $request->headers->get('tekstove-apikey')  ,
-        ];
+        $key = $request->headers->get('tekstove-apikey', false);
+        if (!$key) {
+            $key = $request->query->get('tekstove-apikey', false);
+        }
+
+        return ['key' => $key];
     }
 
     /**

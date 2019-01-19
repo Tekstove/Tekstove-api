@@ -19,6 +19,13 @@ class Lyric implements AutoAclSerializableInterface
     use AclTrait;
 
     /**
+     * No information available
+     */
+    const AUTHORIZATION_NA = 1;
+    const AUTHORIZATION_ALLOWED = 2;
+    const AUTHORIZATION_ARTIST_FORBIDDEN = 3;
+
+    /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -116,7 +123,7 @@ class Lyric implements AutoAclSerializableInterface
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -283,5 +290,38 @@ class Lyric implements AutoAclSerializableInterface
         }
 
         return $forbidden;
+    }
+
+    public function getAuthorizationStatus(): int
+    {
+        $return = self::AUTHORIZATION_NA;
+        foreach ($this->artistLyrics as $artistLytic) {
+            if ($artistLytic->getArtist()->isForbidden()) {
+                return self::AUTHORIZATION_ARTIST_FORBIDDEN;
+            }
+
+            if ($artistLytic->getArtist()->getAuthorization() === Artist::AUTHORIZATION_FORBIDDEN) {
+                return self::AUTHORIZATION_ARTIST_FORBIDDEN;
+            }
+
+            if ($artistLytic->getArtist()->getAuthorization() === AuthorizationInterface::AUTHORIZATION_ALLOWED) {
+                $return = self::AUTHORIZATION_ALLOWED;
+            }
+        }
+
+        $allowedLyrivs = [
+            68126, // official fb page https://www.facebook.com/venelinstefanow/ on 1 Dec 2018
+        ];
+
+        if (in_array($this->getId(), $allowedLyrivs)) {
+            return self::AUTHORIZATION_ALLOWED;
+        }
+
+        return $return;
+    }
+
+    public function addArtist(ArtistLyric $artistLyric)
+    {
+        $this->artistLyrics->add($artistLyric);
     }
 }

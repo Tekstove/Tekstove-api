@@ -1,0 +1,4 @@
+app.user_login.get:
+  path: "/login"
+  defaults: { _controller: App\Controller\V4\User\LoginController::getAction }
+  methods: [GET]

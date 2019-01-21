@@ -30,7 +30,7 @@ class TekstoveController extends AbstractFOSRestController
     {
         $this->serializer = $serializer;
         $this->currentRequest = $r->getCurrentRequest();
-        $groups = $this->currentRequest->query->get('groups');
+        $groups = $this->currentRequest->query->get('groups', []);
         $this->setGroups($groups);
         $this->paginator = $pager;
     }
@@ -46,6 +46,9 @@ class TekstoveController extends AbstractFOSRestController
             $groups,
             function (string &$item) {
                 $item = strtolower($item);
+                if ($item == 'credentials') {
+                    throw new \RuntimeException('Group credentials can\'t be set');
+                }
             }
         );
         $this->getContext()->setGroups($groups);

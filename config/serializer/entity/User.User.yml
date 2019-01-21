@@ -9,3 +9,6 @@
     getUsername:
       groups: ['list', 'details']
       serialized_name: username
+    getAvatar:
+      groups: ['list', 'details']
+      serialized_name: avatar

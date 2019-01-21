@@ -22,6 +22,11 @@ class User
     private $username;
 
     /**
+     * @ORM\Column()
+     */
+    private $avatar;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -35,5 +40,13 @@ class User
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
     }
 }

@@ -99,6 +99,12 @@ services:
             - { name: "jms_serializer.event_subscriber" }
         public: true
 
+    tekstove.api.serizlizer.artist.bbcode:
+        class: App\EventListener\Serialize\ArtistSubscriber
+        tags:
+            - { name: "jms_serializer.event_subscriber" }
+        public: true
+
     tekstove.api.user_provider:
         class: Tekstove\ApiBundle\Security\ApiUserProvider
 

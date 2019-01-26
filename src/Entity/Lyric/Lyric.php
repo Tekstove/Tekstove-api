@@ -5,6 +5,7 @@ namespace App\Entity\Lyric;
 use App\Entity\Artist\Artist;
 use App\Entity\AuthorizationInterface;
 use App\Entity\Language;
+use App\Entity\Publisher\Publisher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,6 +25,7 @@ class Lyric implements AutoAclSerializableInterface
     const AUTHORIZATION_NA = 1;
     const AUTHORIZATION_ALLOWED = 2;
     const AUTHORIZATION_ARTIST_FORBIDDEN = 3;
+    const AUTHORIZATION_PUBLISHER_FORBIDDEN = 4;
 
     /**
      * @ORM\Id
@@ -110,6 +112,12 @@ class Lyric implements AutoAclSerializableInterface
     private $artistLyrics;
 
     /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Publisher\Publisher")
+     * @var Publisher[]
+     */
+    private $publishers;
+
+    /**
      * @ORM\Column(type="string")
      */
     private $cacheTitleShort;
@@ -118,6 +126,7 @@ class Lyric implements AutoAclSerializableInterface
     {
         $this->artistLyrics = new ArrayCollection();
         $this->languages = new ArrayCollection();
+        $this->publishers = new ArrayCollection();
     }
 
     /**
@@ -261,6 +270,14 @@ class Lyric implements AutoAclSerializableInterface
     }
 
     /**
+     * @return Publisher[]|ArrayCollection
+     */
+    public function getPublishers(): Collection
+    {
+        return $this->publishers;
+    }
+
+    /**
      * @return string
      */
     public function getCacheTitleShort(): string
@@ -309,6 +326,14 @@ class Lyric implements AutoAclSerializableInterface
             }
         }
 
+        foreach ($this->getPublishers() as $publisher) {
+            if ($publisher->getAuthorization() === AuthorizationInterface::AUTHORIZATION_ALLOWED) {
+                $return = self::AUTHORIZATION_ALLOWED;
+            } elseif ($publisher->getAuthorization() === AuthorizationInterface::AUTHORIZATION_FORBIDDEN) {
+                return self::AUTHORIZATION_PUBLISHER_FORBIDDEN;
+            }
+        }
+
         $allowedLyrivs = [
             68126, // official fb page https://www.facebook.com/venelinstefanow/ on 1 Dec 2018
         ];
@@ -323,5 +348,10 @@ class Lyric implements AutoAclSerializableInterface
     public function addArtist(ArtistLyric $artistLyric)
     {
         $this->artistLyrics->add($artistLyric);
+    }
+
+    public function addPublisher(Publisher $publisher)
+    {
+        $this->publishers->add($publisher);
     }
 }

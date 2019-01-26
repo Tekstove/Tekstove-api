@@ -18,6 +18,8 @@ class LyricController extends TekstoveController
         foreach ($filters as &$filter) {
             if ($filter['field'] == 'ArtistId' || $filter['field'] == 'artist') {
                 $filter['field'] = 'd.artistLyrics.artist';
+            } elseif ($filter['field'] == 'publisher') {
+                $filter['field'] = 'd.publishers.id';
             }
         }
         $request->query->set('filters', $filters);

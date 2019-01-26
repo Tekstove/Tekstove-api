@@ -1,0 +1,4 @@
+app.v4.publisher.get:
+  path: "/{id}"
+  defaults: { _controller: App\Controller\V4\Publisher\PublisherController::getAction }
+  methods: [GET]

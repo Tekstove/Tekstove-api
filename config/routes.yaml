@@ -33,6 +33,11 @@ tekstove_api_v4_artist_routing:
     prefix:   /v4/artists
     defaults: { _format: json }
 
+app.v4.publishersasdasdasd:
+    resource: "routes/routing/v4/publisher.yml"
+    prefix:   /v4/publishers
+    defaults: { _format: json }
+
 tekstove_api_user_routing:
     resource: "routes/routing/user.yml"
     prefix:   /users

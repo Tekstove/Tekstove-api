@@ -3,8 +3,10 @@
 namespace Test\App\Entity\Lyric\Lyric;
 
 use App\Entity\Artist\Artist;
+use App\Entity\AuthorizationInterface;
 use App\Entity\Lyric\ArtistLyric;
 use App\Entity\Lyric\Lyric;
+use App\Entity\Publisher\Publisher;
 
 class LyricTest extends \PHPUnit\Framework\TestCase
 {
@@ -64,5 +66,25 @@ class LyricTest extends \PHPUnit\Framework\TestCase
         $lyric->addArtist($artistLyric);
 
         $this->assertSame(Lyric::AUTHORIZATION_ALLOWED, $lyric->getAuthorizationStatus());
+    }
+
+    public function testGetAuthorizationStatusPublisherAllowed()
+    {
+        $lyric = new Lyric();
+        $publisher = new Publisher();
+        $publisher->setAuthorization(AuthorizationInterface::AUTHORIZATION_ALLOWED);
+        $lyric->addPublisher($publisher);
+
+        $this->assertSame(Lyric::AUTHORIZATION_ALLOWED, $lyric->getAuthorizationStatus());
+    }
+
+    public function testGetAuthorizationStatusPublisherNotAllowed()
+    {
+        $lyric = new Lyric();
+        $publisher = new Publisher();
+        $publisher->setAuthorization(AuthorizationInterface::AUTHORIZATION_FORBIDDEN);
+        $lyric->addPublisher($publisher);
+
+        $this->assertSame(Lyric::AUTHORIZATION_PUBLISHER_FORBIDDEN, $lyric->getAuthorizationStatus());
     }
 }

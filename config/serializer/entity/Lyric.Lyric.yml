@@ -55,6 +55,9 @@
       groups: ['details']
       serialized_name: sendDate
       type: DateTime<'U'>
+    getPublishers:
+      groups: ['details']
+      serialized_name: publishers
     getCacheTitleShort:
       groups: ['list']
       serialized_name: cacheTitleShort

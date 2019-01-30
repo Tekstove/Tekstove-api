@@ -9,3 +9,6 @@
     getName:
       groups: ['list', 'details']
       serialized_name: name
+    getFacebookPageId:
+      serialized_name: facebookPageId
+      groups: ['details']

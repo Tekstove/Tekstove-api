@@ -4,6 +4,7 @@ namespace App\Entity\Artist;
 
 use App\Entity\AuthorizationInterface;
 use App\Entity\AuthorizationTrait;
+use App\Entity\Social\FacebookPageTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Artist implements AuthorizationInterface
 {
     use AuthorizationTrait;
+    use FacebookPageTrait;
 
     /**
      * @ORM\Id
@@ -34,11 +36,6 @@ class Artist implements AuthorizationInterface
      * @ORM\Column(type="string")
      */
     private $about;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $facebookPageId;
 
     /**
      * @return mixed
@@ -78,13 +75,5 @@ class Artist implements AuthorizationInterface
     public function getAbout(): ?string
     {
         return $this->about;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getFacebookPageId()
-    {
-        return $this->facebookPageId;
     }
 }

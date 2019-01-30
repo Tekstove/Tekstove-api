@@ -3,6 +3,7 @@
 namespace App\Entity\Publisher;
 
 use App\Entity\AuthorizationTrait;
+use App\Entity\Social\FacebookPageTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Publisher
 {
     use AuthorizationTrait;
+    use FacebookPageTrait;
 
     /**
      * @ORM\Id

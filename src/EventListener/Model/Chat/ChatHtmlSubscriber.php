@@ -2,7 +2,6 @@
 
 namespace App\EventListener\Model\Chat;
 
-
 use App\Entity\Chat\Message;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;

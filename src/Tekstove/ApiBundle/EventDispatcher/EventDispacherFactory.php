@@ -48,8 +48,8 @@ class EventDispacherFactory
 
     protected static function createChatContentChecker(ContainerInterface $container)
     {
-        $kernelPath = $container->get('kernel')->getRootDir();
-        $dictionariesDir = $kernelPath . '/../vendor/tekstove/content-checker/Dictionaries/';
+        $kernelPath = $container->get('kernel')->getProjectDir();
+        $dictionariesDir = $kernelPath . '/vendor/tekstove/content-checker/Dictionaries/';
 
         $checker = new \Tekstove\ContentChecker\Checker\ExactChecker();
         foreach (['sites.txt'] as $relativeDictionaryPath) {

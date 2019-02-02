@@ -3,13 +3,11 @@
 namespace App\Controller\Chat;
 
 use App\Controller\TekstoveAbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Tests\Request\ParamConverter\TestUserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\Chat\Message;
 use Tekstove\ApiBundle\Model\Chat\MessageQuery;
 use Tekstove\ApiBundle\Model\Chat\Exception\MessageHumanReadableException;
 use Propel\Runtime\ActiveQuery\Criteria;
-use Tekstove\ApiBundle\Model\UserQuery;
 
 /**
  * MessagesController

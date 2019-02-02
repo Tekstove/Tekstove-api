@@ -2,6 +2,7 @@
 
 namespace Tekstove\ApiBundle\Model\Chat;
 
+use Propel\Runtime\Connection\ConnectionInterface;
 use Tekstove\ApiBundle\Model\Chat\Base\Message as BaseMessage;
 use Tekstove\ApiBundle\EventDispatcher\Chat\MessageEvent;
 
@@ -40,6 +41,14 @@ class Message extends BaseMessage
         $event = new MessageEvent($this);
         $this->getEventDispacher()->dispatch('tekstove.chat.message.save', $event);
         return parent::preSave($con);
+    }
+
+    public function postSave(ConnectionInterface $con = null)
+    {
+        parent::postSave($con);
+
+        $event = new MessageEvent($this);
+        $this->getEventDispacher()->dispatch('tekstove.chat.message.save.post', $event);
     }
 
     public function getDateTimeTimestamp()

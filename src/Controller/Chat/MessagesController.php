@@ -62,43 +62,6 @@ class MessagesController extends TekstoveAbstractController
         $messageRepository = $this->get('tekstove.chat.message.repository');
         try {
             $messageRepository->save($message);
-
-            if ($message->getMessage()[0] === '!') {
-                $commandMessage = new Message();
-                $commandMessage->setUsername('tekstove.info');
-
-                $command = substr($message->getMessage(), 1);
-                if (strpos($command, 'seen ') === 0) {
-                    $usernameToFind = substr($command, 5);
-                    $userRepo = new UserQuery();
-                    $userToFind = $userRepo->findOneByUsername($usernameToFind);
-                    if (!$userToFind) {
-                        $commandMessage->setMessage('Не намирам потребителя');
-                    } else {
-                        $messageRepo = new MessageQuery();
-                        $messageRepo->addDescendingOrderByColumn('id');
-                        $messageRepo->filterByUserId($userToFind->getId());
-                        $messageRepo->limit(1);
-                        $lastMessage = $messageRepo->findOne();
-                        if ($lastMessage) {
-
-                            $commandMessageText = "Последно съобщение на ";
-                            $commandMessageText .= $lastMessage->getDate('Y-m-d H:i:s');
-
-                            $commandMessageText .= PHP_EOL;
-                            $commandMessageText .= $lastMessage->getMessage();
-
-                            $commandMessage->setMessage($commandMessageText);
-                        } else {
-                            $commandMessage->setMessage("Не намирам последно съобщение :(");
-                        }
-                    }
-
-                    $messageRepository->save($commandMessage);
-                }
-
-            }
-
         } catch (MessageHumanReadableException $e) {
             $view = $this->handleData($request, $e->getErrors());
             $view->setStatusCode(400);

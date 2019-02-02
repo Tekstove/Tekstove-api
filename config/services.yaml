@@ -87,6 +87,11 @@ services:
         arguments: ["@tekstove.api.bbcode.cache"]
         public: true
 
+    app.chat.mesage_html_subscriber_v4:
+        class: App\EventListener\Model\Chat\ChatHtmlSubscriber
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+
     tekstove.api.bbcode.cache:
         class: Potaka\BbcodeBundle\BbCode\TextToHtmlCache
         arguments: ["@potaka.bbcode.full", "@cache.app"]

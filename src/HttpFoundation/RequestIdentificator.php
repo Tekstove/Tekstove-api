@@ -5,9 +5,7 @@ namespace App\HttpFoundation;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- *
- *
- * Description of RequestIdentificator
+ * Return hash, identifying current request
  *
  * @author po_taka <angel.koilov@gmail.com>
  */

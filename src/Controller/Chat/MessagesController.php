@@ -23,10 +23,17 @@ class MessagesController extends TekstoveAbstractController
 
         if (empty($request->get('filter'))) {
             $maxIdQuery = new MessageQuery();
+            $maxIdQuery->filterByIdOverride(null);
             $maxIdQuery->orderById(Criteria::DESC);
+            $maxIdQuery->offset(21);
             $lastmessage = $maxIdQuery->findOne();
+
+            $startId = 0;
+            if ($lastmessage) {
+                $startId = $lastmessage->getId();
+            }
             $messageQuery->filterById(
-                $lastmessage->getId() - 20,
+                $startId,
                 Criteria::GREATER_THAN
             );
         }

@@ -16,7 +16,11 @@ RUN apt-get update \
         php7.1-mysql \
         php7.1-mbstring \
         git unzip curl \
-        apache2 libapache2-mod-fastcgi apache2-mpm-worker apache2-suexec libapache2-mod-fcgid
+        apache2 libapache2-mod-fastcgi apache2-mpm-worker apache2-suexec libapache2-mod-fcgid \
+        php7.1-xdebug
+
+RUN echo "xdebug.remote_connect_back=1" >> /etc/php/7.1/cgi/conf.d/20-xdebug.ini
+RUN echo "xdebug.remote_enable=1" >> /etc/php/7.1/cgi/conf.d/20-xdebug.ini
 
 RUN a2enmod actions fastcgi rewrite
 

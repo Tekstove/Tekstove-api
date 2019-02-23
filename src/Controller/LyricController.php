@@ -26,7 +26,7 @@ class LyricController extends TekstoveAbstractController
         return $this->handleData($request, $lyricQuery);
     }
 
-    public function getAction(LoggerInterface$logger, Request $request, $id)
+    public function getAction(LoggerInterface $logger, Request $request, $id)
     {
         $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
 

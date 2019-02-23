@@ -14,8 +14,14 @@ use JMS\Serializer\SerializerInterface;
 
 class TekstoveController extends AbstractFOSRestController
 {
+    /**
+     * @var SerializerInterface
+     */
     private $serializer;
 
+    /**
+     * @var \Symfony\Component\HttpFoundation\Request
+     */
     private $currentRequest;
 
     /**
@@ -24,6 +30,9 @@ class TekstoveController extends AbstractFOSRestController
      */
     private $context;
 
+    /**
+     * @var PaginatorInterface
+     */
     private $paginator;
 
     public function __construct(SerializerInterface $serializer, RequestStack $r, PaginatorInterface $pager)
@@ -52,8 +61,7 @@ class TekstoveController extends AbstractFOSRestController
     }
 
     /**
-     * @param array $data
-     * @return Response
+     * Create Response from array
      */
     public function handleArray(array $data): Response
     {
@@ -62,12 +70,11 @@ class TekstoveController extends AbstractFOSRestController
         return $this->handleView($view);
     }
 
-    public function handleRepository(EntityRepository $repo): Response
+    /**
+     * Create Response from QueryBuilder
+     */
+    public function handleQueryBuilder(QueryBuilder $qb): Response
     {
-        $qb = $repo->createQueryBuilder('d');
-        /* @var $qb QueryBuilder */
-
-        // Filters
         $this->applyFilters(
             $this->currentRequest->get('filters', []),
             $qb,
@@ -101,12 +108,27 @@ class TekstoveController extends AbstractFOSRestController
         return $this->handleArray($data);
     }
 
+    /**
+     * Create Response from EntityRepository
+     */
+    public function handleRepository(EntityRepository $repo): Response
+    {
+        $qb = $repo->createQueryBuilder('d');
+        /* @var $qb QueryBuilder */
+
+        return $this->handleQueryBuilder($qb);
+    }
+
+    /**
+     * Apply array filters to QueryBuilder
+     */
     private function applyFilters(array $filterCollection, QueryBuilder $queryBuilder, string $baseEntityName)
     {
         $simpleOperators = [
             '=' => 'eq',
             'like' => 'like',
             'in' => 'in',
+            '>' => 'gt',
         ];
 
         foreach ($filterCollection as $filter) {
@@ -169,6 +191,9 @@ class TekstoveController extends AbstractFOSRestController
         return $default;
     }
 
+    /**
+     * Create response from single entity
+     */
     public function handleEntity($entity): Response
     {
         $data = [
@@ -178,9 +203,6 @@ class TekstoveController extends AbstractFOSRestController
         return $this->handleArray($data);
     }
 
-    /**
-     * @return Context
-     */
     protected function getContext(): Context
     {
         if ($this->context === null) {

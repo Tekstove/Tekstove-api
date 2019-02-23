@@ -1,0 +1,4 @@
+app.chat.messages.get:
+  path: "/messages"
+  defaults: { _controller: App\Controller\V4\Chat\MessageController::indexAction }
+  methods: [GET]

@@ -38,6 +38,11 @@ app.v4.publishers:
     prefix:   /v4/publishers
     defaults: { _format: json }
 
+app.v4.chat:
+    resource: "routes/routing/v4/chat.yml"
+    prefix:   /v4/chat
+    defaults: { _format: json }
+
 tekstove_api_user_routing:
     resource: "routes/routing/user.yml"
     prefix:   /users

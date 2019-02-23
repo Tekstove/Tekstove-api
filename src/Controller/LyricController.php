@@ -17,6 +17,9 @@ use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
 
 class LyricController extends TekstoveAbstractController
 {
+    /**
+     * @deprecated
+     */
     public function indexAction(LoggerInterface $logger, Request $request)
     {
         $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
@@ -26,6 +29,9 @@ class LyricController extends TekstoveAbstractController
         return $this->handleData($request, $lyricQuery);
     }
 
+    /**
+     * @deprecated
+     */
     public function getAction(LoggerInterface $logger, Request $request, $id)
     {
         $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);

@@ -3,6 +3,7 @@
 namespace App\Controller\Chat;
 
 use App\Controller\TekstoveAbstractController;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\Chat\Message;
 use Tekstove\ApiBundle\Model\Chat\MessageQuery;
@@ -10,14 +11,17 @@ use Tekstove\ApiBundle\Model\Chat\Exception\MessageHumanReadableException;
 use Propel\Runtime\ActiveQuery\Criteria;
 
 /**
- * MessagesController
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class MessagesController extends TekstoveAbstractController
 {
-    public function indexAction(Request $request)
+    /**
+     * @deprecated
+     */
+    public function indexAction(Request $request, LoggerInterface $logger)
     {
+        $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
+
         $this->applyGroups($request);
         $messageQuery = new MessageQuery();
 

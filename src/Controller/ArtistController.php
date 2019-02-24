@@ -17,9 +17,8 @@ class ArtistController extends TekstoveAbstractController
         return $this->handleData($request, $artistQuery);
     }
 
-    public function getAction(LoggerInterface $logger, Request $request, $id)
+    public function getAction(Request $request, $id)
     {
-        $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
         $this->applyGroups($request);
         $artistQuery = new ArtistQuery();
         $artist = $artistQuery->findOneById($id);

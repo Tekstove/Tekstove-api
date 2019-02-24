@@ -2,3 +2,13 @@ app.chat.messages.get:
   path: "/messages"
   defaults: { _controller: App\Controller\V4\Chat\MessageController::indexAction }
   methods: [GET]
+
+app.chat.online.index:
+  path: "/online"
+  defaults: { _controller: App\Controller\V4\Chat\OnlineController::indexAction }
+  methods: [GET]
+
+app.chat.online.post:
+  path: "/online"
+  defaults: { _controller: App\Controller\V4\Chat\OnlineController::postAction }
+  methods: [POST]

@@ -2,14 +2,17 @@
 
 namespace App\Controller\V4;
 
+use App\Entity\User\User;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Context\Context;
+use Tekstove\ApiBundle\Model\User as UserV2;
 
 class TekstoveController extends AbstractFOSRestController
 {
@@ -29,18 +32,27 @@ class TekstoveController extends AbstractFOSRestController
      */
     private $paginator;
 
+    private $request;
+
     public function __construct(RequestStack $r, PaginatorInterface $pager)
     {
         $this->currentRequest = $r->getCurrentRequest();
-        $groups = $this->currentRequest->query->get('groups');
-        $this->setGroups($groups);
+        $this->setGroups($r->getCurrentRequest());
         $this->paginator = $pager;
     }
 
-    protected function setGroups(array $groups)
+    protected function setGroups(Request $request)
     {
+        $groups = $this->currentRequest->query->get('groups');
+
         if (empty($groups)) {
-            throw new \RuntimeException('Groups can\'t by empty');
+            $method = $request->getMethod();
+            // groups are not required for post/path methods
+            if (in_array($method, [Request::METHOD_POST, Request::METHOD_PATCH])) {
+                $groups = ['not-existing-group'];
+            } else {
+                throw new \RuntimeException('Groups can\'t by empty');
+            }
         }
 
         // here we should remove groups allowing personal data serialization
@@ -51,6 +63,22 @@ class TekstoveController extends AbstractFOSRestController
             }
         );
         $this->getContext()->setGroups($groups);
+    }
+
+    /**
+     * Return current logged user.
+     * Transform Model\User to Entity\User
+     */
+    public function getUser()
+    {
+        $user = parent::getUser();
+        if ($user instanceof UserV2) {
+            $useRepo = $this->getDoctrine()->getRepository(User::class);
+            $userV4 = $useRepo->findOneBy(['id' => $user->getId()]);
+            return $userV4;
+        }
+
+        return $user;
     }
 
     /**

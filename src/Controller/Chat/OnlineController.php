@@ -3,6 +3,7 @@
 namespace App\Controller\Chat;
 
 use App\Controller\TekstoveAbstractController as Controller;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\Chat\OnlineQuery;
 use Tekstove\ApiBundle\Model\Chat\Online;
@@ -10,14 +11,14 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use App\HttpFoundation\RequestIdentificator;
 
 /**
- * Description of Online
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class OnlineController extends Controller
 {
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, LoggerInterface $logger)
     {
+        $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
+
         $this->applyGroups($request);
 
         $onlineQuery = new OnlineQuery();

@@ -15,11 +15,6 @@ use JMS\Serializer\SerializerInterface;
 class TekstoveController extends AbstractFOSRestController
 {
     /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
      * @var \Symfony\Component\HttpFoundation\Request
      */
     private $currentRequest;
@@ -35,9 +30,8 @@ class TekstoveController extends AbstractFOSRestController
      */
     private $paginator;
 
-    public function __construct(SerializerInterface $serializer, RequestStack $r, PaginatorInterface $pager)
+    public function __construct(RequestStack $r, PaginatorInterface $pager)
     {
-        $this->serializer = $serializer;
         $this->currentRequest = $r->getCurrentRequest();
         $groups = $this->currentRequest->query->get('groups');
         $this->setGroups($groups);

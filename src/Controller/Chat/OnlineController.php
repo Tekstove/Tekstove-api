@@ -42,8 +42,10 @@ class OnlineController extends Controller
         return $this->handleData($request, ['items' => $onlineUsers]);
     }
 
-    public function postAction(Request $request)
+    public function postAction(Request $request, LoggerInterface $logger)
     {
+        $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
+
         $this->getContext()
                 ->setGroups(['List']);
 

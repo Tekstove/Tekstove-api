@@ -1,6 +1,6 @@
 <?php
 
-namespace Tekstove\ApiBundle\EventListener\Model\Serialize\Chat;
+namespace App\EventListener\Serialize;
 
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
@@ -9,8 +9,6 @@ use Tekstove\ApiBundle\Model\Chat\Message;
 use App\Entity\Chat\Message as MessageV4;
 
 /**
- * Description of MessageSubscriber
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class MessageSubscriber implements EventSubscriberInterface
@@ -51,11 +49,11 @@ class MessageSubscriber implements EventSubscriberInterface
         $visitor = $event->getVisitor();
         $context = $event->getContext();
 
-        $propertyMetadata = $context->getmetadataFactory()
+        $propertyMetadata = $context->getMetadataFactory()
                                         ->getMetadataForClass(Message::class)
                                             ->propertyMetadata;
 
-        $propertyMetadataV4 = $context->getmetadataFactory()
+        $propertyMetadataV4 = $context->getMetadataFactory()
                                 ->getMetadataForClass(MessageV4::class)
                                     ->propertyMetadata;
 
@@ -67,7 +65,7 @@ class MessageSubscriber implements EventSubscriberInterface
 
         if (false == $exclusionStrategy->shouldSkipProperty($ipMetaData, $context) || false == $exclusionStrategy->shouldSkipProperty($ipMetaDataV4, $context)) {
             if (false === $this->authorizationChecker->isGranted('viewIp', $object)) {
-                $visitor->setdata('ip', null);
+                $visitor->setData('ip', null);
             }
         }
 

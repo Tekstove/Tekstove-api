@@ -8,6 +8,11 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Usually there should be no SQL in controller,
+ * anyway, whole logic for online users is here.
+ * Database design is not very compatible with entities.
+ */
 class OnlineController extends TekstoveController
 {
     public function indexAction()

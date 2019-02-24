@@ -32,8 +32,6 @@ class TekstoveController extends AbstractFOSRestController
      */
     private $paginator;
 
-    private $request;
-
     public function __construct(RequestStack $r, PaginatorInterface $pager)
     {
         $this->currentRequest = $r->getCurrentRequest();

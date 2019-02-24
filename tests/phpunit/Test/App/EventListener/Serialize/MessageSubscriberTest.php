@@ -11,6 +11,7 @@ use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\Metadata\PropertyMetadata;
 use Metadata\ClassMetadata;
 use Metadata\MetadataFactoryInterface;
+use PHPUnit\Framework\MockObject\Matcher\InvokedCount;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -111,7 +112,7 @@ class MessageSubscriberTest extends TestCase
     /**
      * @dataProvider ipDataProvider
      */
-    public function testOnPostSerializeMetadataIp(bool $allowedToViewIp, bool $ipCalls)
+    public function testOnPostSerializeMetadataIp(bool $allowedToViewIp, InvokedCount $ipCalls)
     {
         $message = new Message();
 

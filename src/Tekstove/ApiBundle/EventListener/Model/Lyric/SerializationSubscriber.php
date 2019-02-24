@@ -9,8 +9,6 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Tekstove\ApiBundle\Model\Lyric;
 
 /**
- * Description of SerializationListener
- *
  * @author po_taka <angel.koilov@gmail.com>
  */
 class SerializationSubscriber implements EventSubscriberInterface

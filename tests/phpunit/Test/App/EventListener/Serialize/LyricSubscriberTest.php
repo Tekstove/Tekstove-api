@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\ApiBundle\Model\Serialize;
+namespace Test\App\Model\EventListener\Serialize;
 
 use PHPUnit\Framework\TestCase;
 use App\EventListener\Serialize\LyricSubscriber;

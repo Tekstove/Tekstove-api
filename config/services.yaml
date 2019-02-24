@@ -75,13 +75,6 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    tekstove.api.serializer.chat.message_subscriber:
-        class: Tekstove\ApiBundle\EventListener\Model\Serialize\Chat\MessageSubscriber
-        arguments: ["@security.authorization_checker"]
-        tags:
-            - { name: "jms_serializer.event_subscriber" }
-        public: true
-
     app.chat.message_html_subscriber:
         class: Tekstove\ApiBundle\EventListener\Model\Chat\MessageHtmlSubscriber
         arguments: ["@tekstove.api.bbcode.cache"]

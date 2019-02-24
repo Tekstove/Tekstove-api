@@ -19,6 +19,11 @@ class Message
     private $id;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $idOverride;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User\User")
      * @ORM\JoinColumn(name="user_id")
      */
@@ -40,6 +45,11 @@ class Message
     private $messageHtml;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    private $ip;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $date;
@@ -52,6 +62,11 @@ class Message
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getIdOverride(): ?int
+    {
+        return $this->idOverride;
     }
 
     public function getUser(): ?User
@@ -103,5 +118,10 @@ class Message
     public function getDate(): \DateTime
     {
         return $this->date;
+    }
+
+    public function getIp(): ?string
+    {
+        return $this->ip;
     }
 }

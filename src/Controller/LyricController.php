@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
 use Tekstove\ApiBundle\Model\Lyric\LyricRedirectQuery;
@@ -16,15 +17,25 @@ use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
 
 class LyricController extends TekstoveAbstractController
 {
-    public function indexAction(Request $request)
+    /**
+     * @deprecated
+     */
+    public function indexAction(LoggerInterface $logger, Request $request)
     {
+        $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
+
         $this->applyGroups($request);
         $lyricQuery = new LyricQuery();
         return $this->handleData($request, $lyricQuery);
     }
 
-    public function getAction(Request $request, $id)
+    /**
+     * @deprecated
+     */
+    public function getAction(LoggerInterface $logger, Request $request, $id)
     {
+        $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
+
         $this->applyGroups($request);
         $lyricQuery = new LyricQuery();
         try {

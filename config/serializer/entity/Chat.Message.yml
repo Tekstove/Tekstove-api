@@ -1,0 +1,29 @@
+"App\\Entity\\Chat\\Message":
+  exclusion_policy: all
+  exclude: false
+  read_only: true
+  virtual_properties:
+    getId:
+      groups: ['list', 'details']
+      serialized_name: id
+    getIdOverride:
+      groups: [details, list]
+      serialized_name: idOverride
+    getUsername:
+      groups: [details, list]
+    getMessage:
+      groups: [details, list]
+      serialized_name: message
+    getMessageHtml:
+      groups: [details, dist]
+      serialized_name: messageHtml
+    getDate:
+      groups: [details, list]
+      serialized_name: date
+      type: DateTime<'U'>
+    getIp:
+      groups: [details]
+      serialized_name: ip
+    getUser:
+      groups: [details]
+      serialized_name: user

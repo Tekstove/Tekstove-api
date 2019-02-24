@@ -1,5 +1,7 @@
 <?php
 
+namespace Test\App\Model\EventListener\Serialize;
+
 use App\Entity\Chat\Message;
 use App\EventListener\Serialize\MessageSubscriber;
 use JMS\Serializer\Context;
@@ -61,7 +63,7 @@ class MessageSubscriberTest extends TestCase
     /**
      * @dataProvider metadataDataProvider
      */
-    public function testOnPostSerializeMetadata($expectedBan, $expectedCensore, $allowedBan, $allowedCensore)
+    public function testOnPostSerializeMetadata(bool $expectedBan, bool $expectedCensore, bool $allowedBan, bool $allowedCensore)
     {
         $message = new Message();
 
@@ -93,8 +95,7 @@ class MessageSubscriberTest extends TestCase
         };
         $contextMock = $this->getContextMock($visitorExpectations);
 
-
-        $event = new ObjectEvent($contextMock ,$message, []);
+        $event = new ObjectEvent($contextMock, $message, []);
 
         $subscriber->onPostSerialize($event);
     }
@@ -110,7 +111,7 @@ class MessageSubscriberTest extends TestCase
     /**
      * @dataProvider ipDataProvider
      */
-    public function testOnPostSerializeMetadataIp($allowedToViewIp, $ipCalls)
+    public function testOnPostSerializeMetadataIp(bool $allowedToViewIp, bool $ipCalls)
     {
         $message = new Message();
 
@@ -142,7 +143,7 @@ class MessageSubscriberTest extends TestCase
         };
         $contextMock = $this->getContextMock($visitorExpectations);
 
-        $event = new ObjectEvent($contextMock ,$message, []);
+        $event = new ObjectEvent($contextMock, $message, []);
 
         $subscriber->onPostSerialize($event);
     }

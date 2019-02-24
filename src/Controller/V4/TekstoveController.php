@@ -10,7 +10,6 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Context\Context;
-use JMS\Serializer\SerializerInterface;
 
 class TekstoveController extends AbstractFOSRestController
 {

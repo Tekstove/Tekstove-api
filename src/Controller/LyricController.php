@@ -5,67 +5,13 @@ namespace App\Controller;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Tekstove\ApiBundle\Model\LyricQuery;
-use Tekstove\ApiBundle\Model\Lyric\LyricRedirectQuery;
 use Tekstove\ApiBundle\Model\Lyric;
-use Propel\Runtime\Exception\EntityNotFoundException;
-
-use Potaka\Helper\Casing\CaseHelper;
-
 use Tekstove\ApiBundle\Model\User;
-
 use Tekstove\ApiBundle\Model\Lyric\Exception\LyricHumanReadableException;
+use Potaka\Helper\Casing\CaseHelper;
 
 class LyricController extends TekstoveAbstractController
 {
-    /**
-     * @deprecated
-     */
-    public function indexAction(LoggerInterface $logger, Request $request)
-    {
-        $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
-
-        $this->applyGroups($request);
-        $lyricQuery = new LyricQuery();
-        return $this->handleData($request, $lyricQuery);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getAction(LoggerInterface $logger, Request $request, $id)
-    {
-        $logger->error("Code is deprecated and will be removed!", ['class' => __CLASS__, 'method' => __METHOD__]);
-
-        $this->applyGroups($request);
-        $lyricQuery = new LyricQuery();
-        try {
-            $lyric = $lyricQuery->requireOneById($id);
-        } catch (EntityNotFoundException $e) {
-            $redirectQuery = new LyricRedirectQuery();
-            $redirect = $redirectQuery->findOneByDeletedId($id);
-            if ($redirect) {
-                $view = $this->handleData(
-                    $request,
-                    [
-                        'redirect' => [
-                            'id' => $redirect->getRedirectId()
-                        ]
-                    ]
-                );
-
-                $view->setStatusCode(404);
-
-                return $view;
-            }
-            throw $this->createNotFoundException("Lyric not found");
-        }
-
-        $viewEvent = new \Tekstove\ApiBundle\EventDispatcher\Lyric\LyricEvent($lyric);
-        $this->get('tekstove.event_dispacher')->dispatch('tekstove.lyric.view', $viewEvent);
-
-        return $this->handleData($request, $lyric);
-    }
-
     public function postAction(Request $request)
     {
         $repo = $this->get('tekstove.lyric.repository');

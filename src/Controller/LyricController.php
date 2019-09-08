@@ -16,6 +16,8 @@ class LyricController extends TekstoveAbstractController
 {
     /**
      * @deprecated
+     *
+     * For for lyric edit is using this endpoint
      */
     public function getAction(LoggerInterface $logger, Request $request, $id)
     {

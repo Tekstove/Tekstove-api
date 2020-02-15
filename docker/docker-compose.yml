@@ -1,12 +1,10 @@
-version: '2'
+version: '3'
 
 services:
     tekstove.api-web:
         build: ./php
         volumes:
             - ../:/var/www/tekstove-api
-        ports:
-            - "81:80"
         links:
             - tekstove.api-redis
             - tekstove.api-sql
@@ -18,7 +16,7 @@ services:
     tekstove.api-sql:
         image: mariadb:10
         volumes:
-            - "./local/sql:/var/lib/mysql"
+            - tekstove.api-sql_data:/var/lib/mysql
             - "./config/sql/my.cnf:/etc/mysql/my.cnf"
         environment:
             MYSQL_ROOT_PASSWORD: ~
@@ -26,3 +24,5 @@ services:
             MYSQL_USER: 'root'
             MYSQL_PASS: ~
             MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+volumes:
+    tekstove.api-sql_data:

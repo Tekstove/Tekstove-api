@@ -10,7 +10,7 @@ before_script:
 script:
     - composer install -d tests/codeSniffer/
     - ./tests/codeSniffer/vendor/bin/phpcs --standard=tests/codeSniffer/phpcs.xml
-    - composer install --prefer-dist
+    - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install --prefer-dist
     - ./vendor/bin/phpunit -c tests/phpunit/phpunit.xml --no-coverage
     - ./bin/console doctrine:mapping:info
 

@@ -2,6 +2,7 @@ language: php
 php:
   - 7.1
   - 7.4
+  - 7.3
   - nightly
 
 before_script:
@@ -17,6 +18,7 @@ script:
 matrix:
     allow_failures:
         - php: nightly
+        - php: 7.4
 
 notifications:
     on_success: never

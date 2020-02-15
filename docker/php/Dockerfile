@@ -24,7 +24,7 @@ RUN echo "xdebug.remote_enable=1" >> /etc/php/7.1/cgi/conf.d/20-xdebug.ini
 
 RUN a2enmod actions fastcgi rewrite
 
-RUN wget "https://getcomposer.org/download/1.4.2/composer.phar" -q -O /bin/composer && chmod +x /bin/composer
+RUN wget "https://getcomposer.org/download/1.9.3/composer.phar" -q -O /bin/composer && chmod +x /bin/composer
 
 RUN a2enmod proxy_http ssl suexec
 COPY apache-api.conf /etc/apache2/sites-available/tekstove-api.conf
@@ -44,9 +44,6 @@ RUN chmod 755 /var/www/php-fcgi-scripts/tekstove_api/php-fcgi-starter
 
 WORKDIR /var/www/tekstove-api
 
-CMD if [ ! -d "/var/www/tekstove-api/var/cache" ] ; \
-    then composer install -d /var/www/tekstove-api ; \
-    fi ; \
-    chmod 777 -R /var/www/tekstove-api/var/* && \
-    /etc/init.d/apache2 restart && \
-    tail -F /var/log/apache2/error.log -F /var/www/tekstove-api/var/log/dev.log
+ADD start.sh /start.sh
+
+CMD bash /start.sh

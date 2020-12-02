@@ -9,6 +9,8 @@ services:
             - tekstove.api-redis
             - tekstove.api-sql
         restart: unless-stopped
+        environment:
+            - WEB_UID=${WEB_UID}
 
     tekstove.api-redis:
         image: redis:3

@@ -1,0 +1,26 @@
+{
+    "doctrine/sql-formatter": {
+        "version": "1.1.1"
+    },
+    "laminas/laminas-zendframework-bridge": {
+        "version": "1.1.1"
+    },
+    "php": {
+        "version": "7.4"
+    },
+    "symfony/deprecation-contracts": {
+        "version": "v2.2.0"
+    },
+    "symfony/http-client-contracts": {
+        "version": "v2.3.1"
+    },
+    "symfony/polyfill-intl-normalizer": {
+        "version": "v1.20.0"
+    },
+    "symfony/polyfill-php80": {
+        "version": "v1.20.0"
+    },
+    "webimpress/safe-writer": {
+        "version": "2.1.0"
+    }
+}

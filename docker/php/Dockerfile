@@ -17,12 +17,9 @@ RUN apt-get update \
         php${PHP_V}-cgi \
         php${PHP_V}-xml \
         php${PHP_V}-mysql \
-        php${PHP_V}-mbstring \
-        php${PHP_V}-xdebug
+        php${PHP_V}-mbstring
 
 RUN update-alternatives --set php /usr/bin/php${PHP_V}
-RUN echo "xdebug.remote_connect_back=1" >> /etc/php/${PHP_V}/cgi/conf.d/20-xdebug.ini
-RUN echo "xdebug.remote_enable=1" >> /etc/php/${PHP_V}/cgi/conf.d/20-xdebug.ini
 
 RUN a2enmod actions rewrite
 

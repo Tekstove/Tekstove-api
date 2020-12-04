@@ -3,11 +3,6 @@ tekstove_api_lyric.popularity.top.index:
     defaults: { _controller: App\Controller\Lyric\TopPopularityController::indexAction }
     methods: [GET]
 
-tekstove_api_lyric:
-    path: "/"
-    defaults: { _controller: App\Controller\LyricController::indexAction }
-    methods: [GET]
-
 tekstove_api_lyric_credentials:
     path: "/credentials/{id}"
     defaults: { _controller: App\Controller\Lyric\CredentialsController::indexAction }
@@ -37,4 +32,3 @@ tekstove_api_lyric.delete:
     path: "/{id}"
     defaults: { _controller: App\Controller\LyricController::deleteAction }
     methods: [DELETE]
-

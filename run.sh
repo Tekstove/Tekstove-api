@@ -15,7 +15,7 @@ docker build --tag=tekstove-api-php ./php/
 docker-compose -p $PROJECT_NAME build
 
 if [[ "$1" == "-p" ]]; then
-    docker-compose -p $PROJECT_NAME -f docker-compose.yml -f up
+    docker-compose -p $PROJECT_NAME -f docker-compose.yml up
 else
     docker-compose -p $PROJECT_NAME -f docker-compose.yml -f docker-compose-dev.yml up
 fi

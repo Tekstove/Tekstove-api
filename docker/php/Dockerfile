@@ -14,7 +14,7 @@ ENV PHP_V="7.4"
 
 RUN apt-get update \
     && apt-get install -y \
-        php${PHP_V}-cgi \
+        php${PHP_V} \
         php${PHP_V}-xml \
         php${PHP_V}-mysql \
         php${PHP_V}-mbstring

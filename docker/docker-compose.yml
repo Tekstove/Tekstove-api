@@ -5,10 +5,13 @@ services:
         build: ./php
         volumes:
             - ../:/var/www/tekstove-api
+            - tekstove.api-composer-cache:/var/www/.cache
         links:
             - tekstove.api-redis
             - tekstove.api-sql
         restart: unless-stopped
+        environment:
+            - WEB_UID=${WEB_UID}
 
     tekstove.api-redis:
         image: redis:3
@@ -17,7 +20,7 @@ services:
         image: mariadb:10
         volumes:
             - tekstove.api-sql_data:/var/lib/mysql
-            - "./config/sql/my.cnf:/etc/mysql/my.cnf"
+            - ./config/sql/my.cnf:/etc/mysql/my.cnf
         environment:
             MYSQL_ROOT_PASSWORD: ~
             MYSQL_DATABASE: 'tekstove_api'
@@ -26,3 +29,4 @@ services:
             MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
 volumes:
     tekstove.api-sql_data:
+    tekstove.api-composer-cache:

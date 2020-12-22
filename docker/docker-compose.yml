@@ -30,3 +30,8 @@ services:
 volumes:
     tekstove.api-sql_data:
     tekstove.api-composer-cache:
+
+networks:
+    default:
+        external:
+            name: tekstove

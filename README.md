@@ -6,6 +6,6 @@ Please use [Tekstove/Tekstove](https://github.com/Tekstove/Tekstove/issues) for 
 
 Run with docker
 ```
-$ docker-compose -f docker/docker-compose.yml up
+./run.sh
 ```
 > database dockerizaion is WIP :(

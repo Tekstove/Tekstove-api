@@ -17,7 +17,7 @@ services:
         image: redis:3
 
     tekstove.api-sql:
-        image: mariadb:10
+        image: mariadb:10.5
         volumes:
             - tekstove.api-sql_data:/var/lib/mysql
             - ./config/sql/my.cnf:/etc/mysql/my.cnf

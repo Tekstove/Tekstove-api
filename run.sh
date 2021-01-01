@@ -2,7 +2,7 @@
 
 set -e
 
-PROJECT_NAME=tekstove
+export PROJECT_NAME=tekstove
 
 docker network inspect $PROJECT_NAME || docker network create $PROJECT_NAME
 

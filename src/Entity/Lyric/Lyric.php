@@ -336,6 +336,7 @@ class Lyric implements AutoAclSerializableInterface
 
         $allowedLyrivs = [
             68126, // official fb page https://www.facebook.com/venelinstefanow/ on 1 Dec 2018
+            44776, // given from Георги Тотев, email
         ];
 
         if (in_array($this->getId(), $allowedLyrivs)) {

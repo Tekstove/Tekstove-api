@@ -8,7 +8,7 @@ RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt
 
 RUN apt-get update && apt-get install -y \
     git unzip curl \
-    apache2 libapache2-mod-php
+    apache2
 
 ENV PHP_V="7.4"
 

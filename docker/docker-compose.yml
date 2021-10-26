@@ -15,6 +15,7 @@ services:
 
     tekstove.api-redis:
         image: redis:3
+        restart: unless-stopped
 
     tekstove.api-sql:
         image: mariadb:10.5

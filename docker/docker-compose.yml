@@ -14,7 +14,7 @@ services:
             - WEB_UID=${WEB_UID}
 
     tekstove.api-redis:
-        image: redis:3
+        image: redis:6
         restart: unless-stopped
 
     tekstove.api-sql:
